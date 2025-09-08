@@ -1,0 +1,23 @@
+name: enlight-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - pandas
+  - numpy
+  - matplotlib
+  - tqdm
+  - ipykernel
+  - openpyxl
+  - highs
+  - pip
+  - pip:
+      - atlite
+      - linopy
+      - highspy
+# To create the environment please run:
+# conda env create -f environment.yaml
+
+# To install gurobi, enter the following command in the terminal:
+#conda install -c gurobi gurobi

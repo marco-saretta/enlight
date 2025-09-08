@@ -1,0 +1,156 @@
+ID,Name,Product,Electric capacity,zone_el,Latitude,Longitude,Demand price
+PtX1BE,HyOffWind Zeebrugge Phase1,Hydrogen,1.0,BE,51.3313458,3.2068372,48.60676883
+PtX2BE,HyOffWind Zeebrugge Phase2,Hydrogen,24.0,BE,51.3313458,3.2068372,49.84382679
+PtX4BE,Hyport,Hydrogen,50.0,BE,51.22642,2.93136,53.57951733
+PtX5BE,Don Quichote,Hydrogen,0.3,BE,50.72983,4.22182,48.20263932
+PtX6BE,Green Methanol,Methanol,5.0,BE,51.24127,4.40738,40.2575598
+PtX7BE,HRS CMB Port of Antwerp,Hydrogen,1.0,BE,51.24127,4.40738,52.30241158
+PtX11BE,"North CCU HUB, North-C Methanol Demo plant",Methanol,63.0,BE,0.0,0.0,36.36270883
+PtX14BE,Wallonia e- methane project,Methane,75.0,BE,0.0,0.0,54.12420718
+PtX1CZ,Greening of Gas,Hydrogen,0.5,CZ,48.967966,16.655186,47.99292191
+PtX2CZ,CZ H2 strategy target phase 1,Hydrogen,150.0,CZ,0.0,0.0,52.50915312
+PtX4DK,Brande Hydrogen,Hydrogen,0.4,DK1,55.95606,9.12131,53.57951733
+PtX10DK,HRS Aalborg,Hydrogen,0.3,DK1,57.04511,9.93654,51.69439896
+PtX12DK,HyBalance,Hydrogen,1.2,DK1,56.62786,9.82469,53.70554104
+PtX13DK,Greenlab Skive Phase 1,Hydrogen,12.0,DK1,56.64594,8.97784,47.72777863
+PtX14DK,Greenlab Skive Phase 2,Hydrogen,88.0,DK1,56.64594,8.97784,55.85682926
+PtX20DK,H2RES,Hydrogen,2.0,DK2,55.60376,12.48105,48.18266726
+PtX21DK,Reddap,Ammonia,10.0,DK1,56.50592,8.18201,61.21138841
+PtX29DK,Power2Met,Methanol,0.26,DK1,57.27437,9.95272,40.29625203
+PtX31DK,HFC Marine,Hydrogen,0.5,DK1,56.62786,9.82469,53.44601533
+PtX33DK,Estech,Hydrogen,2.0,DK1,55.08400731,10.6312822,55.44601533
+PtX2DE,AquaPrimus,Hydrogen,42.0,DELU,53.861701,8.694068,53.4368117
+PtX6DE,Hybridge,Hydrogen,100.0,DELU,52.31266,7.40002,47.77222637
+PtX7DE,HySynGas,Methane,50.0,DELU,53.8901,9.17256,53.445893
+PtX8DE,Bad LauchstÃ¤dt energy park,Hydrogen,35.0,DELU,51.38523,11.88348,52.903418
+PtX9DE,WestkÃ¼ste,Hydrogen,30.0,DELU,54.196111,9.093333,49.12164843
+PtX10DE,Lingen BP Refinery ,Hydrogen,15.0,DELU,52.55865,7.30993,47.29848003
+PtX11DE,REFHYNE,Hydrogen,10.0,DELU,50.85534,6.97678,56.35989511
+PtX12DE,Energiepark Mainz,Hydrogen,6.0,DELU,49.94482,8.253,49.73123312
+PtX13DE,"ETOGAS, Solar Fuel Beta-plant AUDI, Werlte (Audi e-gas)",Methane,6.0,DELU,52.87015,7.67239,46.00765983
+PtX14DE,H&R Ãlwerke Hamburg-Neuhof,Hydrogen,5.0,DELU,53.51495,9.9525,46.70811658
+PtX15DE,Maximator,Hydrogen,2.5,DELU,51.49335,10.792,49.67397069
+PtX16DE,Wind to gas BrunsbÃ¼ttel,Hydrogen,2.4,DELU,53.89287,9.17844,46.93346092
+PtX17DE,Salzgitter Clean Hydrogen project,Hydrogen,2.2,DELU,52.17002,10.43087,45.11618957
+PtX18DE,PtG-Fehndorf	,Hydrogen,2.0,DELU,52.77946,7.10719,46.84914913
+PtX19DE,Carbon2Chem,Hydrogen,2.0,DELU,51.4587,6.99485,45.84999487
+PtX20DE,Uniper/E-ON WindGas Falkenhagen Hydrogen Pilot Project,Hydrogen,2.0,DELU,53.19967,12.23368,51.90745034
+PtX21DE,PtG plant Hamburg-Reitbrook,Hydrogen,1.5,DELU,53.47581,10.10102,48.07961257
+PtX22DE,Leuchtturmprojekt Power-to-Gas Baden-WÃ¼rttemberg,Hydrogen,1.3,DELU,47.53881,7.70757,50.91859106
+PtX23DE,Hassfurt,Hydrogen,1.25,DELU,50.0296,10.52502,53.784297
+PtX24DE,HYPOS (Leipzig),Hydrogen,1.25,DELU,51.49379,11.93799,48.39929525
+PtX25DE,eFarm,Hydrogen,1.125,DELU,54.78231,8.85001,46.16325342
+PtX26DE,Kopernikus 2.0,Methane,1.0,DELU,49.10027,8.43101,51.22297471
+PtX27DE,H2ORIZON,Hydrogen,1.0,DELU,49.28248,9.37566,45.30027191
+PtX28DE,MEFCO2,Methane,1.0,DELU,51.61151,7.52704,44.68559321
+PtX29DE,"Windgas Haurup, 1st phase",Hydrogen,1.0,DELU,54.71845,9.31623,51.26214763
+PtX30DE,"RH2 Grapzow, Mecklenburg Vorpommern",Hydrogen,1.0,DELU,53.71272,13.28947,53.58759064
+PtX31DE,P2G plant Erdgas Schwaben,Hydrogen,1.0,DELU,50.30736,8.51576,46.76003637
+PtX32DE,Dezentrale Energieversorgung fÃ¼r LÃ¼besse,Methane,10.0,DELU,53.48991,11.46295,54.34767182
+PtX33DE,Methquest,Methane,2.0,DELU,49.01485,8.41544,53.37420776
+PtX34DE,Hy2Chem,Hydrogen,5.0,DELU,51.32802,12.02357,46.93133218
+PtX39DE,"Wunsiedel Energy Park, 1st phase",Hydrogen,6.0,DELU,0.0,0.0,53.96584498
+PtX40DE,Linde Leuna Chemical Complex,Hydrogen,24.0,DELU,0.0,0.0,45.12756032
+PtX41DE,RWE-Thyssenkrupp Duisburg steel plant,Hydrogen,100.0,DELU,0.0,0.0,53.1107669
+PtX42DE,Vattenfall's Moorburg plant,Hydrogen,100.0,DELU,0.0,0.0,55.06525628
+PtX43DE,Trailblazer (Phase 1),Hydrogen,20.0,DELU,0.0,0.0,53.14281275
+PtX44DE,Ineratec PtL Frankfurt ,Hydrogen,10.0,DELU,0.0,0.0,51.13494393
+PtX45DE,HyBit,Hydrogen,10.0,DELU,0.0,0.0,51.17620433
+PtX5ES,Power to Green H2 Mallorca - Phase 2,Hydrogen,7.5,ES,39.72501,2.8597,48.20263932
+PtX6ES,ELYGRID (R&D),Hydrogen,2.6,ES,41.64139,-0.99571,53.2996364
+PtX7ES,Power to Green H2 Mallorca - Phase 1,Hydrogen,2.5,ES,39.72501,2.8597,52.30241158
+PtX8ES,Repsol Basque Hydrogen Corridor - 1st phase,Hydrogen,2.5,ES,43.32539,-3.11272,47.13985083
+PtX9ES,Repsol Basque Hydrogen Corridor - 2nd phase,Hydrogen,10.0,ES,43.32539,-3.11272,55.2248581
+PtX10ES,Repsol Basque Hydrogen Corridor - 3rd phase,Hydrogen,100.0,ES,43.32539,-3.11272,51.69439896
+PtX11ES,Repsol Cartagena (Green H2 platform Murcia),Hydrogen,100.0,ES,37.57286,-0.92274,49.40478543
+PtX12ES,Repsol Other projects,Hydrogen,344.5,ES,40.61359,-3.77701,55.34314448
+PtX15ES,ES H2 strategy phase 1,Hydrogen,2000.0,ES,0.0,0.0,52.78986722
+PtX2FR,Hygreen Provence 2nd phase,Hydrogen,113.0,FR,43.89152,5.76416,51.48143023
+PtX3FR,"H2V Normandy, 2nd phase",Hydrogen,100.0,FR,49.47828,0.54717,53.62920779
+PtX4FR,"H2V59, 2nd phase",Hydrogen,100.0,FR,51.04207,2.37326,53.57951733
+PtX5FR,"H2V Normandy, 1st phase",Hydrogen,100.0,FR,49.47828,0.54717,48.20263932
+PtX6FR,"H2V59, 1st phase",Hydrogen,100.0,FR,51.04207,2.37326,53.2996364
+PtX7FR,NEL-Lhyfe Agreement - Total,Hydrogen,59.31,FR,43.39912,5.10191,52.30241158
+PtX8FR,"Hygreen Provence, 1st Phase",Hydrogen,17.0,FR,43.89152,5.76416,47.13985083
+PtX9FR,VendÃ©e hydrogÃ¨ne,Hydrogen,3.425,FR,46.6741,-1.43977,55.2248581
+PtX10FR,Jupiter 1000,Hydrogen,1.0,FR,43.43703,4.91084,51.69439896
+PtX11FR,MassHylia,Hydrogen,40.0,FR,43.3838,5.165,49.40478543
+PtX12FR,FR H2 strategy phase 1,Hydrogen,1000.0,FR,0.0,0.0,55.34314448
+PtX22FR,Vicat Montalieu-Vercieu cement plant,Hydrogen,330.0,FR,0.0,0.0,55.15864521
+PtX23FR,TotalÂs La MÃ¨de biorefinery,Methanol,40.0,FR,0.0,0.0,37.19970242
+PtX24FR,Sunrhyse (Phase 1),Hydrogen,30.0,FR,0.0,0.0,50.30030263
+PtX25FR,Centrale Ãlectrique de lÂOuest Guyanais (CEOG),Hydrogen,16.0,FR,0.0,0.0,54.12612059
+PtX1HU,Aquamarine,Hydrogen,2.5,HU,46.48333,20.666667,50.24437227
+PtX2NL,Hydrogen Delta - Zeeland,Hydrogen,1000.0,NL,51.45717,3.72704,51.48143023
+PtX4NL,Port of Rotterdam BP refinery ,Hydrogen,250.0,NL,51.93904,4.11005,53.57951733
+PtX5NL,Shell - Port of Rotterdam,Hydrogen,200.0,NL,51.87822,4.34688,48.20263932
+PtX6NL,Ijmuiden,Hydrogen,100.0,NL,52.46029,4.5744,53.2996364
+PtX7NL,"HyNetherlands, 1st phase",Hydrogen,100.0,NL,53.4361,6.87849,52.30241158
+PtX8NL,Hydrogen Plant for Westereems Wind Farm (RWE Eemshaven),Hydrogen,100.0,NL,53.45044,6.79318,47.13985083
+PtX9NL,"Hemweg
+hub Amsterdam",Hydrogen,100.0,NL,52.40666,4.84751,55.2248581
+PtX12NL,DJEWELS Chemiepark - Delfzijl,Hydrogen,20.0,NL,53.31622,6.95973,55.34314448
+PtX14NL,E-Thor,Hydrogen,5.0,NL,51.88614,4.25683,55.85682926
+PtX15NL,"GreenH2UB (1st hub, Noord Brabant)",Hydrogen,3.0,NL,51.56651,5.17434,52.78986722
+PtX16NL,Multhiphly,Hydrogen,2.6,NL,51.96655,4.03722,51.02914684
+PtX18NL,Hysolar Green on Road - Nieuwegein,Hydrogen,2.0,NL,52.0327,5.09097,54.98878725
+PtX19NL,Duwaal,Hydrogen,2.0,NL,52.63632,4.75624,46.88845826
+PtX20NL,Delfzijl - Hystock,Hydrogen,1.034,NL,53.08473,6.93382,46.54506382
+PtX21NL,HEAVENN (Hydrogen Energy Applications for Valley Environments in Northern Netherlands),Hydrogen,1.0,NL,53.01138,6.5373,49.3955175
+PtX22NL,PosHYdon,Hydrogen,1.0,NL,54.33639,6.02335,53.52104177
+PtX23NL,Hydrogenpilot Oosterwolde,Hydrogen,1.0,NL,52.98417,6.30036,50.24177902
+PtX24NL,Zuidwending,Hydrogen,1.0,NL,53.09597,6.93604,48.66269919
+PtX25NL,GldH2,Hydrogen,1.0,NL,52.14362,6.19076,54.12612059
+PtX26NL,P2P IPKW,Hydrogen,1.0,NL,51.96682,5.94306,54.46977316
+PtX27NL,ELYgator,Hydrogen,200.0,NL,51.333333,3.833333,52.22767751
+PtX28NL,E-Thor,Hydrogen,5.0,NL,51.83,4.32,53.33832862
+PtX29NL,Multiphly,Hydrogen,2.4,NL,51.916667,4.5,56.33642908
+PtX32NL,Holland Hydrogen (Phase 1),Hydrogen,0.0,NL,0.0,0.0,0.0
+PtX1AT,UpHy,Hydrogen,6.0,AT,48.33587,14.32021,48.60676883
+PtX2AT,DEMO4GRID,Hydrogen,4.0,AT,47.25802,11.31306,51.48143023
+PtX3AT,H2FUTURE,Hydrogen,6.0,AT,48.2786,14.31934,51.99160435
+PtX4AT,AT H2 strategy phase 1,Hydrogen,250.0,AT,0.0,0.0,53.57951733
+PtX1FI,Nordic-Ren-Gas Oy,Methane,20.0,FI,0.0,0.0,17.46511152
+PtX3FI,Westenergy Oy,Methane,30.0,FI,0.0,0.0,19.0797278
+PtX4FI,Vantaan Energia Oy,Methane,10.0,FI,0.0,0.0,17.30256053
+PtX14FI,Raahen Monivoima & Kokkolan Energia ,Hydrogen,5.7,FI,0.0,0.0,24.02514674
+PtX19FI,Nordic-Ren-Gas Oy,Hydrogen,60.0,FI,0.0,0.0,20.91249735
+PtX20FI,Helen,Hydrogen,2.0,FI,0.0,0.0,26.55991495
+PtX22FI,Prime Capital AG,Hydrogen,200.0,FI,0.0,0.0,22.82302905
+PtX28FI,P2X Solutions,Hydrogen,20.0,FI,0.0,0.0,24.87768292
+PtX31FI,EPV Energia,Hydrogen,4.3,FI,0.0,0.0,23.51497954
+PtX32FI,Neste,Hydrogen,120.0,FI,0.0,0.0,24.30537612
+PtX33FI,UPM,Hydrogen,20.0,FI,0.0,0.0,25.42188203
+PtX39FI,LempÃ¤Ã¤lÃ¤n Energia,Hydrogen,2.5,FI,0.0,0.0,20.33497345
+PtX48FI,P2X Harjavalta (Phase 1),Hydrogen,20.0,FI,0.0,0.0,18.6648791
+PtX1SE, Liquid Wind,Hydrogen,32.085,SE3,57.68546,11.97842,47.56013016
+PtX2SE,HYBRIT pilot,Hydrogen,4.5,SE3,57.69934,11.82046,51.28264029
+PtX3SE,"Ãrsted, FlagshipONE",Methanol,70.0,SE2,0.0,0.0,37.77027328
+PtX7SE,Port of Gothenburg,Methanol,4.0,SE3,0.0,0.0,36.05598639
+PtX9SE,RES ja Ãnge Municipality,Hydrogen,20.0,SE2,0.0,0.0,53.93132293
+PtX13SE,Liquid Wind,Methanol,65.0,SE2,0.0,0.0,38.13612523
+PtX14SE,H2 Green steel,Hydrogen,700.0,SE1,0.0,0.0,54.02514674
+PtX15SE,Ovako,Hydrogen,20.0,SE2,0.0,0.0,46.70338907
+PtX1UK,Centurion,Hydrogen,100.0,GB,53.32883,-2.75622,48.60676883
+PtX2UK,Gigastack-Hornsea 2,Hydrogen,100.0,GB,53.63375,-0.24676,49.84382679
+PtX3UK,Hydrogen plant - Orkney Islands - BIG HIT 2n phase,Hydrogen,1.0,GB,58.98372,-2.97473,51.99160435
+PtX4UK,"Aberdeen, Hydrogen bus project",Hydrogen,1.0,GB,57.15213,-2.0943,53.57951733
+PtX5UK,HyDeploy,Hydrogen,0.5,GB,53.00355,-2.27207,46.56503588
+PtX6UK,Hydrogen plant - Orkney Islands - BIG HIT 1st phase,Hydrogen,0.5,GB,58.98372,-2.97473,51.66203296
+PtX7UK,HyPER,Hydrogen,1.5,GB,52.0699,-0.6081,56.19282533
+PtX8UK,UK H2 strategy phase 1,Hydrogen,1000.0,GB,0.0,0.0,47.13985083
+PtX1NO,CRI project in Norway,Methanol,70.0,NO5,69.21818,18.07759,37.20229567
+PtX2NO,Kvinnherad Power-to-Gas,Hydrogen,30.0,NO2,59.98537,6.00746,51.48143023
+PtX3NO,Norsk e-Fuel,Methanol,22.0,NO2,59.12185,9.63047,44.0977973
+PtX4NO,Nordic Blue Crude,Methanol,20.0,NO2,59.12185,9.63047,44.04810683
+PtX5NO,Green fertilizer project Porsgrunn,Hydrogen,5.0,NO2,59.12185,9.63047,48.20263932
+PtX6NO,HAEOLUS,Hydrogen,2.5,NO4,70.5381,29.54063,51.66203296
+PtX7NO,Glomfjord Hydrogen AS,Hydrogen,2.0,NO3,66.81661,13.94037,52.30241158
+PtX8NO,Silva Green Fuel,Methanol,1.0,NO2,59.54202413,10.55795964,39.09777423
+PtX10NO,Norsk e-fuel HerÃ¸ya,Jetfuel,10.65,NO2,59.1220126,9.63112327,0.029519863
+PtX13NO,Project Robinson,Hydrogen,0.78,NO2,58.44858328,5.991646595,47.72777863
+PtX14NO,Yara Porsgrunn Hydrogen,Hydrogen,21.0,NO2,59.13930973,9.655435103,54.21922582
+PtX15NO,NEL HerÃ¸ya Hydrogen,Hydrogen,500.0,NO2,59.1220126,9.63112327,51.15226378
+PtX16NO,NEL + Statkraft H2 for steel,Hydrogen,50.0,NO4,66.31348612,14.16504718,47.13873308
+PtX19NO,Aurora Porject (Mongstad),Hydrogen,12.077,NO5,60.81844059,5.023992562,48.5260617
+PtX1CH,Hydrospider,Hydrogen,2.0,CH,47.42165,8.55983,48.60676883

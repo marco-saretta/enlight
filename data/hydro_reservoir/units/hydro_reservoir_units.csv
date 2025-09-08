@@ -1,0 +1,1496 @@
+﻿ID,country,name,Technology,capacity_el,Pumping capacity,zone_el,Latitude,Longitude,Volume,Storage Capacity,Dam Height,Commission,prodcost
+HY2BG,BG,Sestrimo,Large Hydro - Dammed,240,291,BG,42.1913161,24.3321331,0.42,0,539,1974,97
+HY7BG,BG,Gorna Arda,Large Hydro - Dammed,174.2,0,BG,41.61503,26.32921,0,0,0,2010,101
+HY9BG,BG,Studen Kladenets,Large Hydro - Dammed,160,0,BG,41.6195,25.6415,388,0,2.71389,1958,110
+HY10BG,BG,Peshtera,Large Hydro - Dammed,135,0,BG,42.0135,24.2579,302.3,0,586,1959,98
+HY11BG,BG,Momina Klisura,Large Hydro - Dammed,120,0,BG,42.2319,23.9494,0.2,0,254,---,109
+HY12BG,BG,Ivailovgrad,Large Hydro - Dammed,114,0,BG,41.5837,26.1074,156.7,0,43,1964,100
+HY13BG,BG,Kardzhali,Large Hydro - Dammed,110,0,BG,41.6334,25.34,540,0,93,1963,98
+HY14BG,BG,Devin,Medium Hydro - Dammed,80,0,BG,41.7201,24.425,1.37,0,156,---,93
+HY15BG,BG,Krichim,Medium Hydro - Dammed,80,0,BG,41.99178,24.468033,20.26,0,172,---,105
+HY16BG,BG,Tsankov Kamak,Medium Hydro - Dammed,80,0,BG,41.8221821,24.4420481,111,0,5.6278,---,110
+HY17BG,BG,Aleko,Medium Hydro - Dammed,66,0,BG,42.1194,24.289,0.17,0,272,---,107
+HY18BG,BG,Teshel,Medium Hydro - Dammed,60,0,BG,41.6428,24.153,447.13,0,341,---,107
+HY19BG,BG,Batak,Small Hydro - Dammed,48,0,BG,41.922589,24.1694,87.7,0,421,---,94
+HY20BG,BG,Pasarel,Small Hydro - Dammed,33,0,BG,42.5441,23.4861,655.3,0,116,---,93
+HY21BG,BG,Beli Iskar + Mala Tsarkva + Simeonovo,Small Hydro - Dammed,31.3,0,BG,42.1373,23.5691,15.1,0,1160,---,107
+HY22BG,BG,Spanchevo,Small Hydro - Dammed,28,0,BG,41.56265,23.56559,0.04,0,438,---,110
+HY23BG,BG,Kalin + Kamenitsa + Pastra + Rila,Small Hydro - Dammed,24.2,0,BG,42.07,23.13,2.2,0,1800,---,104
+HY24BG,BG,Kokalyane,Small Hydro - Dammed,22.4,0,BG,42.58398,23.42819,2.7,0,98.5,---,112
+HY26BG,BG,Popina Laka,Small Hydro - Dammed,21.5,0,BG,41.65627,23.3754,0.046,0,532,---,104
+HY27BG,BG,Pirin,Small Hydro - Dammed,21.2,0,BG,41.5745,23.5626,0.06,0,456,---,102
+HY28BG,BG,Lilyanovo,Small Hydro - Dammed,20,0,BG,41.62674,23.33449,0.045,0,250,---,96
+HY29BG,BG,Sandanski I,Small Hydro - Dammed,14.2,0,BG,41.58536,23.2905,0.03,0,230,---,111
+HY30BG,BG,Alexander Stambolyski,Small Hydro - Dammed,10.24,0,BG,43.1213,25.171,200,0,50,---,106
+HY31BG,BG,Barzia,Small Hydro - Dammed,8,0,BG,43.19,23.167,0.03,0,251,---,111
+HY32BG,BG,Petrohan,Small Hydro - Dammed,7.8,0,BG,43.12,23.12,0.14,0,529,---,102
+HY33BG,BG,Koprinka,Small Hydro - Dammed,7,0,BG,42.6125,25.3198,142.4,0,24,---,108
+HY34BG,BG,Klisoura,Small Hydro - Dammed,3.5,0,BG,43.16859,23.15498,0.05,0,124.6,---,111
+HY35BG,BG,Vacha I & II,Small Hydro - Dammed,14,0,BG,42.06433,24.48453,0.851388889,0,172,---,111
+HY1CZ,CZ,Orlík EORK,Large Hydro - Dammed,360,0,CZ,49.6064,14.1812,716.5,0,91,1961,87
+HY4CZ,CZ,Slapy ESLA,Large Hydro - Dammed,144,0,CZ,49.82354,14.434501,269.3,0,70,1955,96
+HY5CZ,CZ,Lipno ELI1,Large Hydro - Dammed,120,0,CZ,48.6333,14.2375,306,0,42,1958,95
+HY12CZ,CZ,Štěchovice ESTE,Small Hydro - Dammed,22.5,0,CZ,49.84625,14.42176,11.2,0,22.5,---,89
+HY14CZ,CZ,Vir I,Small Hydro - Dammed,12,0,CZ,49.56625,16.30875,53.142,0,78,---,82
+HY15CZ,CZ,Nechranice,Small Hydro - Dammed,11,0,CZ,50.36625,13.412917,287.562,0,52,---,94
+HY16CZ,CZ,Hnevkovice,Small Hydro - Dammed,9.6,0,CZ,49.180417,14.447083,22.2,0,31,---,100
+HY17CZ,CZ,Vrane,Small Hydro - Dammed,9.4,0,CZ,49.9381,14.3749,11.1,0,10,---,96
+HY18CZ,CZ,Slezska Harta,Small Hydro - Dammed,3,0,CZ,49.89125,17.579583,217,0,65,---,96
+HY19CZ,CZ,Vranov EVR,Small Hydro - Dammed,18.9,0,CZ,49.9381,14.3749,122.665,0,59,---,83
+HY895DE,DE,Walchensee / Isar,Large Hydro - Dammed,125.6,0,DELU,47.631354,11.337054,1.324,0,200,---,79
+HY896DE,DE,Roßhaupten,Small Hydro - Dammed,45.5,0,DELU,47.651451,10.735525,168,0,35.4,---,79
+HY897DE,DE,Hemfurth,Small Hydro - Dammed,20,0,DELU,51.167139,9.046832,199.3,0,45,---,86
+HY2EL,EL,Aoos (Piges Aoos) Dam,Large Hydro - Dammed,230,0,EL,39.8271,21.0092,300,0,150,---,110
+HY3EL,EL,Asomata Dam,Large Hydro - Dammed,108,0,EL,40.4744,22.2439,55,1000,205,---,114
+HY10EL,EL,Ilarionas,Large Hydro - Dammed,154,0,EL,40.0966,21.8039,520,72000,130,---,106
+HY11EL,EL,Kastraki Dam,Large Hydro - Dammed,320,0,EL,38.7415,21.3642,950,25000,95.7,---,113
+HY12EL,EL,Kremasta Dam,Large Hydro - Dammed,437,0,EL,38.8863,21.4954,4495,694000,160,---,110
+HY13EL,EL,Ladonas Dam,Medium Hydro - Dammed,70,0,EL,37.694,21.893,49,25000,58,---,107
+HY14EL,EL,Plastiras Dam,Large Hydro - Dammed,130,0,EL,39.2361,21.7462,400,392000,83,---,119
+HY15EL,EL,Platanovrisi Dam,Large Hydro - Dammed,116,0,EL,41.3355,24.4621,57,11000,95,---,113
+HY16EL,EL,Polyfyto Dam,Large Hydro - Dammed,375,0,EL,40.3305,22.1253,1220,342000,105,---,114
+HY17EL,EL,Poyrnari-I Dam,Large Hydro - Dammed,334,0,EL,39.1845,21.0255,647.26,44333.33,87,---,115
+HY18EL,EL,Poyrnari-II Dam,Small Hydro - Dammed,34,0,EL,39.1845,21.0255,82.74,5666.67,87,---,110
+HY20EL,EL,Mesochora,Large Hydro - Dammed,162,0,EL,39.4644,21.3042,0,0,150,---,114
+HY21EL,EL,Stratos Dam,Large Hydro - Dammed,150,0,EL,38.676,21.3233,80,1000,26,---,109
+HY25ES,ES,Jose Maria de Oriol I,Large Hydro - Dammed,934,0,ES,39.730301,-6.8849,3162,970100,130,---,96
+HY26ES,ES,Saucelle II,Large Hydro - Dammed,516.39,0,ES,41.041734,-6.805412,181.5,35600,83,---,98
+HY27ES,ES,Cedillo I,Large Hydro - Dammed,473,0,ES,39.663898,-7.54,260,26400,50,---,85
+HY28ES,ES,Ricobayo II,Large Hydro - Dammed,326.57,0,ES,41.5260254,-5.9845018,1145,0,302.9,---,83
+HY29ES,ES,Mequinenza,Large Hydro - Dammed,324,0,ES,41.368999,0.274,1533.8,265000,81,---,82
+HY30ES,ES,Cortes I,Large Hydro - Dammed,284,0,ES,39.242199,-0.8782,0,0,0,---,90
+HY31ES,ES,Ribarroja Riba-Roja,Large Hydro - Dammed,262.8,0,ES,41.2512192,0.4870597,210,0,34,---,93
+HY32ES,ES,Portas Las,Large Hydro - Dammed,233,0,ES,42.11625,-7.212083,536,906,141,---,89
+HY33ES,ES,Belesar,Large Hydro - Dammed,225,0,ES,42.628502,-7.7122,655,0,207.3,---,97
+HY34ES,ES,Villalcampo II-I,Large Hydro - Dammed,215.81,0,ES,41.491101,-6.084608,66,41000,228,---,86
+HY35ES,ES,Itoiz,Large Hydro - Dammed,198,0,ES,42.80375,-1.362083,417,234000,95.04323147,---,86
+HY36ES,ES,Azutan,Large Hydro - Dammed,180,0,ES,39.778999,-5.088,113,0,191.6,---,99
+HY37ES,ES,Sest II,Large Hydro - Dammed,177,0,ES,42.414001,-7.6496,0,0,0,---,97
+HY38ES,ES,Los Peares,Large Hydro - Dammed,159,0,ES,42.465,-7.724,182,50000,100.8,---,89
+HY39ES,ES,Freira,Large Hydro - Dammed,130,0,ES,42.155998,-8.193,0,0,0,---,97
+HY40ES,ES,Cofrentes,Large Hydro - Dammed,124,0,ES,39.247002,-1.094,0,0,0,---,99
+HY41ES,ES,Cornatel I,Large Hydro - Dammed,122,0,ES,42.471001,-6.813,0,0,0,---,89
+HY42ES,ES,Tabescan II,Large Hydro - Dammed,120,0,ES,42.646,1.26,0,0,0,---,100
+HY43ES,ES,Castro II,Large Hydro - Dammed,110,0,ES,41.575401,-6.1872,27,0,55,---,90
+HY44ES,ES,Canelles,Large Hydro - Dammed,108,0,ES,41.958,0.634,679,289000,49,---,94
+HY45ES,ES,Cijara I,Large Hydro - Dammed,102,0,ES,39.373001,-5.016,1505,296000,46,---,81
+HY46ES,ES,Susqueda,Medium Hydro - Dammed,88.55,0,ES,41.98538029,2.571035327,232.91,0,165.5,---,83
+HY47ES,ES,Barazar I,Medium Hydro - Dammed,83,0,ES,43.009998,-2.685,0,0,0,---,93
+HY48ES,ES,Remolina I,Medium Hydro - Dammed,83,0,ES,42.917,-5.05,0,0,0,---,86
+HY49ES,ES,Silvon II,Medium Hydro - Dammed,81.54,0,ES,43.387117,-6.825233,0,0,0,---,86
+HY50ES,ES,Las Ondinas I,Medium Hydro - Dammed,81,0,ES,42.915001,-6.331,0,0,0,---,96
+HY51ES,ES,Silvon I,Medium Hydro - Dammed,80,0,ES,43.353001,-6.871,96.48,0,94.6,---,87
+HY52ES,ES,Eriste I,Medium Hydro - Dammed,80,0,ES,42.583,0.483,0,0,0,---,95
+HY53ES,ES,Iznajar I,Medium Hydro - Dammed,77,0,ES,37.276001,-4.387,981,279000,104.4,---,86
+HY54ES,ES,Castrejon I,Medium Hydro - Dammed,77,0,ES,39.852001,-4.474,0,0,0,---,93
+HY55ES,ES,Porto de Mueros I,Medium Hydro - Dammed,76,0,ES,42.855,-8.189,297,39000,48.2,---,85
+HY56ES,ES,Contreras,Medium Hydro - Dammed,75,0,ES,39.545417,-1.502917,852,549,236.4646595,---,98
+HY57ES,ES,Prada I,Medium Hydro - Dammed,66,0,ES,42.311001,-7.041,122,0,664.8,---,92
+HY58ES,ES,Mediano I,Medium Hydro - Dammed,66,0,ES,42.317001,0.2,436,267000,92,---,92
+HY59ES,ES,Miranda I,Medium Hydro - Dammed,65,0,ES,43.291,-6.12,0,0,0,---,88
+HY60ES,ES,San Agustin I,Medium Hydro - Dammed,65,0,ES,42.228001,-7.005,0,0,0,---,99
+HY61ES,ES,Salime I,Medium Hydro - Dammed,63,0,ES,43.237,-6.847,133,52000,128,---,94
+HY62ES,ES,Salime III,Medium Hydro - Dammed,63,0,ES,43.237,-6.847,133,52000,128,---,89
+HY63ES,ES,Biescar II,Medium Hydro - Dammed,62,0,ES,42.624001,-0.24,0,0,0,---,87
+HY64ES,ES,Doiras,Medium Hydro - Dammed,61.94,0,ES,43.38616,-6.825378,0,0,0,---,101
+HY65ES,ES,Arbon,Medium Hydro - Dammed,56.04,0,ES,43.477229,-6.730199,38,0,0,---,84
+HY66ES,ES,García de Sola,Medium Hydro - Dammed,56,0,ES,39.145417,-5.18625,554,38,25.17139734,---,98
+HY67ES,ES,Puerto Pena I,Medium Hydro - Dammed,56,0,ES,39.144001,-5.185,0,0,0,---,97
+HY68ES,ES,Sau,Medium Hydro - Dammed,55.56,0,ES,41.96761928,2.414154641,165.26,0,97,---,85
+HY69ES,ES,Buendia I,Medium Hydro - Dammed,55,0,ES,40.398998,-2.784,1639,1515,339.2,---,98
+HY70ES,ES,Eume I,Medium Hydro - Dammed,54,0,ES,43.403999,-8.043,123,0,161.1,---,100
+HY71ES,ES,Salas,Medium Hydro - Dammed,53,0,ES,41.924,-7.943,87,0,333.2,---,96
+HY72ES,ES,La Barca I,Medium Hydro - Dammed,53,0,ES,43.352001,-6.201,0,0,0,---,98
+HY73ES,ES,Guijo de Grandanilla,Medium Hydro - Dammed,53,0,ES,40.18,-6.142,0,0,0,---,88
+HY74ES,ES,Lanuza I,Medium Hydro - Dammed,52,0,ES,42.709,-0.304,0,0,0,---,88
+HY75ES,ES,Santiago Jares,Medium Hydro - Dammed,51,0,ES,42.335999,-7.112,0,0,0,---,86
+HY76ES,ES,Burguillo I,Small Hydro - Dammed,49,0,ES,40.424999,-4.534,201,0,398,---,98
+HY77ES,ES,Las Conchas I,Small Hydro - Dammed,49,0,ES,41.944,-8.035,0,0,0,---,92
+HY78ES,ES,Nansa Falls (Peña de Bejo hdam - Rozadio ror - Celis ror - Herrerías ror),Small Hydro - Dammed,48.7,0,ES,43.133094,-4.3884443,11.8,0,116,---,97
+HY79ES,ES,Proaza I,Small Hydro - Dammed,48,0,ES,43.259998,-6.007,0,0,0,---,83
+HY80ES,ES,Grado I,Small Hydro - Dammed,46,0,ES,42.164001,0.241,300,69000,63.5,---,99
+HY81ES,ES,Doiras I,Small Hydro - Dammed,43,0,ES,43.386002,-6.825,96.48,0,94.6,---,100
+HY82ES,ES,La Fortunada,Small Hydro - Dammed,42,0,ES,42.570999,0.202,0,0,0,---,97
+HY83ES,ES,Tranco de Beas I,Small Hydro - Dammed,40,0,ES,38.174999,-2.796,498,175000,94,---,99
+HY84ES,ES,Barrios de Luna,Small Hydro - Dammed,38,0,ES,42.466999,-5.883,308,252000,300.3,---,87
+HY85ES,ES,Penadrada I,Small Hydro - Dammed,38,0,ES,42.854,-6.459,0,0,0,---,98
+HY86ES,ES,Talarn,Small Hydro - Dammed,37.36,0,ES,42.17969,0.91314,0,0,0,---,96
+HY87ES,ES,Entrepenas I,Small Hydro - Dammed,37,0,ES,40.493,-2.75,835,0,343.7,---,99
+HY88ES,ES,Ribadelago II,Small Hydro - Dammed,35,0,ES,42.123001,-6.755,0,0,0,---,94
+HY89ES,ES,Quereno I,Small Hydro - Dammed,34,0,ES,42.417,-6.832,0,0,0,---,94
+HY90ES,ES,San Juan I,Small Hydro - Dammed,33,0,ES,40.373001,-4.312,138,104000,276.6,---,82
+HY91ES,ES,Santa Marina I,Small Hydro - Dammed,33,0,ES,42.668999,-6.512,0,0,0,---,98
+HY92ES,ES,Tabescan,Small Hydro - Dammed,32,0,ES,42.646,1.26,0,0,0,---,90
+HY93ES,ES,Sobron I,Small Hydro - Dammed,29,0,ES,42.820999,-3.157,0,0,0,---,101
+HY94ES,ES,Zujar,Small Hydro - Dammed,28,0,ES,38.917,-5.479,0,0,0,---,86
+HY95ES,ES,Regueiro I,Small Hydro - Dammed,27,0,ES,42.342999,-7.475,0,0,0,---,83
+HY96ES,ES,La Serena,Small Hydro - Dammed,25,0,ES,38.912998,-5.413,3219,421000,125,---,97
+HY97ES,ES,Beles II,Small Hydro - Dammed,21,0,ES,42.629002,-7.712,0,0,0,---,93
+HY98ES,ES,Domeno,Small Hydro - Dammed,20,0,ES,39.738998,-0.929,0,0,0,---,87
+HY99ES,ES,Las Picadas I,Small Hydro - Dammed,20,0,ES,40.333,-4.249,0,0,0,---,84
+HY100ES,ES,Peareii,Small Hydro - Dammed,19,0,ES,42.465,-7.724,0,0,0,---,90
+HY101ES,ES,Porto,Small Hydro - Dammed,18,0,ES,42.161999,-6.921,0,0,0,---,93
+HY102ES,ES,Alarcon,Small Hydro - Dammed,15.89,0,ES,39.565,-2.113056,1118,0,523.9,---,84
+HY103ES,ES,Bembezar,Small Hydro - Dammed,15,0,ES,37.903,-5.207,342,53000,56.9,---,84
+HY104ES,ES,Guadalmena I,Small Hydro - Dammed,15,0,ES,38.356998,-2.921,347,86000,103,---,86
+HY105ES,ES,Bejo,Small Hydro - Dammed,15,0,ES,43.112,-4.441,0,0,0,---,92
+HY106ES,ES,Vilanua,Small Hydro - Dammed,13,0,ES,42.706001,-0.52,0,0,0,---,82
+HY107ES,ES,Duque,Small Hydro - Dammed,13,0,ES,36.919998,-3.344,0,0,0,---,84
+HY108ES,ES,Nuevo Chorro,Small Hydro - Dammed,13,0,ES,36.879002,-4.791,0,0,0,---,84
+HY109ES,ES,Pampaneira I,Small Hydro - Dammed,13,0,ES,36.939999,-3.343,0,0,0,---,96
+HY110ES,ES,Porto de Mueros,Small Hydro - Dammed,10,0,ES,42.855,-8.189,0,39000,0,---,98
+HY111ES,ES,Alange,Small Hydro - Dammed,9,0,ES,38.78625,-6.270417,852,0,67,---,88
+HY112ES,ES,La Baells,Small Hydro - Dammed,6.95,0,ES,42.11826235,1.879835414,109.43,0,100,---,96
+HY113ES,ES,Pasteral I,Small Hydro - Dammed,6.32,0,ES,41.98449599,2.600532576,1.3,0,25.9,---,82
+HY114ES,ES,Ebro,Small Hydro - Dammed,6,0,ES,42.974583,-4.04875,541,314,212.9932676,---,100
+HY115ES,ES,Chanza,Small Hydro - Dammed,5,0,ES,37.562083,-7.520417,341,0,85,---,97
+HY116ES,ES,Orellana,Small Hydro - Dammed,4,0,ES,38.986,-5.538,808,20,9.083477155,---,99
+HY117ES,ES,Darnius Boadella,Small Hydro - Dammed,3.58,0,ES,42.34038429,2.83505879,60.18,0,0,---,96
+HY118ES,ES,Sant Ponç,Small Hydro - Dammed,2.235,0,ES,41.96268329,1.605051744,24.38,0,0,---,100
+HY119ES,ES,Pack,Small Hydro - Dammed,1.5,0,ES,46.979012,15.022876,0,0,0,---,91
+HY1FR,FR,Aigle,Large Hydro - Dammed,360,0,FR,45.244,2.225,220,0,92,---,90
+HY2FR,FR,Allement,Small Hydro - Dammed,32,0,FR,46.112,5.422,0,0,0,---,89
+HY6FR,FR,Argentiere-La Bessee,Small Hydro - Dammed,38,0,FR,44.783,6.548,0,0,0,---,104
+HY7FR,FR,Artouste,Medium Hydro - Dammed,88,0,FR,42.887,-0.411,6.7,0,56,---,96
+HY10FR,FR,Auzerette,Small Hydro - Dammed,29,0,FR,45.365,2.646,0,0,0,---,94
+HY13FR,FR,Bancairon,Medium Hydro - Dammed,50,0,FR,44.003,7.137,0,0,0,---,89
+HY14FR,FR,Bathie,Large Hydro - Dammed,600,0,FR,45.645,6.445,0,0,0,---,92
+HY18FR,FR,Bort,Large Hydro - Dammed,235,0,FR,45.413,2.498,0,0,0,---,104
+HY21FR,FR,Brens-Virigin,Medium Hydro - Dammed,90,0,FR,45.725,5.698,16,0,16,---,103
+HY23FR,FR,Brommat,Large Hydro - Dammed,406,0,FR,44.768,2.684,8,0,72,---,85
+HY26FR,FR,Cambeyrac,Small Hydro - Dammed,9.8,0,FR,44.655,2.574,0,0,0,---,99
+HY27FR,FR,Castelnau-Lassouts,Small Hydro - Dammed,42,0,FR,44.505,2.874,0,0,0,---,99
+HY28FR,FR,Castillon,Medium Hydro - Dammed,68,0,FR,43.878,6.538,149,0,100,---,96
+HY29FR,FR,Castirla,Medium Hydro - Dammed,54.5,0,FR,42.38,9.134,25.5,0,74,---,98
+HY30FR,FR,Champcella,Small Hydro - Dammed,12,0,FR,44.737,6.575,0,0,0,---,91
+HY31FR,FR,Chastang,Large Hydro - Dammed,293,0,FR,45.151,2.01,0,0,0,---,94
+HY32FR,FR,Chaudanne,Small Hydro - Dammed,24.3,0,FR,43.848,6.544,0,0,0,---,101
+HY35FR,FR,Cize Bolozon,Small Hydro - Dammed,23,0,FR,46.211,5.465,0,0,0,---,100
+HY36FR,FR,Claux,Small Hydro - Dammed,13.5,0,FR,44.876,6.48,0,0,0,---,96
+HY38FR,FR,Coiselet,Small Hydro - Dammed,41,0,FR,46.294,5.592,0,0,0,---,100
+HY39FR,FR,Combe d'avrieux,Large Hydro - Dammed,123,0,FR,45.215,6.712,3.94,0,50,---,104
+HY41FR,FR,Curbans,Large Hydro - Dammed,139,0,FR,44.421,6.02,1.2,0,23,---,90
+HY44FR,FR,Egets,Small Hydro - Dammed,37.3,0,FR,42.955,0.565,0,0,0,---,93
+HY45FR,FR,Eguzon,Medium Hydro - Dammed,72,0,FR,46.455,1.613,0,0,0,---,99
+HY46FR,FR,Enchanet,Small Hydro - Dammed,35,0,FR,45.082,2.194,0,0,0,---,96
+HY47FR,FR,Eygliers,Small Hydro - Dammed,25,0,FR,44.672,6.65,0,0,0,---,101
+HY50FR,FR,Genissiat,Large Hydro - Dammed,420,0,FR,46.053,5.813,0,0,0,---,103
+HY54FR,FR,Golinhac,Small Hydro - Dammed,45,0,FR,44.606,2.605,0,0,0,---,100
+HY55FR,FR,Gour Noir (Le),Small Hydro - Dammed,40,0,FR,45.071,2.067,0,0,0,---,97
+HY57FR,FR,Grandval Hydroelectric Power Plant France,Medium Hydro - Dammed,74,0,FR,44.92193781,3.074498177,0,0,0,---,100
+HY58FR,FR,Grangent,Small Hydro - Dammed,37,0,FR,45.467,4.248,0,0,0,---,96
+HY59FR,FR,Hautefage,Small Hydro - Dammed,25,0,FR,45.06,1.994,0,0,0,---,101
+HY61FR,FR,Hospitalet (L'),Large Hydro - Dammed,93.3,0,FR,42.588,1.797,0,0,0,---,85
+HY62FR,FR,Hourat,Large Hydro - Dammed,137,0,FR,43.075,-0.42,0,0,0,---,89
+HY65FR,FR,Lanau,Small Hydro - Dammed,21,0,FR,44.891,3.003,0,0,0,---,102
+HY66FR,FR,Laparan,Small Hydro - Dammed,44,0,FR,42.6717259,1.7009906,0,0,0,---,94
+HY67FR,FR,Lardy,Small Hydro - Dammed,45,0,FR,44.662,2.583,0,0,0,---,100
+HY70FR,FR,Laval cere,Large Hydro - Dammed,130,0,FR,44.953,1.95,0,0,0,---,91
+HY71FR,FR,Lazer (Le),Small Hydro - Dammed,16.5,0,FR,44.346,5.868,0,0,0,---,96
+HY72FR,FR,Licq-Atherey,Small Hydro - Dammed,27.4,0,FR,43.048,-0.886,0,0,0,---,86
+HY73FR,FR,Lot,Small Hydro - Dammed,28.6,0,FR,44.663,2.664,0,0,0,---,86
+HY74FR,FR,Louron,Small Hydro - Dammed,49.3,0,FR,42.79,0.41,0,0,0,---,98
+HY75FR,FR,Lugo Di Nazza,Small Hydro - Dammed,39,0,FR,42.091,9.316,0,0,0,---,104
+HY77FR,FR,Malgovert,Large Hydro - Dammed,297,0,FR,45.618,6.791,230,407100,180,---,105
+HY79FR,FR,Marcillac,Small Hydro - Dammed,30,0,FR,45.215,2.038,0,0,0,---,104
+HY82FR,FR,Mazet,Medium Hydro - Dammed,56,0,FR,45.801,1.803,38,0,106,---,104
+HY83FR,FR,Monceaux La Virolle,Small Hydro - Dammed,19,0,FR,45.576,1.84,0,0,0,---,87
+HY84FR,FR,Montahut,Medium Hydro - Dammed,99,0,FR,43.571,2.94,0,0,0,---,104
+HY87FR,FR,Monteynard,Large Hydro - Dammed,366,0,FR,44.961,5.689,275,77900,153,---,96
+HY89FR,FR,Montpezat,Large Hydro - Dammed,131.8,0,FR,44.69,4.272,0,0,0,---,90
+HY90FR,FR,Moux Charmines,Small Hydro - Dammed,28,0,FR,46.277,5.554,0,0,0,---,89
+HY91FR,FR,Nentilla,Medium Hydro - Dammed,97,0,FR,42.772,2.213,0,0,0,---,88
+HY93FR,FR,Ocana,Small Hydro - Dammed,42.5,0,FR,41.946,8.935,0,0,0,---,96
+HY94FR,FR,Oo,Small Hydro - Dammed,30,0,FR,42.804,0.56,0,0,0,---,96
+HY95FR,FR,Oraison,Large Hydro - Dammed,187.5,0,FR,43.921,5.924,15.7,0,29,---,88
+HY97FR,FR,Orlu,Medium Hydro - Dammed,88.8,0,FR,42.689,1.912,0,0,0,---,91
+HY100FR,FR,Pied de borne,Large Hydro - Dammed,109.4,0,FR,44.472,3.989,6.7,0,57,---,90
+HY102FR,FR,Pinet,Medium Hydro - Dammed,66.5,0,FR,44.07,2.805,10.4,0,45,---,101
+HY103FR,FR,Portillon (Le),Medium Hydro - Dammed,95,0,FR,42.733,0.553,0,0,0,---,87
+HY104FR,FR,Pouget,Large Hydro - Dammed,446.9,0,FR,44.06,2.769,10.9,700,461.2,---,92
+HY105FR,FR,Pragneres,Large Hydro - Dammed,189.2,0,FR,42.821,0.01,63,0,101,---,98
+HY106FR,FR,Quinson,Small Hydro - Dammed,41,0,FR,43.699,6.051,20,0,18,---,92
+HY110FR,FR,Rhue (La),Small Hydro - Dammed,12,0,FR,45.415,2.499,0,0,0,---,99
+HY113FR,FR,Saint Cassien,Small Hydro - Dammed,21.7,0,FR,43.602,6.841,0,0,0,---,91
+HY114FR,FR,Saint chamas,Large Hydro - Dammed,159,0,FR,43.527,5.073,0,0,0,---,103
+HY115FR,FR,Saint Dalmas,Medium Hydro - Dammed,50,0,FR,44.047,7.586,0,0,0,---,98
+HY116FR,FR,Saint esteve,Large Hydro - Dammed,146,0,FR,43.69,5.385,0,0,0,---,89
+HY117FR,FR,Saint Georges de Commiers,Medium Hydro - Dammed,60,0,FR,45.006,5.687,0,0,0,---,95
+HY118FR,FR,Saint guillerme,Large Hydro - Dammed,116,0,FR,45.03,6.079,51,0,136,---,102
+HY120FR,FR,Sainte croix,Large Hydro - Dammed,132.3,0,FR,43.737,6.134,767,0,95,---,101
+HY126FR,FR,Sarrans,Large Hydro - Dammed,183,0,FR,44.829,2.74,296,0,113,---,92
+HY130FR,FR,Sautet (Le),Medium Hydro - Dammed,76,0,FR,44.817,5.908,0,0,0,---,89
+HY131FR,FR,Serre poncon,Large Hydro - Dammed,384,0,FR,44.471,6.27,1272,383600,124,---,97
+HY132FR,FR,Seyssel,Small Hydro - Dammed,45,0,FR,45.971,5.834,0,0,0,---,105
+HY133FR,FR,Sisteron,Large Hydro - Dammed,240,0,FR,44.21,5.921,1.8,0,17,---,95
+HY134FR,FR,Soulom,Medium Hydro - Dammed,57,0,FR,42.953,-0.069,0,0,0,---,85
+HY135FR,FR,St etienne cantales,Large Hydro - Dammed,103.3,0,FR,44.945,2.219,39.5,0,1160,---,104
+HY138FR,FR,Teich,Small Hydro - Dammed,6.3,0,FR,42.71,1.864,0,0,0,---,98
+HY139FR,FR,Tet (La),Small Hydro - Dammed,41.1,0,FR,42.553,2.267,0,0,0,---,91
+HY140FR,FR,Triouzoune,Small Hydro - Dammed,22,0,FR,45.347,2.349,0,0,0,---,86
+HY144FR,FR,Val Beynette,Small Hydro - Dammed,30,0,FR,45.416,2.372,0,0,0,---,98
+HY147FR,FR,Villarodin,Large Hydro - Dammed,364,0,FR,45.213,6.721,333,689900,120,---,98
+HY148FR,FR,Villerest,Medium Hydro - Dammed,58,0,FR,45.9869,4.04938,128,0,70,---,94
+HY149FR,FR,Vinon,Small Hydro - Dammed,32.5,0,FR,43.725,5.827,0,0,0,---,92
+HY151FR,FR,Vouglans,Large Hydro - Dammed,285,0,FR,46.397,5.666,592.4,0,130,---,91
+HY7HR,HR,Djale A,Small Hydro - Dammed,20.4,0,HR,43.574,16.712,0,0,0,---,89
+HY8HR,HR,Djale B,Small Hydro - Dammed,20.4,0,HR,43.574,16.712,0,0,0,---,103
+HY14HR,HR,Dubrovnik A,Large Hydro - Dammed,126,0,HR,42.603,18.23,1109,0,272,---,92
+HY15HR,HR,Dubrovnik B,Large Hydro - Dammed,126,0,HR,42.603,18.23,1109,0,272,---,91
+HY19HR,HR,Golubic A,Small Hydro - Dammed,3.75,0,HR,44.09,16.22,0,0,0,---,98
+HY20HR,HR,Golubic B,Small Hydro - Dammed,3.75,0,HR,44.09,16.22,0,0,0,---,108
+HY23HR,HR,Kraljevac A,Small Hydro - Dammed,20.8,0,HR,43.431,16.885,0,0,0,---,93
+HY24HR,HR,Kraljevac B,Small Hydro - Dammed,20.8,0,HR,43.431,16.885,0,0,0,---,98
+HY25HR,HR,Kraljevac C,Small Hydro - Dammed,4.8,0,HR,43.431,16.885,0,0,0,---,90
+HY41HR,HR,Peruca A,Medium Hydro - Dammed,30,0,HR,43.795,16.597,541,0,47,---,91
+HY42HR,HR,Peruca B,Medium Hydro - Dammed,30,0,HR,43.795,16.597,541,0,47,---,108
+HY45HR,HR,Senj A1,Large Hydro - Dammed,72,0,HR,44.943,14.925,142,0,410,---,93
+HY46HR,HR,Senj A2,Large Hydro - Dammed,72,0,HR,44.943,14.925,142,0,410,---,98
+HY47HR,HR,Senj A3,Large Hydro - Dammed,72,0,HR,44.943,14.925,142,0,410,---,100
+HY48HR,HR,Sklope,Small Hydro - Dammed,22.5,0,HR,44.69,15.271,0,0,0,---,92
+HY52HR,HR,Vinodol A,Medium Hydro - Dammed,30,0,HR,45.229,14.674,36.9,0,648,---,96
+HY53HR,HR,Vinodol B,Medium Hydro - Dammed,30,0,HR,45.229,14.674,36.9,0,648,---,94
+HY54HR,HR,Vinodol C,Medium Hydro - Dammed,30,0,HR,45.229,14.674,36.9,0,648,---,99
+HY55HR,HR,Zakucac A,Large Hydro - Dammed,144,0,HR,43.458,16.703,3,0,250,---,95
+HY56HR,HR,Zakucac B,Large Hydro - Dammed,108,0,HR,43.458,16.703,3,0,250,---,101
+HY57HR,HR,Zakucac C,Large Hydro - Dammed,135,0,HR,43.458,16.703,3,0,250,---,99
+HY58HR,HR,Zakucac D,Large Hydro - Dammed,135,0,HR,43.458,16.703,3,0,250,---,100
+HY59HR,HR,Zavrelje,Small Hydro - Dammed,2.1,0,HR,42.622,18.205,0,0,0,---,100
+HY60HR,HR,Zeleni vir,Small Hydro - Dammed,1.7,0,HR,45.45,14.853,0,0,0,---,95
+HY4IT,IT,Agri,Medium Hydro - Dammed,39,0,IT,40.258,16.602,0,0,0,---,106
+HY16IT,IT,Baduozzana,Medium Hydro - Dammed,26,0,IT,40.096,9.118,0,0,0,---,119
+HY20IT,IT,Bardonecchia,Medium Hydro - Dammed,23,0,IT,45.074,6.696,0,0,0,---,106
+HY23IT,IT,Baschi,Large Hydro - Dammed,80,0,IT,42.669,12.216,0,0,0,---,121
+HY25IT,IT,Boazzo,Large Hydro - Dammed,95,0,IT,46.002,10.517,0,0,0,---,105
+HY32IT,IT,Brunico,Medium Hydro - Dammed,40,0,IT,46.797,11.938,0,0,0,---,102
+HY42IT,IT,Campliccioli,Small Hydro - Dammed,8,0,IT,41.084,9.546,0,0,0,---,116
+HY45IT,IT,Canterno,Medium Hydro - Dammed,11,0,IT,41.938,13.041,0,0,0,---,107
+HY46IT,IT,Caoria,Medium Hydro - Dammed,39,0,IT,46.192,11.684,13.22,0,94.7,---,109
+HY47IT,IT,Capodiponte Block1,Medium Hydro - Dammed,24,0,IT,46.03,10.347,0,0,0,---,116
+HY48IT,IT,Capodiponte Block2,Small Hydro - Dammed,9,0,IT,46.03,10.347,0,0,0,---,119
+HY52IT,IT,Carona,Medium Hydro - Dammed,48,0,IT,46.025,9.833,0,0,0,---,114
+HY53IT,IT,Caroso-Borzonasca,Small Hydro - Dammed,9,0,IT,44.437,9.398,0.22,0,433.8,---,111
+HY59IT,IT,Casteldelf,Medium Hydro - Dammed,28,0,IT,43.548,10.86,0,0,0,---,103
+HY61IT,IT,Castrocucco,Large Hydro - Dammed,83,0,IT,39.937,15.763,0,0,0,---,118
+HY63IT,IT,Cavilla,Medium Hydro - Dammed,24,0,IT,45.92,11.731,0,0,0,---,115
+HY69IT,IT,Centrale Naturno,Large Hydro - Dammed,175,0,IT,46.649,11.005,0,0,0,---,110
+HY79IT,IT,Chievolis,Medium Hydro - Dammed,20,0,IT,46.255,12.735,0,0,0,---,119
+HY81IT,IT,Cimego,Large Hydro - Dammed,220,0,IT,45.942,10.64,12.26,0,738,---,115
+HY93IT,IT,Cotilia,Medium Hydro - Dammed,40,0,IT,42.382,13.014,0,0,0,---,105
+HY100IT,IT,Cucchinadorza,Medium Hydro - Dammed,41,0,IT,40.13,9.136,0,0,0,---,120
+HY103IT,IT,Dossi,Medium Hydro - Dammed,43,0,IT,44.768,11.335,0,0,0,---,117
+HY116IT,IT,Flumendosa 1,Small Hydro - Dammed,8,0,IT,39.469,9.523,58.48,0,58.7,---,118
+HY117IT,IT,Flumendosa 2,Medium Hydro - Dammed,28,0,IT,39.469,9.523,0,0,0,---,107
+HY118IT,IT,Flumendosa 3,Medium Hydro - Dammed,10,0,IT,39.469,9.523,0,0,0,---,111
+HY120IT,IT,Fontana Bianca,Medium Hydro - Dammed,10,0,IT,46.485,10.832,0,0,0,---,115
+HY129IT,IT,Gerola,Medium Hydro - Dammed,13,0,IT,46.06,9.551,0,0,0,---,106
+HY140IT,IT,Hydro Electrique Clavalite,Medium Hydro - Dammed,19,0,IT,45.73,7.505,0,0,0,---,114
+HY146IT,IT,Isolato Spluga,Large Hydro - Dammed,118,0,IT,46.443,9.335,32,0,641.55,---,116
+HY151IT,IT,Lanzada,Large Hydro - Dammed,350,0,IT,46.304,9.829,68,0,174,---,117
+HY152IT,IT,Lappago,Medium Hydro - Dammed,25,0,IT,46.918,11.804,0,0,0,---,117
+HY153IT,IT,Lasa,Large Hydro - Dammed,64,0,IT,46.62,10.695,0,0,0,---,110
+HY162IT,IT,Magisano,Large Hydro - Dammed,75,0,IT,39.013,16.628,0,0,0,---,119
+HY163IT,IT,Malga Ciapela,Medium Hydro - Dammed,20,0,IT,46.427,11.912,0,0,0,---,117
+HY164IT,IT,Malga Mare,Medium Hydro - Dammed,12,0,IT,46.418,10.681,0,0,0,---,110
+HY170IT,IT,Masocorona,Medium Hydro - Dammed,40,0,IT,46.234,11.128,0,0,0,---,102
+HY171IT,IT,Matese 1s,Medium Hydro - Dammed,16,0,IT,41.45,14.367,0,0,0,---,119
+HY172IT,IT,Matese 2s,Medium Hydro - Dammed,18,0,IT,41.45,14.367,0,0,0,---,110
+HY174IT,IT,Meduno,Medium Hydro - Dammed,10,0,IT,46.217,12.788,0,0,0,---,117
+HY176IT,IT,Moline,Medium Hydro - Dammed,19,0,IT,46.084,10.924,0,0,0,---,118
+HY181IT,IT,Morasco,Medium Hydro - Dammed,41,0,IT,45.736,8.294,26,0,64,---,105
+HY183IT,IT,Mucone 1s,Large Hydro - Dammed,101,0,IT,39.493,16.384,0,0,0,---,120
+HY184IT,IT,Mucone 2s,Large Hydro - Dammed,54,0,IT,39.477,16.291,0,0,0,---,117
+HY189IT,IT,Ozieri,Small Hydro - Dammed,5,0,IT,40.586,9,72.1,0,60.5,---,113
+HY194IT,IT,Pantano Davio,Medium Hydro - Dammed,13,0,IT,46.165,10.472,0,0,0,---,108
+HY199IT,IT,Perreres,Medium Hydro - Dammed,15,0,IT,45.906,7.615,11.007,0,1149,---,108
+HY205IT,IT,Pizzone,Medium Hydro - Dammed,19,0,IT,41.675,14.037,0,0,0,---,111
+HY217IT,IT,Ponte Morasco,Large Hydro - Dammed,92,0,IT,41.215,14.695,0,0,0,---,102
+HY240IT,IT,Rosone,Large Hydro - Dammed,135,0,IT,45.484,7.369,61.95,0,2030,---,121
+HY241IT,IT,Rovesca,Medium Hydro - Dammed,43,0,IT,46.057,8.124,0,0,0,---,104
+HY242IT,IT,S. Angelo,Medium Hydro - Dammed,43,0,IT,42.518,14.06,0,0,0,---,120
+HY246IT,IT,S.Fiorano_Generazione,Large Hydro - Dammed,272,0,IT,46.05,10.351,0,0,0,---,105
+HY250IT,IT,S.Giacomo,Large Hydro - Dammed,490,0,IT,42.785,13.511,44.8,0,92,---,119
+HY254IT,IT,S.Pancrazio,Medium Hydro - Dammed,34,0,IT,46.571,11.061,0,0,0,---,117
+HY263IT,IT,San Giacomo,Medium Hydro - Dammed,10,0,IT,42.785,13.511,0,0,0,---,108
+HY266IT,IT,San Michele Caroso,Medium Hydro - Dammed,10,0,IT,44.42463,9.395171,0,0,0,---,104
+HY273IT,IT,Seled Glorenza Block1,Large Hydro - Dammed,50,0,IT,46.671,10.553,0,0,0,---,109
+HY274IT,IT,Seled Glorenza Block2,Large Hydro - Dammed,51,0,IT,46.671,10.553,0,0,0,---,115
+HY279IT,IT,Sospirolo,Medium Hydro - Dammed,40,0,IT,46.143,12.074,0,0,0,---,120
+HY280IT,IT,Soverzene Block1,Large Hydro - Dammed,158,0,IT,46.208,12.303,0,0,0,---,103
+HY281IT,IT,Soverzene Block2,Large Hydro - Dammed,56,0,IT,46.201,12.302,0,0,0,---,105
+HY288IT,IT,Suviana,Medium Hydro - Dammed,27,0,IT,44.137,11.037,0,0,0,---,116
+HY289IT,IT,Taio,Large Hydro - Dammed,161,0,IT,46.335,11.064,0,0,0,---,111
+HY300IT,IT,Torrite,Large Hydro - Dammed,67,0,IT,44.098,10.399,0,0,0,---,105
+HY302IT,IT,Troina,Medium Hydro - Dammed,24,0,IT,37.829,14.575,50,0,940,---,113
+HY305IT,IT,Val Noana,Large Hydro - Dammed,55,0,IT,46.138,11.839,0,0,0,---,108
+HY306IT,IT,Valcimarra Fiastrone,Medium Hydro - Dammed,43,0,IT,43.138,13.167,0,0,0,---,109
+HY307IT,IT,Valpelline,Large Hydro - Dammed,130,0,IT,45.825,7.325,105.48,0,962,---,109
+HY312IT,IT,Venaus,Large Hydro - Dammed,230,0,IT,45.162,7.008,0,0,0,---,112
+HY316IT,IT,Villa,Medium Hydro - Dammed,40,0,IT,41.951,14.353,0,0,0,---,110
+HY322IT,IT,Vobarno,Medium Hydro - Dammed,28,0,IT,45.642,10.501,0,0,0,---,107
+HY1HU,HU,Kiskore,Small Hydro - Dammed,28,0,HU,47.493163,20.514556,228.6,0,6.25,---,78
+HY1AT,AT,Malta hauptstufe,Large Hydro - Dammed,730,0,AT,46.870564,13.329601,6.2,16100,1106,---,84
+HY4AT,AT,Silz 1,Large Hydro - Dammed,500,0,AT,47.2666667,10.9333333,3,8900,1465,---,91
+HY7AT,AT,Kaunertal,Large Hydro - Dammed,392,0,AT,47.067783,10.665211,140,278800,153,---,96
+HY10AT,AT,Mayrhofen,Large Hydro - Dammed,355,0,AT,47.158171,11.850272,6.6,7400,744,---,94
+HY15AT,AT,Lünerseewerk,Large Hydro - Dammed,280,0,AT,47.074251,9.874371,78.3,0,974,---,107
+HY17AT,AT,Kopswerk I,Large Hydro - Dammed,245,0,AT,46.976121,10.05145,13.65,0,122,---,105
+HY18AT,AT,Kaprun hauptstufe,Large Hydro - Dammed,240,0,AT,47.259591,12.738799,81.17,159900,858,---,94
+HY19AT,AT,Roßhag,Large Hydro - Dammed,231,0,AT,47.086876,11.774061,126.5,331100,131,---,88
+HY21AT,AT,Gerlos,Large Hydro - Dammed,200,0,AT,47.233704,11.899669,0.85,1200,610.5,---,95
+HY26AT,AT,Vermuntwerk,Large Hydro - Dammed,157,0,AT,46.96845,10.05986,5.3,0,53,---,100
+HY28AT,AT,Malta oberstufe,Large Hydro - Dammed,120,0,AT,47.065944,13.353102,200,588300,200,---,103
+HY29AT,AT,Schwarzach Kaprun,Large Hydro - Dammed,120,0,AT,47.315375,13.138786,1.8,0,138.7,---,95
+HY34AT,AT,Braunau simbach,Large Hydro - Dammed,100,0,AT,48.244957,13.0075,0,0,0,---,97
+HY39AT,AT,Feistritz ludmannsdorf,Medium Hydro - Dammed,88,0,AT,46.534807,14.170814,0,0,0,---,92
+HY46AT,AT,Schwabeck II,Medium Hydro - Dammed,79,0,AT,46.658193,14.873028,0,0,0,---,105
+HY48AT,AT,Ferlach maria rain,Medium Hydro - Dammed,75,0,AT,46.546625,14.298528,0,0,0,---,97
+HY51AT,AT,Reißeck,Medium Hydro - Dammed,68,0,AT,47.077999,13.417,17.15,68600,0,---,105
+HY53AT,AT,Jochenstein,Medium Hydro - Dammed,66,0,AT,48.5191878,13.7079666,0,0,0,---,93
+HY54AT,AT,Hieflau erzbach,Medium Hydro - Dammed,64,0,AT,47.6057785,14.7429955,1.66,0,83.5,---,103
+HY57AT,AT,Soelk,Medium Hydro - Dammed,59,0,AT,47.433998,13.949,0,0,0,---,104
+HY58AT,AT,Hieflau,Medium Hydro - Dammed,58,0,AT,47.602001,14.764,0,0,0,---,91
+HY61AT,AT,Kreuzeck,Small Hydro - Dammed,45,0,AT,47.083,13.411,0,0,0,---,94
+HY64AT,AT,Malta unterstufe,Small Hydro - Dammed,41,0,AT,46.8332,13.360071,0.5,0,0,---,102
+HY71AT,AT,Arnstein,Small Hydro - Dammed,33,0,AT,47.049999,15.194,0,0,0,---,97
+HY76AT,AT,Bischofshofen,Small Hydro - Dammed,32,0,AT,47.4069,13.220614,0,0,0,---,105
+HY77AT,AT,Werfen,Small Hydro - Dammed,32,0,AT,47.472081,13.193148,0,0,0,---,98
+HY79AT,AT,Remsach,Small Hydro - Dammed,30.9,0,AT,47.1333333,13.1333333,0,0,0,---,91
+HY82AT,AT,Krippau,Small Hydro - Dammed,30,0,AT,47.703511,14.689298,0,0,0,---,107
+HY83AT,AT,Schönau,Small Hydro - Dammed,30,0,AT,47.775426,14.650605,0,0,0,---,93
+HY85AT,AT,Wiestal,Small Hydro - Dammed,28.22,0,AT,47.79940564,13.04399014,0,0,0,---,97
+HY87AT,AT,Lavamünd,Small Hydro - Dammed,28,0,AT,46.643429,14.937028,0,0,0,---,87
+HY88AT,AT,Bodendorf paal,Small Hydro - Dammed,27,0,AT,47.107717,14.065156,0,0,0,---,87
+HY89AT,AT,Pernegg,Small Hydro - Dammed,26,0,AT,47.362,15.338,0,0,0,---,91
+HY92AT,AT,Funsingau,Small Hydro - Dammed,25,0,AT,47.235001,12.058,50.7,84500,117.9,---,93
+HY93AT,AT,Bösdornau,Small Hydro - Dammed,25,0,AT,47.15192,11.833298,0,0,0,---,95
+HY94AT,AT,Kellerberg,Small Hydro - Dammed,25,0,AT,46.669998,13.725,0,0,0,---,104
+HY95AT,AT,Villach,Small Hydro - Dammed,25,0,AT,46.632,13.829,0,0,0,---,96
+HY100AT,AT,Dießbach,Small Hydro - Dammed,24,0,AT,47.5166667,12.8333333,0,0,0,---,101
+HY101AT,AT,Paternion,Small Hydro - Dammed,24,0,AT,46.721001,13.645,0,0,0,---,104
+HY103AT,AT,Wald,Small Hydro - Dammed,23.5,0,AT,47.9044444,13.0263889,0,0,0,---,101
+HY104AT,AT,Landl,Small Hydro - Dammed,23,0,AT,47.660999,14.73,0,0,0,---,92
+HY107AT,AT,Fisching,Small Hydro - Dammed,21,0,AT,47.18,14.764,0,0,0,---,103
+HY110AT,AT,Lebring,Small Hydro - Dammed,20,0,AT,46.857847,15.5373,0,0,0,---,104
+HY119AT,AT,Kirchbichl,Small Hydro - Dammed,16,0,AT,47.515999,12.088,0,0,0,---,103
+HY120AT,AT,Laufnitzdorf,Small Hydro - Dammed,16,0,AT,47.292,15.323,0,0,0,---,92
+HY121AT,AT,St. Veit,Small Hydro - Dammed,16,0,AT,47.321999,13.174,0,0,0,---,99
+HY122AT,AT,St. Veit,Small Hydro - Dammed,16,0,AT,47.321488,13.174577,0,0,0,---,106
+HY127AT,AT,Strubklamm,Small Hydro - Dammed,15,0,AT,47.79940564,13.04399014,0,0,0,---,98
+HY128AT,AT,Gralla,Small Hydro - Dammed,15,0,AT,46.828285,15.566222,0,0,0,---,91
+HY129AT,AT,Schuett,Small Hydro - Dammed,14,0,AT,46.570999,13.722,0,0,0,---,88
+HY130AT,AT,Friesach,Small Hydro - Dammed,14,0,AT,47.144001,15.33,0,0,0,---,90
+HY131AT,AT,Gabersdorf,Small Hydro - Dammed,14,0,AT,46.799999,15.559,0,0,0,---,107
+HY133AT,AT,Rabenstein,Small Hydro - Dammed,14,0,AT,47.250999,15.31,0,0,0,---,103
+HY136AT,AT,Peggau,Small Hydro - Dammed,13,0,AT,47.187,15.336,0,0,0,---,88
+HY137AT,AT,Spielfeld,Small Hydro - Dammed,13,0,AT,46.716999,15.622,0,0,0,---,105
+HY138AT,AT,Obervogau,Small Hydro - Dammed,13,0,AT,46.745776,15.571428,0,0,0,---,104
+HY141AT,AT,Gmuend-Speicher,Small Hydro - Dammed,12,0,AT,47.932999,13.797,0,0,0,---,96
+HY142AT,AT,Triebenbach,Small Hydro - Dammed,12,0,AT,47.480999,14.484,0,0,0,---,104
+HY145AT,AT,Bärenwerk,Small Hydro - Dammed,11.6,0,AT,47.2166667,12.8166667,0,0,0,---,96
+HY146AT,AT,Dionysen,Small Hydro - Dammed,11,0,AT,47.41,15.214,0,0,0,---,89
+HY148AT,AT,St. Martin,Small Hydro - Dammed,10,0,AT,46.987392,15.091178,0,0,0,---,97
+HY149AT,AT,Kamering,Small Hydro - Dammed,10,0,AT,46.738998,13.594,0,0,0,---,87
+HY150AT,AT,Kalserbach-M1,Small Hydro - Dammed,10,0,AT,46.923,12.601,0,0,0,---,98
+HY151AT,AT,Schwarzach,Small Hydro - Dammed,10,0,AT,46.929001,12.545,0,0,0,---,91
+HY153AT,AT,Wallnerau-Salzachstufe,Small Hydro - Dammed,10,0,AT,47.316002,13.141,0,0,0,---,89
+HY154AT,AT,Leoben,Small Hydro - Dammed,10,0,AT,47.388476,15.095161,0,0,0,---,96
+HY155AT,AT,Zederhaus,Small Hydro - Dammed,9.8,0,AT,47.15,13.5,0,0,0,---,102
+HY156AT,AT,Dorferbach,Small Hydro - Dammed,9,0,AT,47.02,12.362,0,0,0,---,102
+HY157AT,AT,Heinfels-M1,Small Hydro - Dammed,9,0,AT,46.748001,12.434,0,0,0,---,95
+HY161AT,AT,Salza,Small Hydro - Dammed,8,0,AT,47.491345,13.956943,0,0,0,---,96
+HY162AT,AT,Salza,Small Hydro - Dammed,8,0,AT,47.487,14.026,0,0,0,---,98
+HY166AT,AT,Brennerwerk-M1,Small Hydro - Dammed,6,0,AT,47.126999,11.453,0,0,0,---,106
+HY167AT,AT,Hierzman-Speicher,Small Hydro - Dammed,6,0,AT,47.016998,15.125,0,0,0,---,90
+HY168AT,AT,St. Martin,Small Hydro - Dammed,6,0,AT,47.016998,15.125,0,0,0,---,97
+HY171AT,AT,Debant,Small Hydro - Dammed,5,0,AT,48.257999,16.389999,0,0,0,---,102
+HY172AT,AT,Sidan,Small Hydro - Dammed,5,0,AT,47.348999,11.885,0,0,0,---,95
+HY173AT,AT,Rott,Small Hydro - Dammed,5,0,AT,47.79940564,13.04399014,0,0,0,---,101
+HY179AT,AT,Leiersbach,Small Hydro - Dammed,3,0,AT,47.145,10.917,0,0,0,---,88
+HY181AT,AT,Hieflau-Speicher,Small Hydro - Dammed,2,0,AT,47.602001,14.764,0,0,0,---,102
+HY185AT,AT,Pack-Speicher,Small Hydro - Dammed,1,0,AT,46.976002,14.983,0,0,0,---,101
+HY13PT,PT,Picote I / Picote II,Large Hydro - Dammed,440,0,PT,41.379,-6.3525,13.43,0,74,---,93
+HY14PT,PT,Castelo Bode,Large Hydro - Dammed,159,0,PT,39.5429,-8.3188,902.5,159500,115,---,94
+HY15PT,PT,Cabril,Large Hydro - Dammed,108,0,PT,39.91727,-8.13244,615,339300,132,---,96
+HY16PT,PT,Venda Nova,Medium Hydro - Dammed,90,0,PT,41.4,-7.59,92.1,125200,97,---,92
+HY17PT,PT,Ribeiradio Ermida,Medium Hydro - Dammed,82.3,0,PT,40.991739,-8.1419,88.3,0,74,---,93
+HY18PT,PT,Canicada,Medium Hydro - Dammed,62,0,PT,41.653,-8.231,144.4,32000,76,---,94
+HY19PT,PT,Vilar Tabuaco,Medium Hydro - Dammed,58,0,PT,40.9871,-7.5353,95.3,115600,55,---,95
+HY20PT,PT,Paradela,Medium Hydro - Dammed,54,0,PT,41.7686,-7.9504,158.2,222500,110,---,96
+HY21PT,PT,Bouca,Small Hydro - Dammed,44,0,PT,39.854,-8.2197,7.9,0,63,---,97
+HY22PT,PT,Salamonde,Small Hydro - Dammed,42,0,PT,41.41,-8.5,55,26900,75,---,98
+HY23PT,PT,Pracana,Small Hydro - Dammed,41,0,PT,39.5649,-7.8123,95.6,9800,60,---,99
+HY24PT,PT,Caldeirao,Small Hydro - Dammed,40,0,PT,40.5316,-7.3297,3.5,1500,39,---,100
+HY25PT,PT,Santa Luzia,Small Hydro - Dammed,25.9,0,PT,40.5,-7.51,50.5,34200,76,---,101
+HY26PT,PT,Varosa,Small Hydro - Dammed,25,0,PT,41.07,-7.46,12.9,0,0,---,102
+HY27PT,PT,Raiva,Small Hydro - Dammed,24,0,PT,40.3095,-8.2488,12,0,34,---,103
+HY28PT,PT,Touvedo,Small Hydro - Dammed,22,0,PT,41.8124,-8.354,4.5,200,42,---,104
+HY29PT,PT,Sabugueiro I,Small Hydro - Dammed,13.2,0,PT,40.23,-7.39,15.28,30560,28.24,---,105
+HY2RO,RO,Che Lotru,Large Hydro - Dammed,510,0,RO,45.446999,23.768,340,0,121,---,77
+HY3RO,RO,Raul Mare (Retezat),Large Hydro - Dammed,335,0,RO,45.3391,22.7213,220,0,168,---,90
+HY4RO,RO,Mărișelu ,Large Hydro - Dammed,221,0,RO,46.6679,23.059,212,0,92,---,92
+HY5RO,RO,Vidraru,Large Hydro - Dammed,220,0,RO,45.3667,24.6307,469,0,166,---,89
+HY6RO,RO,Stejaru,Large Hydro - Dammed,208.4,0,RO,46.9386,26.1029,1230,0,127,---,85
+HY7RO,RO,Sugag (Tau),Large Hydro - Dammed,150,0,RO,45.776001,23.653999,21,0,78,---,81
+HY8RO,RO,Galceag,Large Hydro - Dammed,148.7,0,RO,45.5879,23.6279,0,0,0,---,81
+HY9RO,RO,Dragan (Remeti),Large Hydro - Dammed,144.1401274,0,RO,46.7889,22.7156,0,0,0,---,92
+HY10RO,RO,Ruieni,Large Hydro - Dammed,137.7,0,RO,45.426,22.4757,96,0,125,---,88
+HY11RO,RO,Bradisoru,Large Hydro - Dammed,114.8,0,RO,45.3549,24.1053,39,0,0,---,89
+HY12RO,RO,Tismana,Large Hydro - Dammed,104.8,0,RO,45.0444,22.9472,4.8,0,48,---,88
+HY13RO,RO,Turnu,Medium Hydro - Dammed,70,0,RO,45.277016,24.309554,0,0,24,---,91
+HY14RO,RO,Clabucet,Medium Hydro - Dammed,64,0,RO,45.5661,25.0937,0,0,0,---,78
+HY15RO,RO,Gogosu,Medium Hydro - Dammed,54,0,RO,44.622793,22.641357,800,0,30,---,72
+HY16RO,RO,Draganesti,Medium Hydro - Dammed,53,0,RO,44.177917,24.48375,76,0,34,---,86
+HY17RO,RO,Frunzaru,Medium Hydro - Dammed,53,0,RO,44.045417,24.57125,96,0,30,---,88
+HY18RO,RO,Ipotesti,Medium Hydro - Dammed,53,0,RO,44.26625,24.400417,110,0,31,---,84
+HY19RO,RO,Izbiceni,Medium Hydro - Dammed,53,0,RO,43.81625,24.69625,74,0,29,---,77
+HY20RO,RO,Rusanesti,Medium Hydro - Dammed,53,0,RO,43.920417,24.625417,78,0,29,---,89
+HY21RO,RO,Che Motru,Medium Hydro - Dammed,50,0,RO,45.134775,22.806895,0,0,0,---,74
+HY22RO,RO,Cerna Principal,Medium Hydro - Dammed,50,0,RO,45.162083,22.732917,124,0,110,---,84
+HY23RO,RO,Strejesti,Medium Hydro - Dammed,50,0,RO,44.537083,24.325417,225,0,33,---,76
+HY24RO,RO,Ramnicu Valcea,Small Hydro - Dammed,46,0,RO,45.120417,24.375417,19,0,34,---,77
+HY25RO,RO,Dragasani,Small Hydro - Dammed,45,0,RO,44.682917,24.292083,40,0,32,---,92
+HY26RO,RO,Govora,Small Hydro - Dammed,45,0,RO,45.012083,24.29625,18.5,0,26,---,91
+HY27RO,RO,Racaciuni,Small Hydro - Dammed,45,0,RO,46.337083,27.04625,103.7,0,29,---,75
+HY28RO,RO,Tarnita,Small Hydro - Dammed,45,0,RO,46.727083,23.29625,74,0,97,---,79
+HY29RO,RO,Vaduri,Small Hydro - Dammed,44,0,RO,46.932513,26.27016,0,0,0,---,90
+HY30RO,RO,Beresti,Small Hydro - Dammed,44,0,RO,46.187083,27.18375,12,0,29,---,75
+HY31RO,RO,Sasciori,Small Hydro - Dammed,42,0,RO,45.821684,23.610768,0,0,0,---,90
+HY32RO,RO,Siriu,Small Hydro - Dammed,42,0,RO,45.495417,26.250417,155,0,122,---,74
+HY33RO,RO,Che Raul,Small Hydro - Dammed,41,0,RO,45.156224,22.410357,17,0,230,---,75
+HY34RO,RO,Arcesti,Small Hydro - Dammed,38,0,RO,44.449583,24.312917,43.4,0,31,---,86
+HY35RO,RO,Calimanesti,Small Hydro - Dammed,38,0,RO,45.074583,24.364583,44.3,0,29,---,87
+HY36RO,RO,Ionesti,Small Hydro - Dammed,38,0,RO,44.857917,24.24625,24.9,0,34,---,82
+HY37RO,RO,Zavideni,Small Hydro - Dammed,38,0,RO,44.774583,24.27125,500,0,30,---,77
+HY38RO,RO,Babeni,Small Hydro - Dammed,37,0,RO,44.920417,24.250417,59.7,0,33,---,86
+HY39RO,RO,Daesti,Small Hydro - Dammed,37,0,RO,45.17875,24.369583,11.2,0,29,---,77
+HY40RO,RO,Movileni,Small Hydro - Dammed,33.9,0,RO,45.78295,27.341556,0,0,0,---,80
+HY41RO,RO,Costeshti Stinka / Stanca,Small Hydro - Dammed,30,0,RO,47.84125,27.225417,1290,0,43,---,75
+HY42RO,RO,Galbeni,Small Hydro - Dammed,29,0,RO,46.457917,26.952083,38.8,0,24,---,75
+HY43RO,RO,Slatina,Small Hydro - Dammed,26,0,RO,44.407917,24.354583,19.2,0,26,---,77
+HY44RO,RO,Racova,Small Hydro - Dammed,23,0,RO,46.695417,26.712917,8.66,0,20,---,85
+HY45RO,RO,Pangarati,Small Hydro - Dammed,23,0,RO,46.925769,26.215466,0,0,0,---,83
+HY46RO,RO,Colibita,Small Hydro - Dammed,21,0,RO,47.165417,24.877917,75.22,0,92,---,88
+HY47RO,RO,Leresti,Small Hydro - Dammed,19,0,RO,45.3942,25.0625,0,0,0,---,81
+HY48RO,RO,Lugasu,Small Hydro - Dammed,18,0,RO,47.059583,22.30375,65.4,0,29,---,77
+HY49RO,RO,Tileagd,Small Hydro - Dammed,18,0,RO,47.07875,22.207917,52.9,0,37,---,90
+HY50RO,RO,Che Malaia,Small Hydro - Dammed,18,0,RO,45.35365,24.02453,3.4,0,0,---,81
+HY51RO,RO,Hateg,Small Hydro - Dammed,16,0,RO,45.59125,22.95875,12.5,0,32,---,79
+HY52RO,RO,Dobresti,Small Hydro - Dammed,16,0,RO,45.309726,25.418143,0,0,0,---,79
+HY53RO,RO,Izvoarele,Small Hydro - Dammed,16,0,RO,45.267768,26.024851,0,0,0,---,91
+HY54RO,RO,Ostrovu Mic,Small Hydro - Dammed,15.9,0,RO,45.517246,22.854632,0,0,0,---,77
+HY55RO,RO,Paclisa,Small Hydro - Dammed,15.9,0,RO,45.562186,22.8975,0,0,0,---,88
+HY56RO,RO,Valcele,Small Hydro - Dammed,15,0,RO,44.982917,24.742083,54.8,0,35,---,79
+HY57RO,RO,Zigoneni,Small Hydro - Dammed,15,0,RO,45.082917,24.662917,13.3,0,29,---,73
+HY58RO,RO,Arpasu,Small Hydro - Dammed,14,0,RO,45.79375,24.595417,7.35,0,20,---,78
+HY59RO,RO,Avrig,Small Hydro - Dammed,14,0,RO,45.745417,24.39125,10.8,0,23,---,91
+HY60RO,RO,Scoreiu,Small Hydro - Dammed,14,0,RO,45.77875,24.512917,5.2,0,22,---,77
+HY61RO,RO,Vistea,Small Hydro - Dammed,14,0,RO,45.80875,24.749583,4.25,0,20,---,74
+HY62RO,RO,Voila,Small Hydro - Dammed,14,0,RO,45.835417,24.860417,12.25,0,26,---,79
+HY63RO,RO,Vadeni,Small Hydro - Dammed,12,0,RO,45.057917,23.267917,4.76,0,25,---,73
+HY64RO,RO,Scropoasa,Small Hydro - Dammed,12,0,RO,45.341494,25.430563,0,0,0,---,75
+HY65RO,RO,Somes,Small Hydro - Dammed,12,0,RO,46.73178,23.35068,7.5,0,70,---,81
+HY66RO,RO,Budeasa,Small Hydro - Dammed,11,0,RO,44.91625,24.82125,54.9,0,33,---,89
+HY67RO,RO,Piatra Neamt,Small Hydro - Dammed,11,0,RO,46.932917,26.337917,10,0,27,---,73
+HY68RO,RO,Maneciu,Small Hydro - Dammed,10,0,RO,45.332917,25.987917,60,0,78,---,92
+HY69RO,RO,Paltinu,Small Hydro - Dammed,10,0,RO,45.249583,25.735417,53.67,0,108,---,91
+HY70RO,RO,Mihailesti,Small Hydro - Dammed,10,0,RO,44.327175,25.946302,0,0,0,---,83
+HY71RO,RO,Valenii de Munte,Small Hydro - Dammed,10,0,RO,45.209482,26.050985,0,0,0,---,76
+HY72RO,RO,Golesti,Small Hydro - Dammed,8,0,RO,44.807323,24.99551,0,0,0,---,76
+HY73RO,RO,Bascov,Small Hydro - Dammed,7.7,0,RO,44.89636,24.847892,0,0,0,---,80
+HY74RO,RO,Pitesti,Small Hydro - Dammed,7.7,0,RO,44.845314,24.904656,0,0,0,---,92
+HY75RO,RO,Voinesti,Small Hydro - Dammed,5.2,0,RO,45.30504,25.070867,0,0,0,---,78
+HY76RO,RO,Valsan,Small Hydro - Dammed,5,0,RO,45.413408,24.708014,0.175,0,5.5,---,79
+HY77RO,RO,Vacaresti,Small Hydro - Dammed,4.84,0,RO,44.821493,25.488923,0,0,0,---,85
+HY19SK,SK,Gabčíkovo ,Large Hydro - Dammed,720,0,SK,47.88004,17.53841,0,0,0,---,85
+HY79SK,SK,Žilina,Medium Hydro - Dammed,72,0,SK,49.21553,18.77683,35.9,0,33,---,97
+HY1SE,SE,Harsprånget,Large Hydro - Dammed,977,0,SE1,66.886,19.819,6.4,0,107,---,19
+HY2SE,SE,Stornorrfors,Large Hydro - Dammed,599.4,0,SE2,63.88,20.018,0,0,75,---,41
+HY3SE,SE,Letsi,Large Hydro - Dammed,456,0,SE1,66.502,20.38,68,0,85,---,13
+HY4SE,SE,Porjus,Large Hydro - Dammed,450,0,SE1,66.959,19.802,22,0,1915,---,18
+HY5SE,SE,Messaure,Large Hydro - Dammed,446,0,SE1,66.686,20.336,54,0,101,---,30
+HY6SE,SE,Trängslet,Large Hydro - Dammed,330,0,SE3,61.381,13.731,880,0,120,---,33
+HY7SE,SE,Ligga,Large Hydro - Dammed,327,0,SE1,66.809,19.897,5.4,0,35,---,38
+HY8SE,SE,Vietas,Large Hydro - Dammed,306,0,SE1,67.493,18.355,5900,0,30,---,15
+HY9SE,SE,Ritsem,Large Hydro - Dammed,304,0,SE1,67.732,17.49,600,0,173,---,23
+HY10SE,SE,Kilforsen,Large Hydro - Dammed,275,0,SE2,63.544,16.77,7,0,41,---,22
+HY11SE,SE,Porsi,Large Hydro - Dammed,274,0,SE1,66.429,20.652,22,0,10.1,---,27
+HY12SE,SE,Kråangede,Large Hydro - Dammed,252,0,SE2,63.145,16.118,60,0,20,---,25
+HY13SE,SE,Seitevare,Large Hydro - Dammed,223,0,SE1,66.976,18.575,1675,0,106,---,38
+HY14SE,SE,Gallejaur,Large Hydro - Dammed,220,0,SE1,65.114,19.464,12.6,0,56,---,24
+HY15SE,SE,Harrsele,Large Hydro - Dammed,216,0,SE2,63.999,19.57,4.8,0,29,---,26
+HY16SE,SE,Laxede,Large Hydro - Dammed,200,0,SE1,66.219,20.857,15.1,0,21,---,17
+HY17SE,SE,Hjälta,Large Hydro - Dammed,186,0,SE2,63.1837,17.0968,0,0,0,---,20
+HY18SE,SE,Trollhättan Hojum,Large Hydro - Dammed,172,0,SE3,58.28,12.278333,0,0,17,---,20
+HY19SE,SE,Bergeforsen,Large Hydro - Dammed,160,0,SE2,62.525,17.375,0,0,36,---,35
+HY20SE,SE,Sällsjö,Large Hydro - Dammed,160,0,SE2,63.233,13.682,605,0,31,---,39
+HY21SE,SE,Forsmo,Large Hydro - Dammed,160,0,SE2,63.265,17.182,4.8,0,25,---,30
+HY22SE,SE,Långå,Large Hydro - Dammed,156,0,SE2,62.033333,14.35,784,0,217,---,21
+HY23SE,SE,Midskog,Large Hydro - Dammed,155,0,SE2,63.237,15.244,53,0,27,---,19
+HY24SE,SE,Ramsele,Large Hydro - Dammed,153,0,SE2,63.166667,17.266667,0,0,0,---,12
+HY25SE,SE,Akkats,Large Hydro - Dammed,150,0,SE1,66.632,19.821,42,0,21,---,28
+HY26SE,SE,Lasele,Large Hydro - Dammed,149.6,0,SE2,63.767,16.817,4.1,0,25,---,16
+HY27SE,SE,Hölleforsen,Large Hydro - Dammed,140,0,SE2,62.95,16.666,0.8,0,41,---,39
+HY28SE,SE,Kvistforsen,Large Hydro - Dammed,140,0,SE1,64.751,20.953,4,0,23,---,35
+HY29SE,SE,Moforsen,Large Hydro - Dammed,135,0,SE2,63.368333,16.988333,2.1,0,35,---,25
+HY30SE,SE,Vargfors,Large Hydro - Dammed,134,0,SE1,65.018,19.69,14.1,0,45,---,14
+HY31SE,SE,Stadsforsen,Large Hydro - Dammed,132,0,SE2,65.843,20.376,3.9,0,22,---,16
+HY32SE,SE,Korsselbränna,Large Hydro - Dammed,130,0,SE2,64.459,15.538,7.5,0,20,---,41
+HY33SE,SE,Stalon,Large Hydro - Dammed,130,0,SE2,64.947,16.827,665,0,199,---,41
+HY34SE,SE,Höljes,Large Hydro - Dammed,128,0,SE3,60.902,12.594,269.4,0,80,---,27
+HY35SE,SE,Älvkarleby,Large Hydro - Dammed,125,0,SE3,60.569,17.449,0,0,0,---,38
+HY36SE,SE,Bjurfors,Large Hydro - Dammed,120,0,SE2,64.2,19.716667,0,0,0,---,33
+HY37SE,SE,Nämforsen,Large Hydro - Dammed,114.6,0,SE2,63.45,16.95,0,0,22,---,41
+HY38SE,SE,Järpströmmen,Large Hydro - Dammed,114,0,SE2,63.372,13.417,505,0,16,---,32
+HY39SE,SE,Olden,Large Hydro - Dammed,112,0,SE2,65.808,21.672,178,0,261,---,24
+HY40SE,SE,Storfinnforsen,Large Hydro - Dammed,111,0,SE2,63.597386,16.119386,0,0,49.5,---,32
+HY41SE,SE,Torpshammar,Large Hydro - Dammed,110,0,SE2,62.476,16.325,2.5,0,26,---,39
+HY42SE,SE,Tuggen,Large Hydro - Dammed,110,0,SE2,64.474,18.882,10.8,0,27,---,32
+HY43SE,SE,Bastusel,Large Hydro - Dammed,107,0,SE1,65.402,18.673,29.7,0,30,---,23
+HY44SE,SE,Grundfors,Large Hydro - Dammed,104,0,SE2,64.962064,17.577989,14.4,0,30,---,23
+HY45SE,SE,Krokströmmen,Large Hydro - Dammed,103,0,SE2,62.047,14.878,0,0,0,---,24
+HY46SE,SE,Järnvägsforsen,Large Hydro - Dammed,100,0,SE2,62.383,17.317,0,0,0,---,18
+HY47SE,SE,Järkvissle,Medium Hydro - Dammed,97,0,SE2,62.7984553,16.654173,0,0,0,---,42
+HY48SE,SE,Långbjörn,Medium Hydro - Dammed,97,0,SE2,63.6364624,16.7754028,4,0,32,---,39
+HY49SE,SE,Stensjön,Medium Hydro - Dammed,95,0,SE2,63.98333,13.66667,173,0,318,---,42
+HY50SE,SE,Umluspen,Medium Hydro - Dammed,94,0,SE2,65.094572,17.1013974,1101,0,24,---,23
+HY51SE,SE,Bålforsen,Medium Hydro - Dammed,88,0,SE2,64.58507,18.69109,0,0,0,---,19
+HY52SE,SE,Järkvissle,Medium Hydro - Dammed,88,0,SE2,62.7984553,16.654173,0,0,0,---,19
+HY53SE,SE,Hällby,Medium Hydro - Dammed,84,0,SE2,63.879154,17.21992,0,0,0,---,18
+HY54SE,SE,Svarthåalsforsen,Medium Hydro - Dammed,80,0,SE2,63.028896,16.569358,0,0,0,---,41
+HY55SE,SE,Hammarforsen,Medium Hydro - Dammed,79,0,SE2,63.1139104,16.3570051,1.8,0,25,---,16
+HY56SE,SE,Boden,Medium Hydro - Dammed,78,0,SE1,65.8077024,21.6721611,0,0,0,---,29
+HY57SE,SE,Gammelänge,Medium Hydro - Dammed,78,0,SE2,63.1429868,16.1664,0,0,0,---,41
+HY58SE,SE,Näverede,Medium Hydro - Dammed,76,0,SE2,63.2211171,15.3221337,0,0,0,---,33
+HY59SE,SE,Ajaure,Medium Hydro - Dammed,75,0,SE2,64.9538237,17.617483,209,0,46,---,39
+HY60SE,SE,Trångfors,Medium Hydro - Dammed,73,0,SE2,59.1773705,17.6614727,0,0,0,---,37
+HY61SE,SE,Donje,Medium Hydro - Dammed,72,0,SE2,61.3956,16.4019113,0,0,0,---,42
+HY62SE,SE,Edenforsen,Medium Hydro - Dammed,71,0,SE2,63.690491,16.872475,0,0,0,---,28
+HY63SE,SE,Hissmofors,Medium Hydro - Dammed,68,0,SE2,63.3326397,14.46104,0,0,0,---,29
+HY64SE,SE,Gejmån,Medium Hydro - Dammed,66,0,SE2,65.5760861,15.1847184,0,0,0,---,22
+HY65SE,SE,Krångfors,Medium Hydro - Dammed,65,0,SE1,64.7536116,20.4815155,0,0,0,---,15
+HY66SE,SE,Rebnis,Medium Hydro - Dammed,64,0,SE2,66.499046,17.107241,0,0,0,---,12
+HY67SE,SE,Stensele,Medium Hydro - Dammed,64,0,SE2,65.0522868,17.2331712,0,0,0,---,14
+HY68SE,SE,Degerforsen,Medium Hydro - Dammed,63,0,SE2,59.3139971,14.37167,0,0,0,---,33
+HY69SE,SE,Selsforsen,Medium Hydro - Dammed,62,0,SE1,64.221215,20.271177,0,0,0,---,16
+HY70SE,SE,Sollefteå,Medium Hydro - Dammed,62,0,SE2,63.1711166,17.2660101,0,0,0,---,38
+HY71SE,SE,Blåsjön,Medium Hydro - Dammed,60,0,SE2,64.7478006,14.2214557,0,0,0,---,27
+HY72SE,SE,Edsele,Medium Hydro - Dammed,60,0,SE2,63.4044643,16.5582142,0,0,0,---,23
+HY73SE,SE,Gardikfors,Medium Hydro - Dammed,60,0,SE2,65.4764131,15.8566682,871,0,32,---,27
+HY74SE,SE,Rätan,Medium Hydro - Dammed,60,0,SE2,62.4892966,14.6259026,0,0,0,---,22
+HY75SE,SE,Ljunga,Small Hydro - Dammed,59,0,SE2,62.75643,16.30938,0,0,0,---,19
+HY76SE,SE,Randi,Medium Hydro - Dammed,58,0,SE1,66.8306037,20.3966945,98,0,20,---,16
+HY77SE,SE,Kvarnsveden,Medium Hydro - Dammed,58,0,SE3,60.5271796,15.407159,0,0,0,---,26
+HY78SE,SE,Stenkullafors,Medium Hydro - Dammed,58,0,SE2,65.0521627,16.335801,0,0,0,---,27
+HY79SE,SE,Laforsen,Medium Hydro - Dammed,57,0,SE2,61.943514,15.4972332,0,0,0,---,30
+HY80SE,SE,Kattstrupeforsen,Medium Hydro - Dammed,56,0,SE2,63.3263763,14.5799602,0,0,0,---,25
+HY81SE,SE,Kymmen,Medium Hydro - Dammed,55,0,SE3,59.95,12.75,0,0,0,---,26
+HY82SE,SE,Forsse,Medium Hydro - Dammed,52,0,SE2,63.3358987,14.2121426,0,0,0,---,21
+HY83SE,SE,Långströmmen,Medium Hydro - Dammed,52,0,SE2,62.106128,14.995905,0,0,0,---,21
+HY84SE,SE,Pengfors,Medium Hydro - Dammed,52,0,SE2,63.9311478,19.6645606,0,0,0,---,21
+HY85SE,SE,Norränge,Medium Hydro - Dammed,50,0,SE2,61.4769133,16.3868038,0,0,0,---,27
+HY86SE,SE,Långhag,Small Hydro - Dammed,49,0,SE3,63.39703,15.7152,0,0,0,---,32
+HY87SE,SE,Båtfors,Small Hydro - Dammed,49,0,SE1,64.832573,20.223732,0,0,0,---,24
+HY88SE,SE,Bullerforsen,Small Hydro - Dammed,47,0,SE3,60.508889,15.436944,0,0,0,---,20
+HY89SE,SE,Avesta-storfors,Small Hydro - Dammed,46,0,SE3,60.1498,16.17005,0,0,0,---,23
+HY90SE,SE,Skallböle,Small Hydro - Dammed,46,0,SE2,62.36433,16.96242,0,0,0,---,19
+HY91SE,SE,Rusfors,Small Hydro - Dammed,45,0,SE2,64.717559,18.242239,75,0,22,---,14
+HY92SE,SE,Forshuvudforsen,Small Hydro - Dammed,44,0,SE3,60.49563,15.45471,0,0,0,---,18
+HY93SE,SE,Gulsele I,Small Hydro - Dammed,44,0,SE2,63.81487,17.12433,0,0,0,---,41
+HY94SE,SE,Lanforsen,Small Hydro - Dammed,44,0,SE3,61.937373,15.521949,0,0,0,---,23
+HY95SE,SE,Linnvasselv,Small Hydro - Dammed,44,0,SE2,64.64857,13.76123,0,0,0,---,19
+HY96SE,SE,Trollhättan Olidan,Small Hydro - Dammed,44,0,SE3,58.27513,12.27277,0,0,20,---,25
+HY97SE,SE,Lilla Edet,Small Hydro - Dammed,43,0,SE3,58.13552,12.1202,0,0,0,---,26
+HY98SE,SE,Mockfjärd,Small Hydro - Dammed,43,0,SE3,60.501506,14.964287,0,0,0,---,45
+HY99SE,SE,Finnforsen,Small Hydro - Dammed,42,0,SE1,64.79103,20.3353,0,0,0,---,35
+HY100SE,SE,Untra,Small Hydro - Dammed,42,0,SE3,60.56421,17.439184,0,0,0,---,44
+HY101SE,SE,Stugun,Small Hydro - Dammed,41,0,SE2,63.16334,15.62275,0,0,0,---,20
+HY102SE,SE,Gullspång,Small Hydro - Dammed,40,0,SE3,59.98657,14.11207,0,0,0,---,27
+HY103SE,SE,Mörsil,Small Hydro - Dammed,40,0,SE2,63.29768,13.68738,0,0,0,---,31
+HY104SE,SE,Sikfors,Small Hydro - Dammed,40,0,SE1,65.525764,21.183168,0,0,0,---,14
+HY105SE,SE,Tåsan,Small Hydro - Dammed,40,0,SE3,59.386351,13.569723,0,0,0,---,32
+HY106SE,SE,Granfors,Small Hydro - Dammed,39,0,SE2,64.1833333,20.3833333,0,0,0,---,35
+HY107SE,SE,Höljebro,Small Hydro - Dammed,38,0,SE2,61.23731,17.01125,0,0,0,---,26
+HY108SE,SE,Skedvi,Small Hydro - Dammed,38,0,SE3,60.39454,15.84637,0,0,0,---,32
+HY109SE,SE,Grytfors,Small Hydro - Dammed,37,0,SE2,65.295466,19.11352,0,0,0,---,39
+HY110SE,SE,Vittjärv,Small Hydro - Dammed,37,0,SE1,65.8460275,21.5538235,0,0,0,---,13
+HY111SE,SE,Letten,Small Hydro - Dammed,36,0,SE3,60.712207,12.667535,163.4,0,16,---,19
+HY112SE,SE,Ljusne Strömmar,Small Hydro - Dammed,36,0,SE2,61.2116,17.08097,0,0,0,---,14
+HY113SE,SE,Lövön,Small Hydro - Dammed,36,0,SE2,63.829583,15.642083,0,0,0,---,35
+HY114SE,SE,Sveg,Small Hydro - Dammed,36,0,SE2,62.01812,14.2453105,0,0,0,---,34
+HY115SE,SE,Rengård,Small Hydro - Dammed,36,0,SE1,64.933513,20.046481,0,0,0,---,21
+HY116SE,SE,Parteboda,Small Hydro - Dammed,35,0,SE2,62.517539,15.691329,0,0,0,---,38
+HY117SE,SE,Spjutmo,Small Hydro - Dammed,35,0,SE3,61.083948,14.318083,0,0,0,---,22
+HY118SE,SE,Vargön,Small Hydro - Dammed,34,0,SE3,58.355556,12.374444,0,0,0,---,44
+HY119SE,SE,Munkfors,Small Hydro - Dammed,33,0,SE3,59.84712,13.53885,0,0,0,---,37
+HY120SE,SE,Alfta,Small Hydro - Dammed,32,0,SE2,61.341075,16.006847,0,0,0,---,27
+HY121SE,SE,Röjdåforsen,Small Hydro - Dammed,32,0,SE3,60.39144,12.64037,0,0,0,---,24
+HY122SE,SE,Grytfors,Small Hydro - Dammed,31,0,SE2,65.295466,19.11352,0,0,0,---,31
+HY123SE,SE,Karseforsen,Small Hydro - Dammed,31,0,SE4,56.501729,13.11362,0,0,0,---,30
+HY124SE,SE,Sädva,Small Hydro - Dammed,31,0,SE2,66.467003,16.549485,0,0,0,---,16
+HY125SE,SE,Holmen,Small Hydro - Dammed,29,0,SE3,58.58889,16.18318,0,0,0,---,44
+HY126SE,SE,Åsele,Small Hydro - Dammed,27,0,SE2,64.098361,17.306503,0,0,0,---,12
+HY127SE,SE,Klippen,Small Hydro - Dammed,27,0,SE2,56.123701,13.11603,357,0,65,---,40
+HY128SE,SE,Öjeforsen,Small Hydro - Dammed,27,0,SE2,62.486721,16.067976,0,0,0,---,40
+HY129SE,SE,Juktan,Small Hydro - Dammed,26,0,SE2,65.29,17.22,0,0,0,---,19
+HY130SE,SE,Anjan,Small Hydro - Dammed,25,0,SE2,63.68161,12.8079,0,0,0,---,24
+HY131SE,SE,Betsele,Small Hydro - Dammed,25,0,SE2,64.65498,18.48612,0,0,0,---,38
+HY132SE,SE,Linnvasselv,Small Hydro - Dammed,25,0,SE2,64.64848,13.76143,0,0,0,---,15
+HY133SE,SE,Storåströmmen,Small Hydro - Dammed,25,0,SE2,62.07914,15.10933,0,0,0,---,30
+HY134SE,SE,Asen,Small Hydro - Dammed,24,0,SE2,64.098361,17.306503,0,0,0,---,14
+HY135SE,SE,Flåsjön,Small Hydro - Dammed,24,0,SE2,60.0833333,13.9833333,0,0,0,---,30
+HY136SE,SE,Forshult,Small Hydro - Dammed,24,0,SE3,59.95634,13.5254,0,0,0,---,33
+HY137SE,SE,Granboforsen,Small Hydro - Dammed,24,0,SE2,63.30628,14.70429,0,0,0,---,16
+HY138SE,SE,Gråda,Small Hydro - Dammed,24,0,SE3,60.60383,15.01509,0,0,0,---,33
+HY139SE,SE,Halvfari,Small Hydro - Dammed,24,0,SE2,62.41656,13.531137,0,0,0,---,35
+HY140SE,SE,Torrön,Small Hydro - Dammed,24,0,SE2,63.77123,13.0707,0,0,0,---,40
+HY141SE,SE,Åsen,Small Hydro - Dammed,24,0,SE3,61.2845,13.76261,460,0,28,---,34
+HY142SE,SE,Domnarvet,Small Hydro - Dammed,22,0,SE3,60.49559,15.45453,0,0,0,---,25
+HY143SE,SE,Hällforsen,Small Hydro - Dammed,22,0,SE2,64.58337,18.69227,0,0,0,---,24
+HY144SE,SE,Krakerud,Small Hydro - Dammed,22,0,SE3,59.99988,13.59266,0,0,0,---,41
+HY145SE,SE,Gäddede,Small Hydro - Dammed,22,0,SE2,64.50286,14.15105,460,0,28,---,25
+HY146SE,SE,Matfors,Small Hydro - Dammed,21,0,SE2,62.34769,17.02693,460,0,28,---,29
+HY147SE,SE,Drejefors,Small Hydro - Dammed,20,0,SE3,59.60792,13.47571,0,0,0,---,40
+HY148SE,SE,Gulsele II,Small Hydro - Dammed,20,0,SE2,63.81487,17.12433,1815,0,30,---,18
+HY149SE,SE,Parki,Small Hydro - Dammed,20,0,SE1,66.830913,18.97472,0,0,0,---,38
+HY150SE,SE,Volgsjöfors,Small Hydro - Dammed,20,0,SE2,64.307632,15.71261,0,0,0,---,19
+HY151SE,SE,Söderfors,Small Hydro - Dammed,20,0,SE3,60.38196,17.2416,0,0,0,---,31
+HY152SE,SE,Kvarnfallet,Small Hydro - Dammed,19,0,SE4,56.5081,13.35244,0,0,0,---,42
+HY153SE,SE,Ljusnefors,Small Hydro - Dammed,19,0,SE3,61.20615,17.12112,0,0,0,---,41
+HY154SE,SE,Näs,Small Hydro - Dammed,19,0,SE3,58.55521,15.31401,0,0,0,---,20
+HY155SE,SE,Turinge,Small Hydro - Dammed,18,0,SE2,62.43126,14.94806,0,0,0,---,41
+HY156SE,SE,Skymnäsforsen,Small Hydro - Dammed,16.8,0,SE3,59.94443,13.53221,0,0,0,---,34
+HY157SE,SE,Bergvik,Small Hydro - Dammed,16.2,0,SE2,61.25997,16.83377,0,0,0,---,16
+HY158SE,SE,Byaforsen,Small Hydro - Dammed,16,0,SE2,62.0413,14.49515,0,0,0,---,27
+HY159SE,SE,Nederede,Small Hydro - Dammed,16,0,SE2,62.41634,16.49409,0,0,0,---,40
+HY160SE,SE,Blyberg,Small Hydro - Dammed,15,0,SE3,61.14727,14.14616,0,0,0,---,20
+HY161SE,SE,Väsa,Small Hydro - Dammed,15,0,SE3,61.17427,14.09241,0,0,0,---,41
+HY162SE,SE,Juveln,Small Hydro - Dammed,14,0,SE2,63.70046,12.95638,0,0,0,---,15
+HY163SE,SE,Lottefors,Small Hydro - Dammed,13.8,0,SE2,61.42849,16.42051,0,0,0,---,23
+HY164SE,SE,Skogaforsen,Small Hydro - Dammed,13.6,0,SE4,56.51931,13.18103,0,0,0,---,20
+HY165SE,SE,Bågede,Small Hydro - Dammed,13.4,0,SE2,64.34318,14.80815,0,0,0,---,26
+HY166SE,SE,Lima,Small Hydro - Dammed,13,0,SE2,60.79599,13.42463,0,0,0,---,13
+HY167SE,SE,Näsaforsen,Small Hydro - Dammed,12.5,0,SE2,63.6512,14.67618,0,0,0,---,35
+HY168SE,SE,Hermansboda,Small Hydro - Dammed,12,0,SE2,62.54195,15.8431,0,0,0,---,37
+HY169SE,SE,Landafors,Small Hydro - Dammed,11.2,0,SE2,61.27336,16.61834,0,0,0,---,26
+HY170SE,SE,Lindbyn,Small Hydro - Dammed,11,0,SE3,60.51357,14.99001,0,0,0,---,41
+HY171SE,SE,Sillre,Small Hydro - Dammed,11,0,SE2,62.79736,16.66393,0,0,0,---,14
+HY172SE,SE,Hummelforsen,Small Hydro - Dammed,10.7,0,SE3,60.56354,17.44332,0,0,0,---,24
+HY173SE,SE,Malgomaj,Small Hydro - Dammed,10,0,SE2,64.61755,16.65226,0,0,0,---,18
+HY174SE,SE,Leringsforsen,Small Hydro - Dammed,10,0,SE2,62.57463,16.42887,0,0,0,---,21
+HY175SE,SE,Viforsen,Small Hydro - Dammed,10,0,SE2,62.30866,17.177,0,0,0,---,23
+HY176SE,SE,Edsforsen,Small Hydro - Dammed,9,0,SE3,60.0653,13.52568,0,0,0,---,34
+HY177SE,SE,Eldforsen,Small Hydro - Dammed,8.5,0,SE3,60.43823,14.22905,0,0,0,---,45
+HY178SE,SE,Lövhöjden,Small Hydro - Dammed,8.5,0,SE2,63.87758,14.46711,0,0,0,---,14
+HY179SE,SE,Skifsforsen,Small Hydro - Dammed,8.5,0,SE3,60.50123,14.27411,0,0,0,---,38
+HY180SE,SE,Bergnäs,Small Hydro - Dammed,8,0,SE2,65.67744,18.11396,0,0,0,---,28
+HY181SE,SE,Bursnäs,Small Hydro - Dammed,8,0,SE2,62.43107,14.94802,0,0,0,---,29
+HY182SE,SE,Slagnäs,Small Hydro - Dammed,7,0,SE2,65.58891,18.18252,0,0,0,---,30
+HY183SE,SE,Forshaga,Small Hydro - Dammed,7,0,SE3,59.52597,13.49953,0,0,0,---,43
+HY184SE,SE,Ålviken,Small Hydro - Dammed,6.2,0,SE2,63.83018,15.61016,0,0,0,---,24
+HY185SE,SE,Horrmund,Small Hydro - Dammed,6,0,SE3,61.31363,13.15982,0,0,0,---,41
+HY186SE,SE,Duved,Small Hydro - Dammed,5.6,0,SE2,63.38831,12.90206,0,0,0,---,36
+HY187SE,SE,Abelvattnet,Small Hydro - Dammed,4.6,0,SE2,65.545168,14.981899,0,0,0,---,19
+HY188SE,SE,Rönnöfors,Small Hydro - Dammed,3.9,0,SE2,63.64688,13.83882,0,0,0,---,13
+HY189SE,SE,Båthusströmmen,Small Hydro - Dammed,3,0,SE2,61.89383,12.57779,0,0,0,---,36
+HY190SE,SE,Small hydro SE1,Small Hydro - Dammed,124,0,SE1,0,0,0,0,0,---,34
+HY191SE,SE,Small hydro SE2,Small Hydro - Dammed,83,0,SE2,0,0,0,0,0,---,34
+HY192SE,SE,Small hydro SE3,Small Hydro - Dammed,695,0,SE3,0,0,0,0,0,---,24
+HY193SE,SE,Small hydro SE4,Small Hydro - Dammed,281,0,SE4,0,0,0,0,0,---,43
+HY10UK,UK,Sloy,Large Hydro - Dammed,152.5,0,GB,56.251,-4.712,35.679,0,56,---,80
+HY15UK,UK,Glendoe,Large Hydro - Dammed,100,0,GB,57.093,-4.556,0,0,8,---,75
+HY20UK,UK,Errochty,Medium Hydro - Dammed,75,0,GB,56.707,-4.02,32.48,0,42,---,86
+HY22UK,UK,Lochaber,Medium Hydro - Dammed,65,0,GB,56.829,-5.073,0,0,0,---,77
+HY23UK,UK,Clunie,Medium Hydro - Dammed,61,0,GB,56.716814,-3.777832,36.359,0,21,---,90
+HY30UK,UK,Luichart,Small Hydro - Dammed,34,0,GB,57.574691,-4.686832,62,0,16,---,92
+HY47UK,UK,Orrin,Small Hydro - Dammed,18,0,GB,57.554162,-4.616081,59.466,0,45,---,89
+HY54UK,UK,Torr Achilty,Small Hydro - Dammed,15,0,GB,57.554403,-4.598289,0,0,0,---,73
+HY71UK,UK,Lairg,Small Hydro - Dammed,3.5,0,GB,58.028772,-4.413805,0,0,0,---,74
+HY1NO,NO,Kvilldal,Large Hydro - Dammed,1240,0,NO2,59.512,6.585,293.02,382977.14,536.5,---,36
+HY2NO,NO,Tonstad,Large Hydro - Dammed,960,0,NO2,58.665,6.708,70.19,73839.88,442,---,16
+HY3NO,NO,Aurland1,Large Hydro - Dammed,840,0,NO5,60.863,7.302,448,402356,400,---,18
+HY4NO,NO,Svartisen,Large Hydro - Dammed,720,0,NO4,66.728,13.914,3506,4869834,543,---,31
+HY5NO,NO,Sy-Sima,Large Hydro - Dammed,720,0,NO5,60.499,7.145,475.02,1022718.06,905,---,24
+HY6NO,NO,Saurdal,Large Hydro - Dammed,640,0,NO2,59.483,6.673,3105,250200,4665,---,20
+HY7NO,NO,Lang Sima,Large Hydro - Dammed,580,0,NO5,60.499,7.145,190,510340,1065,---,19
+HY8NO,NO,Rana,Large Hydro - Dammed,500,0,NO4,66.303,14.262,2039.5,2447400,505.29,---,12
+HY9NO,NO,Tokke,Large Hydro - Dammed,433,0,NO2,59.448,8.035,11.2,10449.6,393.5,---,22
+HY10NO,NO,Holen,Large Hydro - Dammed,415,0,NO2,59.346,7.249,1544.3,1158787,860,---,31
+HY11NO,NO,Tyin,Large Hydro - Dammed,390,0,NO5,61.31,7.832,367.3,953878.1,1040,---,26
+HY12NO,NO,Brokke,Large Hydro - Dammed,379,0,NO2,59.123,7.511,296,199504,300,---,20
+HY13NO,NO,Lysebotn 2,Large Hydro - Dammed,370,0,NO2,59.06482,6.63662,556,952428,669.7,---,41
+HY14NO,NO,Nedre Vinstra,Large Hydro - Dammed,344,0,NO1,61.578,9.803,31.1,33245.9,443.2,---,32
+HY15NO,NO,Evanger,Large Hydro - Dammed,330,0,NO5,60.657,6.112,332,565728,770,---,22
+HY16NO,NO,Vinje,Large Hydro - Dammed,309,0,NO2,59.625,7.851,307.2,154828.8,221.8,---,37
+HY17NO,NO,Kobbelv,Large Hydro - Dammed,300,0,NO4,67.623,15.99,1476,2121012,590,---,15
+HY18NO,NO,Skjomen,Large Hydro - Dammed,300,0,NO4,68.204,17.361,380.8,565488,606.29,---,32
+HY19NO,NO,Aurland3,Large Hydro - Dammed,290,0,NO5,60.863,7.302,448,9440,400,---,35
+HY20NO,NO,Jostedal,Large Hydro - Dammed,290,0,NO5,61.527,7.288,498,1373982,1163,---,27
+HY21NO,NO,Aura,Large Hydro - Dammed,283,0,NO3,62.665,8.524,46.5,81421.5,783,---,32
+HY22NO,NO,Sonna,Large Hydro - Dammed,275,0,NO2,59.647,6.354,783.3,55697,550,---,38
+HY23NO,NO,Fortun,Large Hydro - Dammed,270,0,NO5,61.505,7.7,0,0,0,---,34
+HY24NO,NO,Nedre Rossaga,Large Hydro - Dammed,260,0,NO4,66.078,13.944,19,11191,244.4,---,30
+HY25NO,NO,Nes,Large Hydro - Dammed,260,0,NO5,60.604,9.07,0,0,285,---,35
+HY26NO,NO,Mauranger,Large Hydro - Dammed,256,0,NO5,60.132,6.33,88.7,171102.3,830,---,28
+HY27NO,NO,Blafalli,Large Hydro - Dammed,240,0,NO2,59.983,6.017,157.52,115147.12,320,---,17
+HY28NO,NO,Nord Trondelag,Large Hydro - Dammed,230,0,NO1,60.574,8.411,0,0,0,---,41
+HY29NO,NO,Lysebotn,Large Hydro - Dammed,228,0,NO2,59.054,6.626,38,0,375,---,42
+HY30NO,NO,Nea,Large Hydro - Dammed,222,0,NO3,63.029,11.687,38,33592,375,---,28
+HY31NO,NO,Oksla,Large Hydro - Dammed,220,0,NO2,60.12,6.557,426,454542,450,---,41
+HY32NO,NO,Tysso 2,Large Hydro - Dammed,220,0,NO2,60.129,6.641,353.2,594082.4,725,---,36
+HY33NO,NO,Matre,Large Hydro - Dammed,214.8,0,NO5,60.874,5.59,165.7,189922,528,---,23
+HY34NO,NO,Vamma,Large Hydro - Dammed,213,0,NO1,59.542,11.17,0,0,27.5,---,21
+HY35NO,NO,Borgund,Large Hydro - Dammed,212,0,NO5,61.059,7.819,74.7,0,874,---,38
+HY36NO,NO,Nore 1,Large Hydro - Dammed,206,0,NO5,60.239,9.001,352,279840,361,---,30
+HY37NO,NO,Vemork,Large Hydro - Dammed,204,0,NO2,59.847,8.427,1.4,1047.2,300,---,39
+HY38NO,NO,Duge,Large Hydro - Dammed,200,0,NO2,58.666,6.503,1400,13953,220,---,32
+HY39NO,NO,Solhom,Large Hydro - Dammed,200,0,NO2,58.768,7.02,336.8,169747.2,215,---,23
+HY40NO,NO,Saheim,Large Hydro - Dammed,187,0,NO2,59.877,8.593,0,0,273,---,42
+HY41NO,NO,Mar,Large Hydro - Dammed,185,0,NO2,59.879,8.594,260.4,473407.2,823,---,33
+HY42NO,NO,Siso,Large Hydro - Dammed,180,0,NO4,67.325,15.707,547.1,811896.4,650,---,9
+HY43NO,NO,Usta,Large Hydro - Dammed,180,0,NO5,60.56,8.337,385,479710,540,---,30
+HY44NO,NO,Tunnsjodal,Large Hydro - Dammed,171.2,0,NO4,64.704,12.836,13,7072,237.5,---,35
+HY45NO,NO,Alta,Large Hydro - Dammed,170,0,NO4,69.705,23.819,135,58455,185,---,38
+HY46NO,NO,Steinsland,Large Hydro - Dammed,170,0,NO5,60.926,5.978,42.6,49075.2,451.3,---,32
+HY47NO,NO,Torpa,Large Hydro - Dammed,164,0,NO1,60.996,10.058,250,266750,470,---,25
+HY48NO,NO,Alta krv,Large Hydro - Dammed,163,0,NO5,69.705,23.819,135,58455,185,---,18
+HY49NO,NO,Hylen,Large Hydro - Dammed,160,0,NO2,58.465,6.544,44,7260,68,---,36
+HY50NO,NO,Roldal,Large Hydro - Dammed,160,0,NO2,59.822,6.818,301,247723,365,---,42
+HY51NO,NO,Suldal 1,Large Hydro - Dammed,160,0,NO2,59.572,6.816,115,85100,306,---,28
+HY52NO,NO,Ovre Rossaga,Large Hydro - Dammed,159,0,NO4,65.887,13.801,2559,800967,135.5,---,37
+HY53NO,NO,Ana-Sira,Large Hydro - Dammed,150,0,NO2,58.295,6.453,155,17205,47,---,32
+HY54NO,NO,Suldal 2,Large Hydro - Dammed,150,0,NO2,59.65,6.817,0,0,0,---,29
+HY55NO,NO,Dale,Large Hydro - Dammed,144,0,NO5,62.109,6.559,6.3,9097.2,619,---,21
+HY56NO,NO,Driva,Large Hydro - Dammed,144,0,NO3,62.623,8.889,280,362880,565.59,---,20
+HY57NO,NO,Grytten Kraftver,Large Hydro - Dammed,143.5,0,NO3,62.502,7.772,158.3,356491.6,953.4,---,30
+HY58NO,NO,Aurland2,Large Hydro - Dammed,143,0,NO5,60.863,7.302,448,420224,400,---,37
+HY59NO,NO,Ovre Vinstra,Large Hydro - Dammed,140,0,NO1,61.483,9.312,536.96,434937.6,329.9,---,32
+HY60NO,NO,Songa,Large Hydro - Dammed,136,0,NO2,59.778,7.726,750,480000,286.7,---,19
+HY61NO,NO,Askara,Large Hydro - Dammed,133,0,NO5,61.812,5.662,102.2,159636.4,665.29,---,34
+HY62NO,NO,Bratsberg,Large Hydro - Dammed,132,0,NO3,63.373,10.41,366.7,120277.6,145,---,12
+HY63NO,NO,Straumsmo,Large Hydro - Dammed,130,0,NO4,68.741,18.643,3.7,1909.2,229,---,22
+HY64NO,NO,Trollheim,Large Hydro - Dammed,130,0,NO3,63.002,9.019,179,167902,400,---,13
+HY65NO,NO,Kolsvik,Large Hydro - Dammed,128,0,NO4,65.204,12.794,188.1,218572.2,519,---,8
+HY66NO,NO,Ranasfoss,Large Hydro - Dammed,125,0,NO1,60.02755,11.32333,0,0,46.4,---,28
+HY67NO,NO,Hunderfossen,Large Hydro - Dammed,124,0,NO1,61.217,10.439,0,0,0,---,22
+HY68NO,NO,Hjartdola,Large Hydro - Dammed,120,0,NO2,59.604,8.712,473,620103,560,---,39
+HY69NO,NO,Lomi,Large Hydro - Dammed,120,0,NO4,67.124,16.097,473,0,560,---,30
+HY70NO,NO,Tjorhom,Large Hydro - Dammed,120,0,NO2,58.879,6.821,0,0,0,---,31
+HY71NO,NO,Leirdola,Large Hydro - Dammed,115,0,NO5,61.439,7.244,0,0,58,---,39
+HY72NO,NO,Steinsfoss,Large Hydro - Dammed,115,0,NO2,58.3,7.968,54,4752,43,---,22
+HY73NO,NO,Langvatn,Large Hydro - Dammed,114.5,0,NO4,66.337,14.167,0,0,209.69,---,23
+HY74NO,NO,Rendalen,Large Hydro - Dammed,114,0,NO1,61.812,11.121,0,0,0,---,33
+HY75NO,NO,Tafjord4,Large Hydro - Dammed,113,0,NO3,62.231,7.415,112.3,228642.8,885.5,---,28
+HY76NO,NO,Tjodan,Large Hydro - Dammed,113,0,NO2,59.052,6.652,30.6,73225.8,969,---,36
+HY77NO,NO,Naddvik,Large Hydro - Dammed,112,0,NO5,61.182,7.636,0,0,248.8,---,41
+HY78NO,NO,Svelgfoss,Large Hydro - Dammed,110.8,0,NO2,59.581,9.257,228,260148,480,---,19
+HY79NO,NO,Solberg1,Large Hydro - Dammed,110.5,0,NO1,59.628,10.667,0,0,0,---,24
+HY80NO,NO,Myster,Large Hydro - Dammed,110,0,NO5,60.74,5.807,0,0,248.8,---,25
+HY81NO,NO,Sundsbarm,Large Hydro - Dammed,110,0,NO2,59.498,8.634,0,0,0,---,22
+HY82NO,NO,Finndola,Large Hydro - Dammed,108,0,NO2,69.223,18.082,0,0,0,---,18
+HY83NO,NO,Meraker,Large Hydro - Dammed,108,0,NO3,63.416,11.737,1027,428259,185,---,33
+HY84NO,NO,Aroy,Large Hydro - Dammed,107.5,0,NO5,61.277,7.155,0,0,0,---,20
+HY85NO,NO,Stakaldefossen,Large Hydro - Dammed,106.7,0,NO5,61.446,6.01,225.6,208680,357.22,---,40
+HY86NO,NO,Innset,Large Hydro - Dammed,105,0,NO4,68.658,18.82,1027,0,185,---,10
+HY87NO,NO,Oyberget,Large Hydro - Dammed,104,0,NO3,61.934,8.031,0,0,0,---,12
+HY88NO,NO,Skjerka,Large Hydro - Dammed,104,0,NO2,58.554,7.376,225.6,0,357.22,---,16
+HY89NO,NO,Bjolvo,Large Hydro - Dammed,103.2,0,NO5,60.432,6.418,266,205086,328.39,---,35
+HY90NO,NO,Abjora,Large Hydro - Dammed,103,0,NO1,60.865,9.279,37.6,52226.4,570.4,---,14
+HY91NO,NO,Boylefoss,Large Hydro - Dammed,102,0,NO2,58.596,8.716,0,0,34.62,---,25
+HY92NO,NO,Skollenborg,Large Hydro - Dammed,102,0,NO1,59.619,9.668,90.2,107338,513.59,---,43
+HY93NO,NO,Sundsfjord,Large Hydro - Dammed,102,0,NO4,66.971,14.152,0,0,0,---,15
+HY94NO,NO,Kaggefoss,Large Hydro - Dammed,101,0,NO1,59.931,9.948,0,0,0,---,24
+HY95NO,NO,Eiriksdal,Large Hydro - Dammed,100,0,NO5,61.236,6.198,37.6,0,570.4,---,23
+HY96NO,NO,Harpefossen,Large Hydro - Dammed,100,0,NO1,61.581,9.842,265,120575,200,---,42
+HY97NO,NO,Refsdal,Large Hydro - Dammed,100,0,NO5,61.021,6.567,90.2,0,513.59,---,23
+HY98NO,NO,Solberg2,Large Hydro - Dammed,100,0,NO1,59.628,10.667,1.7,1047.2,268.9,---,24
+HY99NO,NO,Uvdal 1,Large Hydro - Dammed,100,0,NO5,60.265,8.931,144,157680,455,---,23
+HY100NO,NO,Hemsil 2,Medium Hydro - Dammed,98,0,NO5,60.705,8.972,205,0,540,---,26
+HY101NO,NO,Kjosnesfjorden,Medium Hydro - Dammed,96.5,0,NO5,61.518,6.615,104,30056,120,---,36
+HY102NO,NO,Osa,Medium Hydro - Dammed,95.5,0,NO1,61.235,11.509,265,0,200,---,22
+HY103NO,NO,Tafjord5,Medium Hydro - Dammed,95,0,NO3,62.231,7.415,94,0,977,---,15
+HY104NO,NO,Brattset,Medium Hydro - Dammed,92,0,NO3,62.802,10.012,166,128152,325.6,---,31
+HY105NO,NO,Grana,Medium Hydro - Dammed,90,0,NO3,63.116,9.675,9.4,1974,87,---,39
+HY106NO,NO,Guolas,Medium Hydro - Dammed,90,0,NO4,69.35,21.1,0,0,0,---,30
+HY107NO,NO,Kvinen,Medium Hydro - Dammed,90,0,NO2,58.928,7.084,150,104100,285,---,42
+HY108NO,NO,Sarp,Medium Hydro - Dammed,90,0,NO1,59.276,11.134,145.6,153025.6,440,---,16
+HY109NO,NO,Florli,Medium Hydro - Dammed,89,0,NO2,59.017,6.433,0,0,0,---,21
+HY110NO,NO,Sjonsta,Medium Hydro - Dammed,88,0,NO4,67.194,15.709,0,0,0,---,24
+HY111NO,NO,Framruste,Medium Hydro - Dammed,85,0,NO3,61.941,7.881,61.2,32864.4,230.8,---,29
+HY112NO,NO,Bagn,Medium Hydro - Dammed,84.6,0,NO1,60.826,9.545,94.9,148993,660,---,28
+HY113NO,NO,Svelgen,Medium Hydro - Dammed,84.5,0,NO5,61.769,5.308,0,0,318.2,---,36
+HY114NO,NO,Litjfossen,Medium Hydro - Dammed,83,0,NO1,62.665,10.146,517.1,216664.9,174,---,20
+HY115NO,NO,Skibotn,Medium Hydro - Dammed,83,0,NO4,69.315,20.358,2.2,426.8,84.3,---,23
+HY116NO,NO,Sorfjord,Medium Hydro - Dammed,82.9,0,NO4,68.064,16.664,0,0,0,---,35
+HY117NO,NO,Hemsil 1,Medium Hydro - Dammed,78,0,NO5,60.705,8.972,205,0,540,---,42
+HY118NO,NO,Savalen,Medium Hydro - Dammed,77.8,0,NO1,62.187,10.617,61.2,0,230.8,---,16
+HY119NO,NO,Sildvik,Medium Hydro - Dammed,75,0,NO4,68.409,17.801,114.6,56612.4,215,---,32
+HY120NO,NO,Hove,Medium Hydro - Dammed,73,0,NO5,61.07,6.595,213.99,351157.59,685.5,---,41
+HY121NO,NO,Mykstufoss,Medium Hydro - Dammed,72,0,NO1,60.049,9.201,0,0,0,---,30
+HY122NO,NO,Kjela,Medium Hydro - Dammed,71.8,0,NO2,59.731,7.426,102.8,96015.2,450,---,17
+HY123NO,NO,Bjelland,Medium Hydro - Dammed,70,0,NO2,58.407,7.528,2.2,0,84.3,---,22
+HY124NO,NO,Boris,Medium Hydro - Dammed,70,0,NO4,69.643333,30.1375,120.6,194889.6,646,---,36
+HY125NO,NO,NedreNea,Medium Hydro - Dammed,70,0,NO3,63.152,11.24,0,0,0,---,40
+HY126NO,NO,Tinfos Telemark,Medium Hydro - Dammed,69.7,0,NO2,59.569,9.264,0,0,0,---,40
+HY127NO,NO,Storlivatn,Medium Hydro - Dammed,66,0,NO2,59.67,6.502,114.6,0,215,---,20
+HY128NO,NO,Ylja,Medium Hydro - Dammed,66,0,NO1,61.197,8.381,213.99,0,685.5,---,27
+HY129NO,NO,Jorundland,Medium Hydro - Dammed,65,0,NO2,58.898,8.26,0,0,96,---,26
+HY130NO,NO,Nygard,Medium Hydro - Dammed,65,0,NO5,60.387,5.327,72,46008,267.7,---,20
+HY131NO,NO,Rygene,Medium Hydro - Dammed,65,0,NO2,58.406,8.638,387.4,178204,200,---,34
+HY132NO,NO,Tussa,Medium Hydro - Dammed,64,0,NO3,62.109,6.559,150,99750,290,---,20
+HY133NO,NO,Kvanangen,Medium Hydro - Dammed,63.8,0,NO4,69.714,22.169,0,0,231.69,---,22
+HY134NO,NO,Borregaard inst,Medium Hydro - Dammed,62,0,NO1,59.276,11.13,223.5,137676,258,---,26
+HY135NO,NO,Haverstad,Medium Hydro - Dammed,62,0,NO2,58.507,7.42,0,0,38.5,---,28
+HY136NO,NO,Grytaga,Medium Hydro - Dammed,61.3,0,NO4,67.351,15.188,44,32428,308,---,25
+HY137NO,NO,Svorkmo,Medium Hydro - Dammed,61,0,NO3,63.178,9.771,60.3,116137.8,810,---,20
+HY138NO,NO,Sjona,Medium Hydro - Dammed,60.3,0,NO4,66.311,13.563,72,0,267.7,---,35
+HY139NO,NO,Adamselv,Medium Hydro - Dammed,60,0,NO4,70.372,26.788,252.2,101888.8,164.5,---,10
+HY140NO,NO,Bogna,Medium Hydro - Dammed,60,0,NO3,64.222,12.037,150,0,290,---,16
+HY141NO,NO,Fagerli,Medium Hydro - Dammed,60,0,NO4,67.119,16.077,92.1,57654.6,251,---,14
+HY142NO,NO,Fjone,Medium Hydro - Dammed,60,0,NO2,59.217,8.452,223.5,0,258,---,37
+HY143NO,NO,Hekni,Medium Hydro - Dammed,60,0,NO2,58.995,7.547,695,143865,88,---,23
+HY144NO,NO,Lomen,Medium Hydro - Dammed,60,0,NO1,61.136,8.879,44,0,308,---,16
+HY145NO,NO,Mel,Medium Hydro - Dammed,60,0,NO5,61.347,6.556,66,74976,487.7,---,36
+HY146NO,NO,Nore 2,Medium Hydro - Dammed,60,0,NO5,60.239,9.001,197.2,106290.8,234,---,27
+HY147NO,NO,Tevla,Medium Hydro - Dammed,60,0,NO3,63.39,11.911,2684,134200,19.7,---,16
+HY148NO,NO,Embrets4,Medium Hydro - Dammed,57,0,NO1,59.901,9.929,222.3,24897.6,50.5,---,43
+HY149NO,NO,Holsbru,Medium Hydro - Dammed,56,0,NO5,61.312,7.832,0,0,61,---,42
+HY150NO,NO,Kvittingen,Medium Hydro - Dammed,56,0,NO5,60.465,5.909,92.1,0,251,---,28
+HY151NO,NO,Oljusjoen,Medium Hydro - Dammed,56,0,NO5,60.948,8.113,75.5,64477,346,---,39
+HY152NO,NO,Roskrepp,Medium Hydro - Dammed,56,0,NO2,59.026,7.085,695,0,88,---,38
+HY153NO,NO,Nomeland,Medium Hydro - Dammed,55.5,0,NO2,58.357,7.904,0.25,0,20.39,---,41
+HY154NO,NO,Hovatn,Medium Hydro - Dammed,55,0,NO2,58.983,7.669,194,143560,314,---,31
+HY155NO,NO,Vemundsbotn,Medium Hydro - Dammed,55,0,NO5,60.855,5.695,197.2,0,234,---,42
+HY156NO,NO,Skogfoss,Medium Hydro - Dammed,54,0,NO4,69.373,29.694,172.2,119506.8,275,---,32
+HY157NO,NO,Iveland,Medium Hydro - Dammed,52.5,0,NO2,58.39,7.894,44.7,41347.5,383.7,---,24
+HY158NO,NO,Leirfossene,Medium Hydro - Dammed,52.5,0,NO3,68.239,14.533,0,0,0,---,34
+HY159NO,NO,NedreFiskumfoss,Medium Hydro - Dammed,51,0,NO3,64.543,12.455,0,0,0,---,36
+HY160NO,NO,Lio,Medium Hydro - Dammed,50.8,0,NO2,59.463,7.939,75.5,0,346,---,38
+HY161NO,NO,Dokka Kr,Medium Hydro - Dammed,50,0,NO1,60.84,10.062,0,0,0,---,41
+HY162NO,NO,Froystul,Medium Hydro - Dammed,50,0,NO2,59.847,8.427,0,0,0,---,21
+HY163NO,NO,Kvanndal,Medium Hydro - Dammed,50,0,NO2,59.658,6.983,194,0,314,---,44
+HY164NO,NO,Mal,Medium Hydro - Dammed,50,0,NO5,59.55,9.25,0,0,0,---,45
+HY165NO,NO,Novle,Medium Hydro - Dammed,50,0,NO2,59.839,6.88,172.2,0,275,---,22
+HY166NO,NO,Ormsetfoss,Medium Hydro - Dammed,50,0,NO3,63.845,10.688,44.7,0,383.7,---,22
+HY167NO,NO,Uvdal 2,Medium Hydro - Dammed,50,0,NO5,60.265,8.931,220,0,595,---,20
+HY168NO,NO,Follafoss,Small Hydro - Dammed,48.5,0,NO3,63.987,11.102,32,0,175.3,---,23
+HY169NO,NO,Mosvik,Small Hydro - Dammed,46,0,NO3,63.727,10.868,125,0,205,---,17
+HY170NO,NO,Herva,Small Hydro - Dammed,45,0,NO5,61.566,7.862,251.7,0,257,---,40
+HY171NO,NO,Soa,Small Hydro - Dammed,45,0,NO3,63.291,9.089,0,0,0,---,28
+HY172NO,NO,Vessingfoss,Small Hydro - Dammed,45,0,NO3,62.996,11.828,625,0,50,---,39
+HY173NO,NO,Aurland4,Small Hydro - Dammed,44,0,NO5,60.861,7.305,448,0,400,---,26
+HY174NO,NO,Funnefoss,Small Hydro - Dammed,44,0,NO1,60.167,11.529,0,0,0,---,25
+HY175NO,NO,Jukla,Small Hydro - Dammed,44,0,NO5,60.189,6.383,341,0,200,---,27
+HY176NO,NO,Karsto,Small Hydro - Dammed,43.8,0,NO2,59.279,5.524,0,0,0,---,33
+HY177NO,NO,Mageli,Small Hydro - Dammed,43.2,0,NO5,61.367,10.285,0,0,0,---,40
+HY178NO,NO,Hodnaberg,Small Hydro - Dammed,43,0,NO5,60.558,6.211,177,0,300,---,33
+HY179NO,NO,Hanefoss,Small Hydro - Dammed,42.1,0,NO2,58.529,8.338,16.4,0,70,---,19
+HY180NO,NO,Hardeland,Small Hydro - Dammed,42,0,NO5,60.238,10.397,92.95,0,743.6,---,17
+HY181NO,NO,Mesna,Small Hydro - Dammed,42,0,NO1,61.117,10.471,81.4,0,356,---,16
+HY182NO,NO,Stuvane,Small Hydro - Dammed,42,0,NO5,61.051,7.642,0,0,0,---,24
+HY183NO,NO,Svean,Small Hydro - Dammed,42,0,NO3,63.279,10.473,0,0,0,---,33
+HY184NO,NO,Ustekveikja,Small Hydro - Dammed,42,0,NO1,60.528,7.752,10.93,0,113,---,40
+HY185NO,NO,Vrangfoss,Small Hydro - Dammed,42,0,NO2,59.302,9.205,0,0,23,---,18
+HY186NO,NO,Orkdal,Small Hydro - Dammed,41,0,NO3,63.302,9.848,0,0,0,---,25
+HY187NO,NO,Hegsetfoss,Small Hydro - Dammed,40.3,0,NO3,63.165,11.231,0,0,0,---,34
+HY188NO,NO,Gronvollfoss,Small Hydro - Dammed,40.1,0,NO1,59.658,9.208,0,0,0,---,23
+HY189NO,NO,Amela,Small Hydro - Dammed,40,0,NO5,62.009,5.837,0,0,0,---,42
+HY190NO,NO,Groa,Small Hydro - Dammed,40,0,NO3,62.644,8.73,0,0,0,---,39
+HY191NO,NO,Ulset,Small Hydro - Dammed,40,0,NO3,62.619,10.255,132,0,320,---,19
+HY192NO,NO,Dynjanfoss,Small Hydro - Dammed,39,0,NO2,58.952,8.395,220.3,0,80.19,---,36
+HY193NO,NO,Ramfoss,Small Hydro - Dammed,39,0,NO1,60.083,9.816,100,0,22.39,---,20
+HY194NO,NO,Blafalli,Small Hydro - Dammed,38.6,0,NO2,59.858,6.017,0,0,0,---,18
+HY195NO,NO,Batsvatn,Small Hydro - Dammed,38,0,NO5,68.090128,17.716649,0,0,0,---,18
+HY196NO,NO,Hafslund,Small Hydro - Dammed,38,0,NO1,59.274985,11.129381,0,0,0,---,34
+HY197NO,NO,Jossang,Small Hydro - Dammed,38,0,NO5,59.002831,6.081568,0,0,0,---,42
+HY198NO,NO,Laudal,Small Hydro - Dammed,38,0,NO2,58.245,7.514,2.3,0,36,---,30
+HY199NO,NO,Finsa,Small Hydro - Dammed,37.1,0,NO2,60.605,7.505,0,0,0,---,26
+HY200NO,NO,Stordal,Small Hydro - Dammed,36.6,0,NO5,62.382,6.992,83.42,0,115,---,31
+HY201NO,NO,Dalvatn,Small Hydro - Dammed,36.5,0,NO2,59.691,6.57,27.9,0,185,---,32
+HY202NO,NO,Gravfoss2,Small Hydro - Dammed,36.5,0,NO1,59.929421,9.946417,0,0,0,---,16
+HY203NO,NO,Aunfoss,Small Hydro - Dammed,36,0,NO3,64.61,12.578,0,0,0,---,20
+HY204NO,NO,Bingsfoss,Small Hydro - Dammed,36,0,NO1,59.99,11.265,0,0,0,---,36
+HY205NO,NO,Eikelandsosen,Small Hydro - Dammed,35,0,NO5,60.242,5.744,41,0,500,---,37
+HY206NO,NO,Gronsdal,Small Hydro - Dammed,35,0,NO5,59.968,6.572,0,0,0,---,19
+HY207NO,NO,Hellandsfoss,Small Hydro - Dammed,35,0,NO5,60.832,5.883,0,0,0,---,31
+HY208NO,NO,Skjak 1,Small Hydro - Dammed,35,0,NO3,61.947,7.828,0,0,0,---,29
+HY209NO,NO,Lakshola,Small Hydro - Dammed,34,0,NO4,67.448,15.75,24.5,0,314,---,24
+HY210NO,NO,Moflat,Small Hydro - Dammed,33,0,NO1,59.55,9.25,0,0,0,---,32
+HY211NO,NO,Haugen,Small Hydro - Dammed,32.9,0,NO5,59.586,10.743,0,0,0,---,29
+HY212NO,NO,Hofsfoss,Small Hydro - Dammed,32,0,NO1,60.185,10.241,0,0,0,---,31
+HY213NO,NO,Tafjord2,Small Hydro - Dammed,32,0,NO3,62.231,7.415,94,0,977,---,31
+HY214NO,NO,Tunnsjo,Small Hydro - Dammed,32,0,NO4,59.903,8.905,0,0,0,---,13
+HY215NO,NO,Glomfjord,Small Hydro - Dammed,31.8,0,NO5,66.814,13.966,17,0,463.5,---,43
+HY216NO,NO,Linnvasselv,Small Hydro - Dammed,31.3,0,NO5,64.652493,13.786226,0,0,0,---,24
+HY217NO,NO,Daja,Small Hydro - Dammed,31,0,NO5,67.088,16.057,316.3,0,155,---,26
+HY218NO,NO,Tistedal,Small Hydro - Dammed,31,0,NO1,59.125,11.444,0,0,0,---,16
+HY219NO,NO,Dividalen,Small Hydro - Dammed,30,0,NO5,68.874,19.561,135.7,0,278.5,---,24
+HY220NO,NO,Haen,Small Hydro - Dammed,30,0,NO3,67.662,12.631,0,0,0,---,20
+HY221NO,NO,Kaldestad,Small Hydro - Dammed,30,0,NO5,60.554,6.023,175.89,0,80,---,19
+HY222NO,NO,Oksenelvane,Small Hydro - Dammed,30,0,NO5,59.94648,5.961609,0,0,0,---,27
+HY223NO,NO,Sokna Reg. Midt,Small Hydro - Dammed,30,0,NO3,60.239,9.928,0,0,0,---,33
+HY224NO,NO,Vigeland,Small Hydro - Dammed,30,0,NO2,58.084,7.305,0,0,0,---,26
+HY225NO,NO,Bjerka,Small Hydro - Dammed,29.1,0,NO5,66.063,13.998,153,0,357,---,44
+HY226NO,NO,Froland,Small Hydro - Dammed,29,0,NO2,58.51,8.634,0,0,0,---,40
+HY227NO,NO,Maudal,Small Hydro - Dammed,28.7,0,NO2,58.765,6.368,63,0,300,---,43
+HY228NO,NO,Stokkeland,Small Hydro - Dammed,28.5,0,NO2,58.362,7.057,0,0,0,---,34
+HY229NO,NO,Nygard,Small Hydro - Dammed,28.1,0,NO5,60.387,5.327,0,0,0,---,24
+HY230NO,NO,Amli,Small Hydro - Dammed,28,0,NO2,58.77,8.49,0,0,0,---,29
+HY231NO,NO,Lopet,Small Hydro - Dammed,28,0,NO1,61.133,11.383,0,0,0,---,25
+HY232NO,NO,Nedalsfoss,Small Hydro - Dammed,28,0,NO3,59.594,10.042,0.2,0,96,---,24
+HY233NO,NO,Osbu,Small Hydro - Dammed,28,0,NO3,62.517,8.5,711,0,56,---,17
+HY234NO,NO,Skotfoss,Small Hydro - Dammed,28,0,NO1,69.373,29.694,0,0,0,---,32
+HY235NO,NO,Smeland,Small Hydro - Dammed,28,0,NO2,58.617,7.417,1.4,0,97,---,20
+HY236NO,NO,Tafjord1,Small Hydro - Dammed,27.4,0,NO3,62.231,7.415,94,0,977,---,38
+HY237NO,NO,Evenstad,Small Hydro - Dammed,27.2,0,NO2,61.424,11.097,0,0,0,---,18
+HY238NO,NO,Rekvatn,Small Hydro - Dammed,27.1,0,NO5,67.824218,15.993795,77,0,207.5,---,34
+HY239NO,NO,Arlifoss,Small Hydro - Dammed,27,0,NO1,59.681,9.15,0,0,0,---,23
+HY240NO,NO,Hogefoss,Small Hydro - Dammed,27,0,NO2,60.168,10.256,0,0,0,---,27
+HY241NO,NO,Leivdal,Small Hydro - Dammed,26.4,0,NO5,60.406627,7.376671,0,0,0,---,19
+HY242NO,NO,Gresslifoss,Small Hydro - Dammed,26,0,NO3,63.058,11.439,1,0,33,---,19
+HY243NO,NO,Honefoss2,Small Hydro - Dammed,26,0,NO1,58.418928,6.109621,0,0,0,---,15
+HY244NO,NO,Melkefoss,Small Hydro - Dammed,26,0,NO5,69.399,29.787,0,0,0,---,24
+HY245NO,NO,Slunkajavrre,Small Hydro - Dammed,26,0,NO5,67.807909,16.115713,85,0,246.5,---,39
+HY246NO,NO,Stolsdal,Small Hydro - Dammed,26,0,NO2,59.233,6.183,0,0,0,---,43
+HY247NO,NO,Strandfossen,Small Hydro - Dammed,26,0,NO1,60.882,11.562,0,0,0,---,19
+HY248NO,NO,Byrkjelo,Small Hydro - Dammed,25.2,0,NO5,61.734,6.509,0,0,0,---,19
+HY249NO,NO,Byrte,Small Hydro - Dammed,25,0,NO2,59.558,7.811,58.2,0,285,---,37
+HY250NO,NO,Fosse,Small Hydro - Dammed,25,0,NO5,60.397,5.324,0,0,0,---,36
+HY251NO,NO,Slind,Small Hydro - Dammed,25,0,NO3,61.165,6.936,43.1,0,178,---,20
+HY252NO,NO,Svorka,Small Hydro - Dammed,25,0,NO3,63.164,9.757,12.5,0,259,---,26
+HY253NO,NO,Tafjord3,Small Hydro - Dammed,25,0,NO3,62.231,7.415,94,0,977,---,23
+HY254NO,NO,Nedre Tessa,Small Hydro - Dammed,24.5,0,NO1,62.109,6.559,0,0,0,---,16
+HY255NO,NO,Gravfoss,Small Hydro - Dammed,24.3,0,NO1,59.929,9.947,0,0,0,---,22
+HY256NO,NO,Breive,Small Hydro - Dammed,24,0,NO2,70.597,22.109,0,0,0,---,42
+HY257NO,NO,Ulvik,Small Hydro - Dammed,24,0,NO5,60.571,6.916,52.6,0,440.6,---,44
+HY258NO,NO,Radalen,Small Hydro - Dammed,23.9,0,NO5,60.29,5.316,0,0,0,---,32
+HY259NO,NO,Verdal,Small Hydro - Dammed,23.9,0,NO3,63.751,11.917,0,0,0,---,35
+HY260NO,NO,Lindland,Small Hydro - Dammed,23.8,0,NO2,58.073,7.52,18.8,0,106,---,34
+HY261NO,NO,Rod,Small Hydro - Dammed,23.6,0,NO3,59.073,10.943,0,0,0,---,17
+HY262NO,NO,Malset,Small Hydro - Dammed,23.5,0,NO5,60.983,6.517,0,0,0,---,34
+HY263NO,NO,Amdal,Small Hydro - Dammed,23,0,NO2,59.656,6.316,0,0,0,---,24
+HY264NO,NO,Fjaremsfossen,Small Hydro - Dammed,23,0,NO3,63.321965,10.436126,0,0,0,---,29
+HY265NO,NO,Smavatna,Small Hydro - Dammed,23,0,NO4,66.233,14.333,0,0,0,---,31
+HY266NO,NO,Valer,Small Hydro - Dammed,23,0,NO5,60.676,11.841,0,0,0,---,15
+HY267NO,NO,Vittingfoss,Small Hydro - Dammed,22.3,0,NO1,59.486,10.012,0,0,0,---,36
+HY268NO,NO,Flesaker,Small Hydro - Dammed,22.1,0,NO1,58.629862,8.687982,0,0,0,---,15
+HY269NO,NO,Fagervollan,Small Hydro - Dammed,22,0,NO2,66.37,13.657,74,0,227,---,23
+HY270NO,NO,Kalvedalen,Small Hydro - Dammed,22,0,NO1,61.257,8.759,118.9,0,243.3,---,26
+HY271NO,NO,Logna,Small Hydro - Dammed,22,0,NO2,58.764,7.51,143.2,0,146.39,---,30
+HY272NO,NO,Skjefst2,Small Hydro - Dammed,22,0,NO1,67.233,15.021,0,0,0,---,37
+HY273NO,NO,Funna,Small Hydro - Dammed,21.7,0,NO3,63.437,11.734,64,0,336.2,---,24
+HY274NO,NO,Ulvund,Small Hydro - Dammed,21.5,0,NO3,60.655,6.433,10,0,85,---,18
+HY275NO,NO,Embrets3,Small Hydro - Dammed,21,0,NO1,59.901,9.929,0,0,0,---,29
+HY276NO,NO,Faslefoss,Small Hydro - Dammed,20,0,NO1,60.957,9.301,86.2,0,37.5,---,28
+HY277NO,NO,Hensfoss,Small Hydro - Dammed,20,0,NO1,60.211,10.237,109.1,0,24,---,42
+HY278NO,NO,Hogga,Small Hydro - Dammed,20,0,NO1,59.31,9.045,125,0,12,---,33
+HY279NO,NO,Ovre Tessa,Small Hydro - Dammed,20,0,NO3,61.817179,8.951578,0,0,0,---,39
+HY280NO,NO,Svandalsflona,Small Hydro - Dammed,20,0,NO5,59.625,6.29,28,0,200,---,16
+HY281NO,NO,Litledalen,Small Hydro - Dammed,19.5,0,NO3,62.667,7.533,0.62,0,126,---,26
+HY282NO,NO,Porsa,Small Hydro - Dammed,19.3,0,NO4,70.403,23.63,0,0,0,---,24
+HY283NO,NO,Kaldaga,Small Hydro - Dammed,19,0,NO2,66.066,13.311,0,0,0,---,41
+HY284NO,NO,Haukrei,Small Hydro - Dammed,18.8,0,NO5,59.205,7.832,105.6,0,102.5,---,42
+HY285NO,NO,Niingen,Small Hydro - Dammed,18.5,0,NO3,68.559,17.014,0,0,0,---,20
+HY286NO,NO,Eidsfoss,Small Hydro - Dammed,18,0,NO5,59.297,9.22,0,0,0,---,37
+HY287NO,NO,Grasjo,Small Hydro - Dammed,18,0,NO1,62.933703,9.125257,0,0,0,---,24
+HY288NO,NO,Hunsf Ost,Small Hydro - Dammed,18,0,NO5,60.168,10.256,0,0,0,---,22
+HY289NO,NO,Ogreyfoss,Small Hydro - Dammed,18,0,NO2,58.478973,6.030994,0,0,0,---,20
+HY290NO,NO,Pikerfoss,Small Hydro - Dammed,18,0,NO4,59.716,9.61,0,0,0,---,14
+HY291NO,NO,Royrvikfoss,Small Hydro - Dammed,18,0,NO1,64.886275,13.562079,0,0,0,---,22
+HY292NO,NO,Aukland,Small Hydro - Dammed,17.9,0,NO2,58.206,7.922,0,0,0,---,42
+HY293NO,NO,Brandhol,Small Hydro - Dammed,17.7,0,NO2,59.393861,5.929941,0,0,0,---,41
+HY294NO,NO,Hunsfos,Small Hydro - Dammed,17.5,0,NO4,58.264,7.969,0,0,0,---,24
+HY295NO,NO,Asebo,Small Hydro - Dammed,17,0,NO5,60.124305,10.364395,0,0,0,---,19
+HY296NO,NO,Djupdal,Small Hydro - Dammed,17,0,NO4,59.94,9.339,0,0,0,---,15
+HY297NO,NO,Dovikfoss,Small Hydro - Dammed,17,0,NO5,59.933,10,0,0,0,---,16
+HY298NO,NO,Grunnai,Small Hydro - Dammed,17,0,NO4,59.531,8.743,0,0,0,---,26
+HY299NO,NO,Innvik,Small Hydro - Dammed,17,0,NO2,61.843,6.628,0,0,512,---,19
+HY300NO,NO,Berild,Small Hydro - Dammed,16.9,0,NO4,59.957,10.685,2.53,0,275,---,32
+HY301NO,NO,Norheimsund,Small Hydro - Dammed,16.8,0,NO2,60.371,6.146,0,0,0,---,24
+HY302NO,NO,Spanne,Small Hydro - Dammed,16.7,0,NO4,59.385,5.324,0,0,0,---,33
+HY303NO,NO,Moksa,Small Hydro - Dammed,16.6,0,NO5,61.319056,10.300177,8.8,0,501,---,40
+HY304NO,NO,Gamlebrofoss,Small Hydro - Dammed,16.5,0,NO2,59.658,9.652,0,0,0,---,22
+HY305NO,NO,Breiava,Small Hydro - Dammed,16,0,NO3,59.159,6.617,40,0,60,---,15
+HY306NO,NO,Morre,Small Hydro - Dammed,16,0,NO3,63.967,10.2,0,0,0,---,18
+HY307NO,NO,Svartelva,Small Hydro - Dammed,16,0,NO3,60.781,11.273,74,0,107.9,---,40
+HY308NO,NO,Vrenga,Small Hydro - Dammed,16,0,NO2,59.85,9.45,19.2,0,378,---,20
+HY309NO,NO,Tralandsfoss,Small Hydro - Dammed,15.9,0,NO3,58.348278,6.964348,0,0,0,---,14
+HY310NO,NO,Oksebotn,Small Hydro - Dammed,15.5,0,NO1,60.558,7.598,69.3,0,125,---,18
+HY311NO,NO,Brulandsfoss,Small Hydro - Dammed,15.2,0,NO1,61.436,5.915,0,0,0,---,37
+HY312NO,NO,Askerudfoss,Small Hydro - Dammed,15,0,NO1,60.897,6.202,0,0,0,---,27
+HY313NO,NO,Geithusfoss,Small Hydro - Dammed,15,0,NO5,59.929,9.963,134,0,9.19,---,22
+HY314NO,NO,Herlandsfoss,Small Hydro - Dammed,15,0,NO2,60.832,5.883,78.9,0,136,---,19
+HY315NO,NO,Lutufallet,Small Hydro - Dammed,15,0,NO5,61.066,12.582,0,0,0,---,17
+HY316NO,NO,Brattingfoss,Small Hydro - Dammed,14,0,NO3,64.043,11.084,107,0,118.3,---,24
+HY317NO,NO,Eidefossen,Small Hydro - Dammed,14,0,NO4,61.804,9.304,0,0,0,---,15
+HY318NO,NO,Forsa,Small Hydro - Dammed,14,0,NO2,68.276,16.625,0,0,0,---,32
+HY319NO,NO,Oldereid,Small Hydro - Dammed,14,0,NO5,64.963,12.175,56,0,319,---,21
+HY320NO,NO,OvreLeirfoss,Small Hydro - Dammed,14,0,NO2,63.372869,10.407425,0,0,0,---,17
+HY321NO,NO,Sagfossen,Small Hydro - Dammed,14,0,NO1,60.983,7.005,0,0,0,---,34
+HY322NO,NO,Flatenfoss,Small Hydro - Dammed,13.9,0,NO5,58.63,8.689,25.4,0,20.76,---,36
+HY323NO,NO,Ogndal,Small Hydro - Dammed,13.7,0,NO4,64.015,11.495,0,0,0,---,9
+HY324NO,NO,Asmulfoss,Small Hydro - Dammed,13.5,0,NO5,64.677473,12.677895,0,0,0,---,39
+HY325NO,NO,Suvdola,Small Hydro - Dammed,13.4,0,NO2,59.149,8.792,0,0,0,---,40
+HY326NO,NO,Ortern,Small Hydro - Dammed,13,0,NO3,69.328,18.694,0,0,0,---,15
+HY327NO,NO,Mo SUFE,Small Hydro - Dammed,12.8,0,NO3,59.294939,9.560249,0,0,0,---,31
+HY328NO,NO,Fana,Small Hydro - Dammed,12.7,0,NO1,60.263,5.345,0,0,0,---,43
+HY329NO,NO,Holtan,Small Hydro - Dammed,12.7,0,NO4,61.419767,6.158175,0,0,0,---,19
+HY330NO,NO,Kurasfossen,Small Hydro - Dammed,12.7,0,NO2,62.679,11.462,0,0,0,---,31
+HY331NO,NO,Namsos,Small Hydro - Dammed,12.7,0,NO3,64.504,11.51,0,0,0,---,24
+HY332NO,NO,Berlifoss,Small Hydro - Dammed,12.5,0,NO1,58.946,8.482,0,0,0,---,25
+HY333NO,NO,NedreLeirfoss,Small Hydro - Dammed,12.5,0,NO5,59.922,10.754,0,0,0,---,25
+HY334NO,NO,Viulfoss,Small Hydro - Dammed,12.5,0,NO4,60.117,10.267,0,0,0,---,33
+HY335NO,NO,Einunna,Small Hydro - Dammed,12.2,0,NO2,62.231,10.342,85,0,121.69,---,43
+HY336NO,NO,Heggmoen,Small Hydro - Dammed,12,0,NO4,67.356,14.852,116,0,116.69,---,19
+HY337NO,NO,Klosterfoss,Small Hydro - Dammed,12,0,NO2,59.198,9.61,0,0,0,---,24
+HY338NO,NO,Sagefossen,Small Hydro - Dammed,12,0,NO3,59.948,6.584,22.6,0,61,---,28
+HY339NO,NO,Vassli,Small Hydro - Dammed,12,0,NO5,63.217,9.633,0,0,0,---,44
+HY340NO,NO,Reinskar,Small Hydro - Dammed,11.9,0,NO5,69.937,19.629,0,0,0,---,42
+HY341NO,NO,Holmen,Small Hydro - Dammed,11.6,0,NO2,59.856,10.492,0,0,0,---,34
+HY342NO,NO,Lokaunet,Small Hydro - Dammed,11.5,0,NO3,63.268,10.458,0,0,0,---,38
+HY343NO,NO,Reppa,Small Hydro - Dammed,11.5,0,NO5,66.65,13.547,30.9,0,575,---,19
+HY344NO,NO,Sjofossen,Small Hydro - Dammed,11.5,0,NO1,67.067,14.05,0,0,0,---,37
+HY345NO,NO,Fagernes,Small Hydro - Dammed,11.4,0,NO1,66.37,13.657,0,0,0,---,39
+HY346NO,NO,Hakvik,Small Hydro - Dammed,11.4,0,NO1,68.405,17.309,0,0,0,---,42
+HY347NO,NO,Fossmark,Small Hydro - Dammed,11.3,0,NO1,60.512,5.726,1.8,0,432,---,21
+HY348NO,NO,Bersavatn,Small Hydro - Dammed,11.2,0,NO2,60.167,6.667,0,0,0,---,33
+HY349NO,NO,Gjuva,Small Hydro - Dammed,11,0,NO3,60.93,8.423,34,0,410,---,15
+HY350NO,NO,Nedre Svultingen,Small Hydro - Dammed,11,0,NO3,61.171,5.296,10,0,68,---,39
+HY351NO,NO,Usma_Selbu,Small Hydro - Dammed,10.9,0,NO4,63.219,11.041,0,0,0,---,21
+HY352NO,NO,Hogstad,Small Hydro - Dammed,10.8,0,NO1,59.321,9.657,2.1,0,135.5,---,22
+HY353NO,NO,Tegneby,Small Hydro - Dammed,10.7,0,NO2,67.939616,12.981575,0,0,0,---,17
+HY354NO,NO,Eid,Small Hydro - Dammed,10.6,0,NO3,61.921,6.012,0,0,0,---,37
+HY355NO,NO,Forsanvatn,Small Hydro - Dammed,10.6,0,NO5,58.989,6.454,0,0,0,---,26
+HY356NO,NO,Monehagen,Small Hydro - Dammed,10.6,0,NO4,61.452,5.857,0,0,0,---,37
+HY357NO,NO,Uleberg,Small Hydro - Dammed,10.6,0,NO3,58.55,7.783,12.6,0,179.5,---,29
+HY358NO,NO,Asen,Small Hydro - Dammed,10.4,0,NO3,63.608,11.052,0,0,0,---,19
+HY359NO,NO,Aurland5,Small Hydro - Dammed,10,0,NO5,60.861,7.305,448,0,400,---,30
+HY360NO,NO,Bergsbotn,Small Hydro - Dammed,10,0,NO4,69.433,17.483,25.8,0,354.1,---,15
+HY361NO,NO,Langfjord,Small Hydro - Dammed,10,0,NO4,65.375,12.701,3.2,0,255,---,20
+HY362NO,NO,Lavkajohka,Small Hydro - Dammed,10,0,NO4,69.234,20.526,61.1,0,133,---,23
+HY363NO,NO,Oltedal,Small Hydro - Dammed,10,0,NO2,58.829,6.037,30.8,0,72,---,26
+HY364NO,NO,Rodne,Small Hydro - Dammed,10,0,NO5,58.973,5.73,0,0,0,---,37
+HY365NO,NO,Steinsvik,Small Hydro - Dammed,10,0,NO1,62.005,5.854,3.36,0,692,---,33
+HY366NO,NO,Klovtveit,Small Hydro - Dammed,9.9,0,NO1,60.355,5.088,0,0,0,---,29
+HY367NO,NO,Vafos,Small Hydro - Dammed,9.6,0,NO2,58.895,9.338,0,0,0,---,22
+HY368NO,NO,Hinnoy,Small Hydro - Dammed,9.5,0,NO4,68.528,15.866,0,0,0,---,11
+HY369NO,NO,Gausbu,Small Hydro - Dammed,9.4,0,NO1,59.367,7.896,116.8,0,88,---,18
+HY370NO,NO,Mosjoen,Small Hydro - Dammed,9.2,0,NO5,65.837,13.193,0,0,0,---,18
+HY371NO,NO,Sylling,Small Hydro - Dammed,9.2,0,NO1,59.895,10.283,0,0,0,---,18
+HY372NO,NO,Faberg,Small Hydro - Dammed,9.1,0,NO4,61.168,10.406,0,0,0,---,19
+HY373NO,NO,Sage,Small Hydro - Dammed,9.1,0,NO4,59.941,10.92,7.05,0,340,---,28
+HY374NO,NO,Tunnsjofoss,Small Hydro - Dammed,9.1,0,NO2,64.690137,13.215878,0,0,0,---,18
+HY375NO,NO,Brekke,Small Hydro - Dammed,9,0,NO5,61.019,5.462,38.41,0,26.6,---,42
+HY376NO,NO,Fossheim,Small Hydro - Dammed,9,0,NO1,61.58,6.5,0,0,0,---,18
+HY377NO,NO,Hjorteland,Small Hydro - Dammed,9,0,NO4,58.044,7.473,0,0,0,---,32
+HY378NO,NO,Kildalen,Small Hydro - Dammed,9,0,NO5,69.666,21.107,9.8,0,193.69,---,25
+HY379NO,NO,Midtre Tessa,Small Hydro - Dammed,9,0,NO2,61.846,8.961,0,0,0,---,45
+HY380NO,NO,Norddalen,Small Hydro - Dammed,9,0,NO1,68.174,17.919,155,0,91,---,23
+HY381NO,NO,Ovre Fiskumfoss,Small Hydro - Dammed,9,0,NO4,64.543,12.455,0,0,0,---,38
+HY382NO,NO,Skogheim,Small Hydro - Dammed,9,0,NO5,61.817,6.15,19,0,341,---,26
+HY383NO,NO,Vadheim,Small Hydro - Dammed,9,0,NO3,61.208,5.83,0,0,0,---,18
+HY384NO,NO,Arna,Small Hydro - Dammed,8.7,0,NO5,60.46,5.438,1.6,0,61,---,18
+HY385NO,NO,Hoylandsfoss,Small Hydro - Dammed,8.5,0,NO5,58.267,6.833,0,0,0,---,16
+HY386NO,NO,Lassajavrre,Small Hydro - Dammed,8.5,0,NO4,69.661,22.22,71.7,0,145,---,24
+HY387NO,NO,Vinkelfallet,Small Hydro - Dammed,8.5,0,NO5,59.096,5.708,0,0,0,---,36
+HY388NO,NO,Skarje,Small Hydro - Dammed,8.4,0,NO1,68.183906,17.306387,0,0,0,---,35
+HY389NO,NO,Ulefoss,Small Hydro - Dammed,8.4,0,NO2,59.284,9.265,0,0,0,---,45
+HY390NO,NO,Verma,Small Hydro - Dammed,8.4,0,NO2,62.343,8.059,0,0,0,---,40
+HY391NO,NO,Honefo.1,Small Hydro - Dammed,8.3,0,NO2,58.419,6.109,0,0,0,---,18
+HY392NO,NO,Eidsfossen_SFE,Small Hydro - Dammed,8.2,0,NO4,61.804,9.304,0,0,0,---,29
+HY393NO,NO,Forsland,Small Hydro - Dammed,8.2,0,NO1,66.273,12.885,2,0,234.8,---,36
+HY394NO,NO,Gjovik,Small Hydro - Dammed,8.2,0,NO3,59.185,10.96,0,0,0,---,13
+HY395NO,NO,Svabo,Small Hydro - Dammed,8.1,0,NO3,66.303985,14.187881,20,0,105,---,33
+HY396NO,NO,Fausa,Small Hydro - Dammed,8,0,NO1,62.358,6.895,15.6,0,330,---,34
+HY397NO,NO,Julskaret,Small Hydro - Dammed,8,0,NO1,63.14,10.966,65,0,106.8,---,30
+HY398NO,NO,Mydalen,Small Hydro - Dammed,8,0,NO5,59.949,10.767,97.2,0,126,---,15
+HY399NO,NO,Skoddeberg,Small Hydro - Dammed,8,0,NO3,59.617,11.081,0,0,0,---,20
+HY400NO,NO,Skree,Small Hydro - Dammed,8,0,NO4,59.186,8.09,0,0,0,---,33
+HY401NO,NO,Sorbrandal,Small Hydro - Dammed,8,0,NO2,62.167,5.561,0,0,0,---,29
+HY402NO,NO,Tafjord,Small Hydro - Dammed,8,0,NO3,62.231,7.415,94,0,977,---,30
+HY403NO,NO,Kvitfossen,Small Hydro - Dammed,7.8,0,NO1,68.327,14.652,5.4,0,240,---,35
+HY404NO,NO,Vassfossen,Small Hydro - Dammed,7.8,0,NO5,59.732,9.868,0,0,0,---,18
+HY405NO,NO,Aall-Ulefoss,Small Hydro - Dammed,7.7,0,NO3,59.284,9.265,0,0,0,---,19
+HY406NO,NO,Dalsfoss,Small Hydro - Dammed,7.6,0,NO1,58.967,9.314,450,0,22,---,35
+HY407NO,NO,Sama,Small Hydro - Dammed,7.5,0,NO2,68.805,16.516,120,0,49.59,---,35
+HY408NO,NO,Tjonnefoss,Small Hydro - Dammed,7.5,0,NO3,58.96,8.52,0,0,0,---,19
+HY409NO,NO,Toverud,Small Hydro - Dammed,7.5,0,NO3,60.611,12.034,20,0,230.1,---,24
+HY410NO,NO,Ballangen,Small Hydro - Dammed,7.4,0,NO4,68.343,16.831,0,0,0,---,15
+HY411NO,NO,Ildgruben,Small Hydro - Dammed,7.4,0,NO5,66.307,14.356,0,0,0,---,15
+HY412NO,NO,Svartdalen,Small Hydro - Dammed,7.3,0,NO3,59.587,8.551,0,0,0,---,10
+HY413NO,NO,Horga,Small Hydro - Dammed,7.2,0,NO3,60.056,9.539,19.7,0,204,---,17
+HY414NO,NO,Juvfossen,Small Hydro - Dammed,7.2,0,NO4,62.246,6.89,0,0,0,---,15
+HY415NO,NO,Palsbu,Small Hydro - Dammed,7.2,0,NO2,60.433067,8.734342,0,0,0,---,35
+HY416NO,NO,Bagna,Small Hydro - Dammed,7,0,NO3,60.822,9.552,0,0,0,---,39
+HY417NO,NO,Kiste,Small Hydro - Dammed,7,0,NO5,59.243,9.812,16.7,0,43,---,32
+HY418NO,NO,Rognfossen-Evang,Small Hydro - Dammed,7,0,NO4,60.657,6.112,0,0,0,---,22
+HY419NO,NO,Sagnfossen,Small Hydro - Dammed,7,0,NO5,61.162,12.447,0,0,0,---,23
+HY420NO,NO,Kistefoss,Small Hydro - Dammed,6.8,0,NO4,60.222,10.369,0,0,0,---,15
+HY421NO,NO,Rottenvik,Small Hydro - Dammed,6.6,0,NO2,69.591,20.277,0,0,0,---,32
+HY422NO,NO,Dale TUE,Small Hydro - Dammed,6.5,0,NO4,61.337,5.412,0,0,0,---,26
+HY423NO,NO,Jossingfjord,Small Hydro - Dammed,6.5,0,NO5,58.315,6.335,0,0,0,---,24
+HY424NO,NO,Langvann,Small Hydro - Dammed,6.5,0,NO3,60.106,10.758,0,0,0,---,40
+HY425NO,NO,Vagamo,Small Hydro - Dammed,6.5,0,NO4,61.875,9.097,0,0,0,---,22
+HY426NO,NO,Osfallet,Small Hydro - Dammed,6.4,0,NO4,61.133,11.383,0,0,0,---,12
+HY427NO,NO,Lysbotn,Small Hydro - Dammed,6.3,0,NO4,59.054,6.626,38.4,0,106,---,23
+HY428NO,NO,Roykas,Small Hydro - Dammed,6.3,0,NO4,59.926,10.932,0,0,0,---,11
+HY429NO,NO,Gjerdsvik,Small Hydro - Dammed,6.2,0,NO5,62.256,5.584,0,0,0,---,42
+HY430NO,NO,Roppa,Small Hydro - Dammed,6.1,0,NO4,61.214,10.042,13.7,0,473,---,15
+HY431NO,NO,Hammeren,Small Hydro - Dammed,6,0,NO1,66.31,14.206,0,0,0,---,24
+HY432NO,NO,Hjelmeland,Small Hydro - Dammed,6,0,NO1,59.224,6.219,2,0,145,---,27
+HY433NO,NO,Istad,Small Hydro - Dammed,6,0,NO3,62.805,7.7,0,0,0,---,14
+HY434NO,NO,Jorpeland Scana,Small Hydro - Dammed,6,0,NO1,59.022,6.041,0,0,0,---,21
+HY435NO,NO,Lya,Small Hydro - Dammed,6,0,NO5,60.664,8.681,0,0,0,---,25
+HY436NO,NO,Steinaga,Small Hydro - Dammed,6,0,NO1,66.973,14.44,0,0,0,---,38
+HY437NO,NO,Kvitnes,Small Hydro - Dammed,5.9,0,NO1,68.572,15.226,0,0,0,---,29
+HY438NO,NO,Nyset,Small Hydro - Dammed,5.9,0,NO5,61.237,7.698,44.3,0,61,---,22
+HY439NO,NO,Halandsfossen,Small Hydro - Dammed,5.8,0,NO3,61.33,5.422,0,0,0,---,17
+HY440NO,NO,Kanstadbotn,Small Hydro - Dammed,5.8,0,NO4,62.676,8.157,0,0,0,---,23
+HY441NO,NO,Kjelland,Small Hydro - Dammed,5.8,0,NO5,60.830718,5.530037,0,0,0,---,17
+HY442NO,NO,Ranes,Small Hydro - Dammed,5.8,0,NO5,69.914,19.26,0,0,0,---,30
+HY443NO,NO,Repvag,Small Hydro - Dammed,5.8,0,NO4,70.747,25.672,0,0,0,---,21
+HY444NO,NO,Bjorndalselva,Small Hydro - Dammed,5.7,0,NO4,67.35,15.515,0,0,0,---,20
+HY445NO,NO,Narvik,Small Hydro - Dammed,5.7,0,NO1,68.438,17.427,0,0,0,---,19
+HY446NO,NO,Urke,Small Hydro - Dammed,5.7,0,NO4,62.213,6.567,0,0,0,---,21
+HY447NO,NO,Bjordal,Small Hydro - Dammed,5.6,0,NO5,59.539,5.595,0,0,0,---,30
+HY448NO,NO,Eldrevatn,Small Hydro - Dammed,5.6,0,NO5,61.019,8.131,38.4,0,141.4,---,22
+HY449NO,NO,Fygle,Small Hydro - Dammed,5.6,0,NO5,68.147,13.638,0,0,0,---,39
+HY450NO,NO,Grytten,Small Hydro - Dammed,5.6,0,NO3,62.502,7.772,158.3,0,953.4,---,32
+HY451NO,NO,Oltesvik,Small Hydro - Dammed,5.6,0,NO1,60.377,5.22,426,0,450,---,37
+HY452NO,NO,Sagevikelv,Small Hydro - Dammed,5.6,0,NO3,60.483,5.733,0,0,0,---,31
+HY453NO,NO,Stranda,Small Hydro - Dammed,5.6,0,NO1,67.962922,15.976403,0,0,0,---,44
+HY454NO,NO,Trandal,Small Hydro - Dammed,5.6,0,NO5,62.261,6.501,0,0,0,---,19
+HY455NO,NO,Vikaelva,Small Hydro - Dammed,5.6,0,NO2,69.314,18.683,0,0,0,---,36
+HY456NO,NO,Akraelva,Small Hydro - Dammed,5.5,0,NO2,59.804,6.099,0,0,0,---,43
+HY457NO,NO,Bjorgum,Small Hydro - Dammed,5.5,0,NO5,59.100929,7.538773,0,0,0,---,30
+HY458NO,NO,Dalen,Small Hydro - Dammed,5.5,0,NO5,59.445,8.005,0,0,0,---,25
+HY459NO,NO,Dittielva,Small Hydro - Dammed,5.5,0,NO2,68.643,18.771,0,0,0,---,37
+HY460NO,NO,Ellenelva,Small Hydro - Dammed,5.5,0,NO4,69.169,29,0,0,0,---,25
+HY461NO,NO,Embla,Small Hydro - Dammed,5.5,0,NO1,62.217,6.91,0,0,0,---,36
+HY462NO,NO,Fall,Small Hydro - Dammed,5.5,0,NO2,60.678,10.353,12,0,0,---,41
+HY463NO,NO,Fossan Halogalan,Small Hydro - Dammed,5.5,0,NO1,63.27,11.007,0,0,0,---,20
+HY464NO,NO,Fr.stad Bioel,Small Hydro - Dammed,5.5,0,NO2,59.184,10.97,0,0,0,---,31
+HY465NO,NO,Frogner,Small Hydro - Dammed,5.5,0,NO1,59.917,10.707,0,0,0,---,18
+HY466NO,NO,Haukeli,Small Hydro - Dammed,5.5,0,NO3,59.733,7.546,32.1,0,268,---,24
+HY467NO,NO,Haukland,Small Hydro - Dammed,5.5,0,NO4,58.465,6.544,8.5,0,252.5,---,20
+HY468NO,NO,Havardsvatn,Small Hydro - Dammed,5.5,0,NO5,60.10165,6.913308,0,0,0,---,24
+HY469NO,NO,Kaupanger,Small Hydro - Dammed,5.5,0,NO1,61.183,7.235,0,0,0,---,18
+HY470NO,NO,Krogstadelva NKR,Small Hydro - Dammed,5.5,0,NO1,59.759,10.01,0,0,0,---,25
+HY471NO,NO,Kvale,Small Hydro - Dammed,5.5,0,NO1,61.447033,7.460703,0,0,0,---,31
+HY472NO,NO,Kveasa,Small Hydro - Dammed,5.5,0,NO1,60.371,6.146,0,0,0,---,30
+HY473NO,NO,Maren,Small Hydro - Dammed,5.5,0,NO1,61.149,6.074,0,0,0,---,32
+HY474NO,NO,Muoidejohka,Small Hydro - Dammed,5.5,0,NO1,66.796,14.67,0,0,0,---,22
+HY475NO,NO,Ofoten,Small Hydro - Dammed,5.5,0,NO1,68.522,17.006,0,0,0,---,32
+HY476NO,NO,Oftedal2,Small Hydro - Dammed,5.5,0,NO1,58.663,6.717,0,0,0,---,21
+HY477NO,NO,Riksheim,Small Hydro - Dammed,5.5,0,NO1,62.358,6.572,0,0,0,---,29
+HY478NO,NO,Saltdalelva,Small Hydro - Dammed,5.5,0,NO3,69.516,19.281,0,0,0,---,29
+HY479NO,NO,Soberg,Small Hydro - Dammed,5.5,0,NO3,59.636,11.154,0,0,0,---,29
+HY480NO,NO,Standal,Small Hydro - Dammed,5.5,0,NO2,60.108,10.881,0,0,0,---,37
+HY481NO,NO,Torsnes,Small Hydro - Dammed,5.5,0,NO3,60.239467,6.201726,0,0,0,---,24
+HY482NO,NO,Tysseland,Small Hydro - Dammed,5.5,0,NO5,60.395,5.322,0,0,0,---,32
+HY483NO,NO,Viddal,Small Hydro - Dammed,5.5,0,NO3,62.14,6.612,0,0,0,---,19
+HY484NO,NO,Voldsetelva,Small Hydro - Dammed,5.5,0,NO5,63.871533,10.796528,0,0,0,---,43
+HY485NO,NO,Dokkelva,Small Hydro - Dammed,5.4,0,NO3,62.68,8.137,0,0,0,---,12
+HY486NO,NO,Furset,Small Hydro - Dammed,5.4,0,NO2,62.283,6.885,0,0,0,---,37
+HY487NO,NO,Giskemo,Small Hydro - Dammed,5.4,0,NO1,62.481,6.814,0,0,0,---,18
+HY488NO,NO,Hynna,Small Hydro - Dammed,5.4,0,NO2,63.058,11.439,0,0,135.7,---,21
+HY489NO,NO,Kanndalen,Small Hydro - Dammed,5.4,0,NO2,61.257,8.759,0,0,261,---,40
+HY490NO,NO,Knutfoss,Small Hydro - Dammed,5.4,0,NO1,64.523,12.426,0,0,0,---,24
+HY491NO,NO,Leinafoss,Small Hydro - Dammed,5.4,0,NO1,60.832,7.119,0,0,0,---,30
+HY492NO,NO,Maroyfjord,Small Hydro - Dammed,5.4,0,NO4,70.757,27.342,0,0,0,---,36
+HY493NO,NO,Toklev,Small Hydro - Dammed,5.4,0,NO4,59.288,9.71,58.5,0,80.59,---,33
+HY494NO,NO,Usma,Small Hydro - Dammed,5.4,0,NO3,63.219,11.041,0,0,0,---,20
+HY495NO,NO,Vikesa,Small Hydro - Dammed,5.4,0,NO5,58.638,6.091,0,0,0,---,35
+HY496NO,NO,Djupfjord 1,Small Hydro - Dammed,5.3,0,NO3,68.603,15.473,25.2,0,255,---,14
+HY497NO,NO,Kaven,Small Hydro - Dammed,5.3,0,NO5,59.032,11.09,0,0,0,---,43
+HY498NO,NO,Reinset,Small Hydro - Dammed,5.3,0,NO5,60.25,6.567,10.5,0,263.6,---,37
+HY499NO,NO,Arvik,Small Hydro - Dammed,5.2,0,NO5,60.126,12.456,0,0,0,---,38
+HY500NO,NO,Avella,Small Hydro - Dammed,5.2,0,NO5,59.908,10.745,0,0,0,---,45
+HY501NO,NO,Gandvik,Small Hydro - Dammed,5.2,0,NO2,70.015,29.115,50.7,0,184,---,43
+HY502NO,NO,Hopselva,Small Hydro - Dammed,5.2,0,NO3,60.312,5.67,0.2,0,161,---,11
+HY503NO,NO,Rasdalen,Small Hydro - Dammed,5.2,0,NO1,60.62,5.967,0,0,0,---,20
+HY504NO,NO,Seterkraft,Small Hydro - Dammed,5.2,0,NO3,59.915,10.634,0,0,0,---,16
+HY505NO,NO,Vagen,Small Hydro - Dammed,5.2,0,NO2,60.399,5.318,0,0,0,---,44
+HY506NO,NO,Ytre Alsaker,Small Hydro - Dammed,5.2,0,NO4,60.462,5.433,0,0,0,---,12
+HY507NO,NO,Bjorndalen,Small Hydro - Dammed,5,0,NO3,59.539,5.595,0,0,0,---,31
+HY508NO,NO,Dauremal,Small Hydro - Dammed,5,0,NO2,61.829093,5.78213,0,0,0,---,43
+HY509NO,NO,Flittig,Small Hydro - Dammed,5,0,NO1,59.323,9.537,24.92,0,145,---,21
+HY510NO,NO,Forus,Small Hydro - Dammed,5,0,NO5,58.883,5.699,0,0,0,---,24
+HY511NO,NO,Fritzoe,Small Hydro - Dammed,5,0,NO3,59.051,10.023,0,0,0,---,28
+HY512NO,NO,Halden,Small Hydro - Dammed,5,0,NO2,59.133,11.387,0,0,0,---,22
+HY513NO,NO,Lovenskjold,Small Hydro - Dammed,5,0,NO1,58.752982,7.857013,0,0,0,---,26
+HY514NO,NO,Lysvatn,Small Hydro - Dammed,5,0,NO3,69.387,17.798,0,0,0,---,18
+HY515NO,NO,Nordvik,Small Hydro - Dammed,5,0,NO4,60.236,5.363,0,0,0,---,33
+HY516NO,NO,Ortvatn,Small Hydro - Dammed,5,0,NO2,66.40672,14.503245,0,0,0,---,38
+HY517NO,NO,Osen,Small Hydro - Dammed,5,0,NO3,64.421,10.038,60,0,57.29,---,13
+HY518NO,NO,Sauda,Small Hydro - Dammed,5,0,NO1,59.651,6.354,0,0,0,---,29
+HY519NO,NO,Skarsfjord,Small Hydro - Dammed,5,0,NO1,69.967,18.848,34.6,0,152.1,---,25
+HY520NO,NO,Skjefst1,Small Hydro - Dammed,5,0,NO3,67.233,15.021,0,0,0,---,37
+HY521NO,NO,Skjerdal,Small Hydro - Dammed,5,0,NO4,58.554,7.376,0,0,0,---,11
+HY522NO,NO,Skulafossen,Small Hydro - Dammed,5,0,NO2,63.267,9.833,0,0,0,---,40
+HY523NO,NO,Sorfjord2,Small Hydro - Dammed,5,0,NO5,68.064,16.664,0,0,0,---,15
+HY524NO,NO,Tyria,Small Hydro - Dammed,5,0,NO1,61.121,10.698,18.7,0,290,---,39
+HY525NO,NO,Valljord,Small Hydro - Dammed,5,0,NO5,67.119331,15.495843,0,0,0,---,31
+HY526NO,NO,Valsoyfjord,Small Hydro - Dammed,5,0,NO1,69.239,19.226,0,0,0,---,34
+HY527NO,NO,Vindedal,Small Hydro - Dammed,5,0,NO2,61.12,7.331,0,0,0,---,17
+HY528NO,NO,Kirkenes,Small Hydro - Dammed,4.9,0,NO1,69.727,30.045,0,0,0,---,29
+HY529NO,NO,Tronsholen,Small Hydro - Dammed,4.9,0,NO5,58.831,5.742,0,0,0,---,45
+HY530NO,NO,Berdalskraft,Small Hydro - Dammed,4.8,0,NO3,62.447204,7.490275,0,0,0,---,14
+HY531NO,NO,Eidum,Small Hydro - Dammed,4.8,0,NO3,63.444,10.982,0,0,0,---,13
+HY532NO,NO,Eitro,Small Hydro - Dammed,4.8,0,NO5,60.294,5.924,0,0,0,---,27
+HY533NO,NO,Ekkjestolen,Small Hydro - Dammed,4.8,0,NO3,58.986,6.19,0,0,0,---,16
+HY534NO,NO,Jardola,Small Hydro - Dammed,4.8,0,NO2,61.717,6.235,0,0,0,---,41
+HY535NO,NO,Tveitelva,Small Hydro - Dammed,4.8,0,NO4,60.007,5.688,0,0,0,---,29
+HY536NO,NO,Akland,Small Hydro - Dammed,4.7,0,NO2,58.731,9.045,0,0,0,---,45
+HY537NO,NO,Makkoren,Small Hydro - Dammed,4.7,0,NO2,61.239979,6.247422,0,0,0,---,31
+HY538NO,NO,Mosbakka,Small Hydro - Dammed,4.7,0,NO3,59.639354,6.298697,0,0,0,---,16
+HY539NO,NO,Bjorkasen,Small Hydro - Dammed,4.6,0,NO3,68.331,16.79,0,0,0,---,25
+HY540NO,NO,Eidsfo 2,Small Hydro - Dammed,4.6,0,NO5,59.297,9.22,0,0,0,---,45
+HY541NO,NO,Kongsfjord,Small Hydro - Dammed,4.6,0,NO4,70.72,29.319,0,0,0,---,35
+HY542NO,NO,Stadheim,Small Hydro - Dammed,4.6,0,NO3,62.31,6.936,0,0,0,---,40
+HY543NO,NO,Sundal,Small Hydro - Dammed,4.6,0,NO1,60.108,6.288,0,0,0,---,43
+HY544NO,NO,Kleiva,Small Hydro - Dammed,4.5,0,NO5,59.739,6.519,84.6,0,74,---,26
+HY545NO,NO,Ovre Svultingen,Small Hydro - Dammed,4.5,0,NO2,61.22,6.075,0,0,0,---,28
+HY546NO,NO,Staffi,Small Hydro - Dammed,4.5,0,NO5,59.866907,6.087542,0,0,0,---,43
+HY547NO,NO,Tryland,Small Hydro - Dammed,4.5,0,NO4,58.156,8.063,19.8,0,133,---,25
+HY548NO,NO,Brandaa,Small Hydro - Dammed,4.4,0,NO2,63.096,9.188,0,0,0,---,41
+HY549NO,NO,Dragefossen,Small Hydro - Dammed,4.4,0,NO4,67.024,15.322,5.6,0,100,---,10
+HY550NO,NO,Dversetelva,Small Hydro - Dammed,4.4,0,NO4,67.145,15.292,0,0,0,---,28
+HY551NO,NO,Bruvollelva,Small Hydro - Dammed,4.3,0,NO5,64.266,12.294,0,0,0,---,26
+HY552NO,NO,Gryto,Small Hydro - Dammed,4.3,0,NO5,68.922,16.527,0,0,0,---,25
+HY553NO,NO,Svartkulp,Small Hydro - Dammed,4.3,0,NO4,60.028,10.672,0,0,0,---,19
+HY554NO,NO,Husnes,Small Hydro - Dammed,4.2,0,NO5,59.859,5.747,0,0,0,---,15
+HY555NO,NO,Kvannvatn,Small Hydro - Dammed,4.2,0,NO1,59.876,8.734,0,0,0,---,28
+HY556NO,NO,Byafossen,Small Hydro - Dammed,4.1,0,NO4,64.038,11.553,0,0,0,---,15
+HY557NO,NO,Kongsvinger,Small Hydro - Dammed,4.1,0,NO1,60.192,11.999,0,0,0,---,27
+HY558NO,NO,Brunstad,Small Hydro - Dammed,4,0,NO3,62.382,6.574,0,0,0,---,17
+HY559NO,NO,Grodemfoss,Small Hydro - Dammed,4,0,NO2,60.44,5.859,0,0,0,---,27
+HY560NO,NO,Jatta,Small Hydro - Dammed,4,0,NO1,58.912,5.711,0,0,0,---,23
+HY561NO,NO,Myra,Small Hydro - Dammed,4,0,NO4,58.749,8.862,4.4,0,18.2,---,10
+HY562NO,NO,Nedrefoss,Small Hydro - Dammed,4,0,NO1,59.922,10.754,0,0,0,---,30
+HY563NO,NO,Ovre Markevatn,Small Hydro - Dammed,4,0,NO4,61.446092,5.335162,0,0,0,---,11
+HY564NO,NO,Reinforsen,Small Hydro - Dammed,4,0,NO3,66.35,14.333,0,0,0,---,36
+HY565NO,NO,Riksheimdal,Small Hydro - Dammed,4,0,NO5,62.358,6.572,0,0,0,---,24
+HY566NO,NO,Rostefoss,Small Hydro - Dammed,4,0,NO5,62.496,11.223,0,0,0,---,23
+HY567NO,NO,Skjeggedal,Small Hydro - Dammed,4,0,NO1,58.75,8.137,0,0,0,---,31
+HY568NO,NO,Trengereid,Small Hydro - Dammed,4,0,NO3,60.429,5.629,2.7,0,388,---,23
+HY569NO,NO,Vedeld,Small Hydro - Dammed,4,0,NO3,62.182051,5.793378,0,0,0,---,24
+HY570NO,NO,Virakelva,Small Hydro - Dammed,4,0,NO4,69.314,18.683,0,0,0,---,38
+HY571NO,NO,Vagaana,Small Hydro - Dammed,3.9,0,NO1,59.497,6.127,0,0,0,---,34
+HY572NO,NO,Tosse,Small Hydro - Dammed,3.8,0,NO4,60.617,5.583,0,0,0,---,12
+HY573NO,NO,Saudebotn,Small Hydro - Dammed,3.7,0,NO4,59.055,6.649,0,0,0,---,34
+HY574NO,NO,Trysilfossen,Small Hydro - Dammed,3.7,0,NO3,61.75,6.277,42.8,0,11.5,---,39
+HY575NO,NO,Vanndola,Small Hydro - Dammed,3.7,0,NO5,61.591,7.351,0,0,0,---,16
+HY576NO,NO,Eidseter,Small Hydro - Dammed,3.6,0,NO1,60.379,11.074,0,0,0,---,27
+HY577NO,NO,Haugfoss,Small Hydro - Dammed,3.6,0,NO2,59.914,9.886,14.3,0,37,---,45
+HY578NO,NO,Honnefoss,Small Hydro - Dammed,3.6,0,NO3,58.419,6.109,61.1,0,39.59,---,20
+HY579NO,NO,Krokevatn,Small Hydro - Dammed,3.6,0,NO2,60.984,5.699,39.6,0,78,---,24
+HY580NO,NO,Aselva,Small Hydro - Dammed,3.5,0,NO5,63.615,9.713,0,0,0,---,40
+HY581NO,NO,Rodberg,Small Hydro - Dammed,3.5,0,NO5,60.267,8.947,0,0,0,---,24
+HY582NO,NO,Samnanger,Small Hydro - Dammed,3.5,0,NO1,60.405,5.723,0,0,0,---,27
+HY583NO,NO,Stokkelandsana,Small Hydro - Dammed,3.5,0,NO4,58.362,7.057,0,0,0,---,15
+HY584NO,NO,Vangpollen,Small Hydro - Dammed,3.5,0,NO1,68.616,15.574,13.4,0,313,---,32
+HY585NO,NO,Svaren,Small Hydro - Dammed,3.4,0,NO1,59.831,5.787,0,0,0,---,22
+HY586NO,NO,Sylsjo,Small Hydro - Dammed,3.4,0,NO1,62.930266,12.151988,0,0,0,---,44
+HY587NO,NO,Hommelfoss,Small Hydro - Dammed,3.3,0,NO5,60.9,5.618,1.2,0,186.5,---,35
+HY588NO,NO,Kangsliaga,Small Hydro - Dammed,3.3,0,NO4,61.257,8.759,0,0,0,---,35
+HY589NO,NO,Melbu,Small Hydro - Dammed,3.3,0,NO1,68.501,14.801,0,0,0,---,17
+HY590NO,NO,Minne,Small Hydro - Dammed,3.3,0,NO4,62.614782,7.044391,0,0,0,---,15
+HY591NO,NO,Rivedal,Small Hydro - Dammed,3.3,0,NO4,61.367,5.265,0,0,0,---,35
+HY592NO,NO,Trysil,Small Hydro - Dammed,3.3,0,NO4,61.317,12.26,0,0,0,---,31
+HY593NO,NO,Vestrebotn,Small Hydro - Dammed,3.3,0,NO2,59.055,6.649,47.6,0,78.7,---,35
+HY594NO,NO,Asnes,Small Hydro - Dammed,3.2,0,NO5,60.613,12.011,0,0,0,---,40
+HY595NO,NO,Via,Small Hydro - Dammed,3.2,0,NO4,61.872,6.848,0,0,0,---,13
+HY596NO,NO,Enga,Small Hydro - Dammed,3.1,0,NO5,66.778,13.533,0,0,0,---,23
+HY597NO,NO,Nordsvorka,Small Hydro - Dammed,3,0,NO3,63.045,8.867,0,0,0,---,20
+HY598NO,NO,Stegaros,Small Hydro - Dammed,3,0,NO5,60.083394,8.286923,0,0,0,---,19
+HY599NO,NO,Dokka Tr,Small Hydro - Dammed,2.9,0,NO4,60.84,10.062,0,0,0,---,27
+HY600NO,NO,Bergerfoss,Small Hydro - Dammed,2.8,0,NO4,60.228,10.375,817.2,0,10.8,---,14
+HY601NO,NO,H. Hoyanger,Small Hydro - Dammed,2.8,0,NO1,61.22,6.076,0,0,0,---,39
+HY602NO,NO,Nordreisa,Small Hydro - Dammed,2.8,0,NO4,69.557,21.39,0,0,0,---,18
+HY603NO,NO,Bortveit,Small Hydro - Dammed,2.7,0,NO4,59.893,5.514,0,0,0,---,20
+HY604NO,NO,Knardalstrand,Small Hydro - Dammed,2.7,0,NO4,59.13,9.617,0,0,0,---,11
+HY605NO,NO,Fossan,Small Hydro - Dammed,2.6,0,NO4,63.027,11.697,50,0,28,---,11
+HY606NO,NO,Osvatn,Small Hydro - Dammed,2.5,0,NO5,59.862,8.128,0,0,0,---,17
+HY607NO,NO,Kassdalen,Small Hydro - Dammed,2.4,0,NO4,62.793,11.188,0,0,0,---,16
+HY608NO,NO,Vardal,Small Hydro - Dammed,2.4,0,NO3,61.599953,7.292476,0,0,0,---,38
+HY609NO,NO,Balsfjord,Small Hydro - Dammed,2.3,0,NO1,69.239,19.226,0,0,0,---,42
+HY610NO,NO,Marka,Small Hydro - Dammed,2.2,0,NO4,68.6,15.038,0,0,0,---,24
+HY611NO,NO,Liarelva,Small Hydro - Dammed,2.1,0,NO3,59.805,5.987,0,0,0,---,40
+HY612NO,NO,Brekkefoss,Small Hydro - Dammed,2,0,NO4,60.888,8.46,0,0,0,---,22
+HY613NO,NO,Follum,Small Hydro - Dammed,2,0,NO4,60.206,10.235,0,0,0,---,20
+HY614NO,NO,Hasle,Small Hydro - Dammed,2,0,NO1,59.925,10.784,0,0,0,---,38
+HY615NO,NO,Hopen,Small Hydro - Dammed,2,0,NO1,63.463,8.014,0,0,0,---,37
+HY616NO,NO,Sykkylven,Small Hydro - Dammed,2,0,NO2,62.392,6.598,0,0,0,---,20
+HY617NO,NO,Kjopsvik,Small Hydro - Dammed,1.9,0,NO5,68.097,16.374,0,0,0,---,32
+HY618NO,NO,Stokmarknes,Small Hydro - Dammed,1.9,0,NO1,68.565,14.91,0,0,0,---,16
+HY619NO,NO,Amot,Small Hydro - Dammed,1.8,0,NO1,59.40732,9.503778,0,0,0,---,28
+HY620NO,NO,Luostejok,Small Hydro - Dammed,1.8,0,NO3,69.829,25.167,26.2,0,31,---,17
+HY621NO,NO,Stord,Small Hydro - Dammed,1.8,0,NO1,59.779,5.5,0,0,0,---,44
+HY622NO,NO,Tafjord6,Small Hydro - Dammed,1.8,0,NO5,62.231,7.415,94,0,977,---,16
+HY623NO,NO,Tveiten,Small Hydro - Dammed,1.8,0,NO1,60.574,5.235,0,0,0,---,23
+HY624NO,NO,Bardufoss,Small Hydro - Dammed,1.7,0,NO5,69.044,18.59,0,0,0,---,20
+HY625NO,NO,Lyngen,Small Hydro - Dammed,1.6,0,NO2,69.576,20.211,0,0,0,---,23
+HY626NO,NO,Modalen,Small Hydro - Dammed,1.6,0,NO1,60.837,5.86,0,0,0,---,37
+HY627NO,NO,Tangeland,Small Hydro - Dammed,1.6,0,NO4,68.44041,17.469644,0,0,0,---,22
+HY628NO,NO,Agdenes,Small Hydro - Dammed,1.5,0,NO3,63.514,9.681,0,0,0,---,39
+HY629NO,NO,Forsand,Small Hydro - Dammed,1.5,0,NO5,58.989,6.454,0,0,0,---,44
+HY630NO,NO,Krossen,Small Hydro - Dammed,1.5,0,NO2,58.096,7.528,0,0,0,---,37
+HY631NO,NO,Smestad,Small Hydro - Dammed,1.5,0,NO2,59.937,10.686,0,0,0,---,18
+HY632NO,NO,Sortland,Small Hydro - Dammed,1.5,0,NO4,68.695,15.413,0,0,0,---,14
+HY633NO,NO,Grytdalen,Small Hydro - Dammed,1.4,0,NO1,63.109,8.559,9.8,0,0,---,20
+HY634NO,NO,Haheim,Small Hydro - Dammed,1.4,0,NO5,60.017,5.536,0,0,0,---,25
+HY635NO,NO,Kilbotn,Small Hydro - Dammed,1.4,0,NO1,68.718,16.533,0,0,0,---,37
+HY636NO,NO,Tynset,Small Hydro - Dammed,1.4,0,NO2,62.276,10.782,0,0,0,---,40
+HY637NO,NO,Selbu,Small Hydro - Dammed,1.3,0,NO3,63.219,11.041,0,0,0,---,22
+HY638NO,NO,Trofors,Small Hydro - Dammed,1.3,0,NO4,65.535,13.407,0,0,0,---,12
+HY639NO,NO,Havik,Small Hydro - Dammed,1.2,0,NO5,59.324,5.298,0,0,0,---,32
+HY640NO,NO,Osteroy,Small Hydro - Dammed,1.1,0,NO4,60.537,5.533,0,0,0,---,24
+HY641NO,NO,Lakselv,Small Hydro - Dammed,1,0,NO1,70.051,24.972,0,0,0,---,28
+HY642NO,NO,Sortveit,Small Hydro - Dammed,1,0,NO3,59.583,6.8,0,0,0,---,30
+HY643NO,NO,Tveit,Small Hydro - Dammed,1,0,NO4,58.222,8.109,0,0,0,---,24
+HY644NO,NO,Fossum,Small Hydro - Dammed,0.8,0,NO1,59.241,9.561,0,0,0,---,23
+HY645NO,NO,Lundsater,Small Hydro - Dammed,0.8,0,NO2,67.783,14.817,0,0,0,---,26
+HY646NO,NO,Mofjellet,Small Hydro - Dammed,0.8,0,NO4,66.293,14.18,0,0,0,---,28
+HY647NO,NO,Fardal,Small Hydro - Dammed,0.7,0,NO5,61.192,7.023,0,0,0,---,31
+HY648NO,NO,Begna,Small Hydro - Dammed,0.6,0,NO5,60.203,10.25,0,0,0,---,16
+HY649NO,NO,Birkeland,Small Hydro - Dammed,0.5,0,NO3,58.331,8.232,0,0,0,---,37
+HY650NO,NO,Solna,Small Hydro - Dammed,0.5,0,NO3,62.108,10.631,0,0,0,---,21
+HY651NO,NO,Holla,Small Hydro - Dammed,0.4,0,NO2,63.314,9.142,0,0,0,---,20
+HY652NO,NO,Kvandal,Small Hydro - Dammed,0.4,0,NO4,60.471,6.61,0,0,0,---,13
+HY653NO,NO,Bjorendal,Small Hydro - Dammed,0.3,0,NO5,61.072,5.827,0,0,0,---,21
+HY654NO,NO,Bryggja,Small Hydro - Dammed,0.3,0,NO3,61.941,5.449,0,0,0,---,14
+HY1CH,CH,Grande Dixence 3 (Bieudron),Large Hydro - Dammed,1254,0,CH,46.0731,7.4034,400,1764300,285,---,97
+HY4CH,CH,Innertkirchen 1,Large Hydro - Dammed,393.5,0,CH,46.7021,8.2353,14,0,0,---,108
+HY5CH,CH,Grande Dixence 1 (Nendaz),Large Hydro - Dammed,392,0,CH,46.0731,7.4034,400,0,285,---,96
+HY6CH,CH,Grimsel 2,Large Hydro - Dammed,388,0,CH,46.56807207,8.319326517,0,0,0,---,93
+HY7CH,CH,Bitsch,Large Hydro - Dammed,340,0,CH,46.33364617,8.00759904,9.2,16300,0,---,98
+HY8CH,CH,Biasca,Large Hydro - Dammed,324,0,CH,46.33498852,8.982649599,4.6,0,92,---,102
+HY9CH,CH,Grande Dixence 2 (Fionnay),Large Hydro - Dammed,306,0,CH,46.18297908,7.251506521,400,0,285,---,94
+HY10CH,CH,Pradella,Large Hydro - Dammed,300,0,CH,46.80458025,10.333691,164,0,130,---,107
+HY12CH,CH,Emosson 1,Large Hydro - Dammed,260.5,0,CH,46.05082217,6.948997011,0,0,0,---,98
+HY13CH,CH,Riddes,Large Hydro - Dammed,258,0,CH,46.15744321,7.209265141,0,0,0,---,105
+HY18CH,CH,Sils,Large Hydro - Dammed,247,0,CH,46.70313601,9.46664905,0,0,0,---,98
+HY19CH,CH,Bährenburg,Large Hydro - Dammed,220,0,CH,46.59019154,9.421427226,0,0,0,---,98
+HY20CH,CH,Handeck 2,Large Hydro - Dammed,215.6,0,CH,46.6157,8.30382,0,0,0,---,93
+HY22CH,CH,Stalden,Large Hydro - Dammed,185,0,CH,46.23022033,7.857193058,77.5,0,120,---,105
+HY24CH,CH,Tavanasa (KVR),Large Hydro - Dammed,180,0,CH,46.75103682,9.046923928,0,0,0,---,108
+HY25CH,CH,Emosson,Large Hydro - Dammed,170,0,CH,46.05082217,6.948997011,227,0,180,---,102
+HY26CH,CH,Göschenen (Göscheneralp),Large Hydro - Dammed,164.8,0,CH,46.66736286,8.585314102,0,0,0,---,106
+HY28CH,CH,Sedrun 1,Large Hydro - Dammed,150,0,CH,46.67004965,8.768603537,59,0,47,---,99
+HY30CH,CH,Bavona,Large Hydro - Dammed,140,0,CH,46.41035376,8.537612845,159,0,877,---,109
+HY31CH,CH,Fionnay (Mauvoisin),Large Hydro - Dammed,140,0,CH,46.03040473,7.30795255,211.5,0,250,---,95
+HY32CH,CH,Tierfehd (Umwälzwerk),Large Hydro - Dammed,140,0,CH,46.87875008,8.985137042,0,0,0,---,111
+HY34CH,CH,Rothenbrunnen,Large Hydro - Dammed,135,0,CH,46.76589603,9.41820115,0,0,0,---,106
+HY35CH,CH,Verzasca (Gordola),Large Hydro - Dammed,132.5,0,CH,46.19421678,8.849101117,0,0,0,---,101
+HY39CH,CH,Verbano 1,Large Hydro - Dammed,119,0,CH,46.13182428,8.716787353,794,0,255,---,99
+HY40CH,CH,Cavergno,Large Hydro - Dammed,114,0,CH,46.35364109,8.595323533,333,0,489,---,97
+HY44CH,CH,Olivone,Large Hydro - Dammed,102,0,CH,46.53967951,8.949111449,0,0,0,---,106
+HY46CH,CH,Castasegna,Large Hydro - Dammed,100,0,CH,46.33609811,9.515437008,0,0,0,---,107
+HY48CH,CH,Vernayaz (CFF),Medium Hydro - Dammed,92,0,CH,46.13320779,7.03598337,0,0,0,---,92
+HY50CH,CH,Safien Platz,Medium Hydro - Dammed,90,0,CH,46.67782429,9.315873833,0.24,0,15,---,96
+HY51CH,CH,Sarelli,Medium Hydro - Dammed,90,0,CH,46.97709803,9.538658855,0,0,0,---,106
+HY52CH,CH,Am Löntsch,Medium Hydro - Dammed,89.1,0,CH,47.05663848,9.049114634,0,0,0,---,103
+HY53CH,CH,Albignawerk Löbbia,Medium Hydro - Dammed,86,0,CH,46.37495221,9.658900883,70,0,115,---,95
+HY54CH,CH,Pradella-Martina,Medium Hydro - Dammed,84,0,CH,46.88211554,10.46455771,0,0,0,---,99
+HY56CH,CH,Hopflauenen-Trift,Medium Hydro - Dammed,81.6,0,CH,46.71511341,8.277516982,0,0,0,---,107
+HY61CH,CH,Schiffenen,Medium Hydro - Dammed,71,0,CH,46.8827252,7.194219036,59,0,47,---,105
+HY62CH,CH,Salanfe,Medium Hydro - Dammed,70,0,CH,46.14640585,7.028896763,40,0,52,---,100
+HY63CH,CH,Tinizong,Medium Hydro - Dammed,69.5,0,CH,46.58250649,9.610648358,0,0,0,---,102
+HY65CH,CH,Croix,Medium Hydro - Dammed,66,0,CH,46.30817449,7.434100899,0.09,0,15,---,99
+HY69CH,CH,Verbano 2,Medium Hydro - Dammed,62,0,CH,46.13217673,8.717442638,794,0,255,---,94
+HY71CH,CH,Hauterive,Medium Hydro - Dammed,60,0,CH,46.76895067,7.127576354,0,0,0,---,93
+HY72CH,CH,Lucendro,Medium Hydro - Dammed,60,0,CH,46.52635159,8.597709009,25,0,73,---,93
+HY76CH,CH,Innertkirchen 2,Medium Hydro - Dammed,54.8,0,CH,46.70855348,8.226019489,14,0,0,---,103
+HY80CH,CH,Unteraa - Lungerersee,Medium Hydro - Dammed,54,0,CH,46.82143519,8.174462349,0,0,0,---,108
+HY82CH,CH,Navisence,Medium Hydro - Dammed,52,0,CH,46.28131729,7.546331033,0,0,0,---,100
+HY83CH,CH,Tiefencastel Ost,Medium Hydro - Dammed,52,0,CH,46.66440166,9.562703474,0,0,0,---,100
+HY84CH,CH,Wägital (Siebnen),Medium Hydro - Dammed,51.52,0,CH,47.17162805,8.900067399,0,0,0,---,95
+HY87CH,CH,Campocologno 1,Medium Hydro - Dammed,50,0,CH,46.23218789,10.14369463,0,0,0,---,92
+HY88CH,CH,Vissoie,Medium Hydro - Dammed,50,0,CH,46.20993765,7.585969834,0,0,0,---,97
+HY89CH,CH,Ilanz 2 (Stufe Panix (Pigniu)),Medium Hydro - Dammed,49.5,0,CH,46.77476376,9.195225579,7.3,0,53,---,99
+HY93CH,CH,Handeck 1,Small Hydro - Dammed,44.8,0,CH,46.6168313,8.307587128,0,0,0,---,103
+HY95CH,CH,Ritom,Small Hydro - Dammed,44,0,CH,46.51725677,8.675317564,0,0,0,---,101
+HY96CH,CH,Rothenbrunnen (EWZ),Small Hydro - Dammed,44,0,CH,46.77394617,9.420985337,0,0,0,---,106
+HY105CH,CH,St-Léonard,Small Hydro - Dammed,36,0,CH,46.26058771,7.44474053,0,0,0,---,95
+HY109CH,CH,Linthal,Small Hydro - Dammed,34.4,0,CH,46.91551045,8.987901562,0,0,0,---,109
+HY110CH,CH,Grimsel 1-Oberaarsee,Small Hydro - Dammed,33.6,0,CH,46.57533808,8.333534074,0,0,0,---,102
+HY111CH,CH,Pallazuit,Small Hydro - Dammed,33.4,0,CH,45.98108849,7.189492432,0,0,0,---,100
+HY114CH,CH,Grimsel 1-Grimselsee,Small Hydro - Dammed,32.2,0,CH,46.57533808,8.333534074,0,0,0,---,106
+HY124CH,CH,Niederenbach,Small Hydro - Dammed,28.2,0,CH,46.9957287,9.087131055,0,0,0,---,94
+HY125CH,CH,La Dernier,Small Hydro - Dammed,28,0,CH,46.70209956,6.349937545,0,0,0,---,107
+HY126CH,CH,Robbia,Small Hydro - Dammed,27,0,CH,46.34826422,10.06109217,0,0,0,---,105
+HY139CH,CH,Turtmann,Small Hydro - Dammed,23.9,0,CH,46.29540226,7.685998364,0.78,0,33,---,102
+HY143CH,CH,Seekraftwerk Zervreila,Small Hydro - Dammed,22,0,CH,46.57894959,9.119315564,0,0,151,---,110
+HY145CH,CH,Spina (Isola),Small Hydro - Dammed,20.9,0,CH,46.43113436,9.206999104,6.5,0,45,---,97
+HY156CH,CH,Oelberg,Small Hydro - Dammed,18.3,0,CH,46.80170595,7.167340809,0,0,0,---,102
+HY158CH,CH,Sanetsch,Small Hydro - Dammed,18,0,CH,46.37642613,7.277999853,2.6,0,42,---,103
+HY161CH,CH,Klosters,Small Hydro - Dammed,16.5,0,CH,46.86101451,9.895574046,0,0,0,---,99
+HY170CH,CH,Melchsee-Frutt,Small Hydro - Dammed,14,0,CH,46.79964631,8.281452614,2.73,0,16,---,106
+HY178CH,CH,Unteraa - Melchaa,Small Hydro - Dammed,12,0,CH,46.82143519,8.174462349,0,0,0,---,92
+HY190CH,CH,Tremorgio,Small Hydro - Dammed,10,0,CH,46.49021144,8.736704246,0,0,0,---,95
+HY193CH,CH,Aegina,Small Hydro - Dammed,9.67,0,CH,46.46817414,8.369523304,0,0,0,---,104
+HY194CH,CH,Gental,Small Hydro - Dammed,9.6,0,CH,46.72719109,8.333697249,0,0,0,---,98
+HY195CH,CH,Palü,Small Hydro - Dammed,9.5,0,CH,46.37249504,10.02897447,0,0,0,---,112
+HY203CH,CH,Bannalp,Small Hydro - Dammed,8.7,0,CH,46.88030374,8.421259962,1.7,0,32,---,104
+HY207CH,CH,Trüebsee,Small Hydro - Dammed,8.5,0,CH,46.79519,8.38969,0,0,0,---,107
+HY217CH,CH,Cavaglia,Small Hydro - Dammed,7,0,CH,46.36809688,10.03630585,0,0,0,---,105
+HY232CH,CH,Diablerets,Small Hydro - Dammed,5.4,0,CH,46.35306411,7.154650449,0,0,0,---,104
+HY241CH,CH,Bortel-Mittelstufe,Small Hydro - Dammed,5.01,0,CH,46.29774273,8.060825209,0,0,0,---,96
+HY244CH,CH,Engeweiher,Small Hydro - Dammed,5,0,CH,47.69348408,8.630435553,0,0,0,---,108
+HY299CH,CH,Seealp - Wasserauen,Small Hydro - Dammed,2.5,0,CH,47.28070404,9.42116369,0,0,0,---,106
+HY329CH,CH,Sella,Small Hydro - Dammed,1.93,0,CH,46.55246375,8.586661903,9.2,0,36,---,106
+HY352CH,CH,Campocologno 2,Small Hydro - Dammed,1.62,0,CH,46.23080211,10.14518215,0,0,0,---,95
+HY374CH,CH,Grindelwald,Small Hydro - Dammed,1.4,0,CH,46.62641983,8.050242336,0,0,0,---,100
+HY380CH,CH,Klusi,Small Hydro - Dammed,1.3,0,CH,46.66389853,7.548263684,0,0,0,---,103
+HY1ME,ME,Piva G2,Large Hydro - Dammed,114,0,ME,43.2725,18.84221,263.33,0,190,---,78
+HY2ME,ME,Piva G3,Large Hydro - Dammed,114,0,ME,43.2725,18.84221,263.33,0,190,---,77
+HY3ME,ME,Piva G1,Large Hydro - Dammed,114,0,ME,43.2725,18.84221,263.33,0,190,---,75
+HY4ME,ME,Glava Zete,Small Hydro - Dammed,5.36,0,ME,42.6,18.98,0,0,0,---,88
+HY5ME,ME,Pljevlja,Small Hydro - Dammed,2.961,0,ME,43.358164,19.313452,0,2894,0,---,77
+HY6ME,ME,Perucica,Large Hydro - Dammed,307,0,ME,42.6718,18.9951,0,0,0,---,73
+HY2AL,AL,Koman 1,Large Hydro - Dammed,150,0,AL,42.103,19.822,47,0,96,---,77
+HY3AL,AL,Koman 2,Large Hydro - Dammed,150,0,AL,42.103,19.822,47,0,96,---,77
+HY4AL,AL,Koman 3,Large Hydro - Dammed,150,0,AL,42.103,19.822,47,0,96,---,79
+HY5AL,AL,Koman 4,Large Hydro - Dammed,150,0,AL,42.103,19.822,47,0,96,---,77
+HY6AL,AL,Fierzë 1,Large Hydro - Dammed,125,0,AL,42.251,20.043,575,0,167,---,78
+HY7AL,AL,Fierzë 2,Large Hydro - Dammed,125,0,AL,42.251,20.043,575,0,167,---,90
+HY8AL,AL,Fierzë 3,Large Hydro - Dammed,125,0,AL,42.251,20.043,575,0,167,---,73
+HY9AL,AL,Fierzë 4,Large Hydro - Dammed,125,0,AL,42.251,20.043,575,0,167,---,79
+HY10AL,AL,Kukel,Large Hydro - Dammed,114,0,AL,41.89953,19.56248,0,0,0,---,76
+HY14AL,AL,Vau i Dejës 1,Large Hydro - Dammed,50,0,AL,42.014,19.636,0,0,0,---,79
+HY15AL,AL,Vau i Dejës 2,Large Hydro - Dammed,50,0,AL,42.014,19.636,0,0,0,---,74
+HY16AL,AL,Vau i Dejës 3,Large Hydro - Dammed,50,0,AL,42.014,19.636,0,0,0,---,88
+HY17AL,AL,Vau i Dejës 4,Large Hydro - Dammed,50,0,AL,42.014,19.636,0,0,0,---,83
+HY18AL,AL,Vau i Dejës 5,Large Hydro - Dammed,50,0,AL,42.014,19.636,0,0,0,---,76
+HY20AL,AL,"Bistricë 1, 2",Small Hydro - Dammed,27.5,0,AL,39.91677,20.13748,0,0,0,---,90
+HY21AL,AL,Ulëz,Small Hydro - Dammed,25.2,0,AL,41.67962,19.89358,0,0,0,---,88
+HY22AL,AL,Shkopet,Small Hydro - Dammed,24,0,AL,41.691004,19.83,0,0,0,---,79
+HY25AL,AL,Prellë,Small Hydro - Dammed,14.7,0,AL,0,0,0,0,0,---,72
+HY26AL,AL,Shoshan,Small Hydro - Dammed,14.4,0,AL,0,0,0,0,0,---,76
+HY28AL,AL,Lapaj,Small Hydro - Dammed,13.6,0,AL,0,0,0,0,0,---,73
+HY29AL,AL,Pobreg,Small Hydro - Dammed,12.3,0,AL,0,0,0,0,0,---,78
+HY30AL,AL,Tërvol,Small Hydro - Dammed,10.6,0,AL,0,0,0,0,0,---,72
+HY31AL,AL,Martanesh,Small Hydro - Dammed,10.5,0,AL,0,0,0,0,0,---,88
+HY6RS,RS,Djerdap I G1,Large Hydro - Dammed,176.3,0,RS,44.6684,22.5268,0,0,0,---,107
+HY7RS,RS,Djerdap I G2,Large Hydro - Dammed,176.3,0,RS,44.6684,22.5268,0,0,0,---,123
+HY8RS,RS,Djerdap I G3,Large Hydro - Dammed,176.3,0,RS,44.6684,22.5268,0,0,0,---,113
+HY9RS,RS,Djerdap I G4,Large Hydro - Dammed,190,0,RS,44.6684,22.5268,0,0,0,---,118
+HY10RS,RS,Djerdap I G5,Large Hydro - Dammed,190,0,RS,44.6684,22.5268,0,0,0,---,113
+HY11RS,RS,Djerdap I G6,Large Hydro - Dammed,190,0,RS,44.6684,22.5268,0,0,0,---,106
+HY1BA,BA,Bocac,Large Hydro - Dammed,110,0,BA,44.562603,17.135024,42.9,0,66,---,78
+HY4BA,BA,Grabovica,Large Hydro - Dammed,115,0,BA,43.5872,17.71886,0,0,0,---,76
+HY5BA,BA,Jablanica,Large Hydro - Dammed,180,0,BA,43.692406,17.732527,0,0,85,---,80
+HY6BA,BA,Jajce I,Small Hydro - Dammed,48,0,BA,44.37738458,17.28159952,4.2,0,0,---,75
+HY7BA,BA,Jajce II,Small Hydro - Dammed,30,0,BA,44.427775,17.239535,1.3,0,0,---,75
+HY8BA,BA,Krupa,Small Hydro - Dammed,48.5,0,BA,44.5624,17.135,5.75,0,29,---,92
+HY9BA,BA,Mostar,Medium Hydro - Dammed,72,0,BA,43.377414,17.844829,6.4,0,44,---,82
+HY10BA,BA,Mostarsko,Medium Hydro - Dammed,60,0,BA,43.2989,17.794,0.96,0,0,---,82
+HY11BA,BA,Pec Mlini,Small Hydro - Dammed,30,0,BA,43.3375,17.3261,0.8,0,0,---,91
+HY12BA,BA,Rama,Large Hydro - Dammed,160,0,BA,43.747041,17.675838,466,303,100,---,78
+HY13BA,BA,Salakovac,Large Hydro - Dammed,210,0,BA,43.447752,17.836906,68,0,70,---,76
+HY14BA,BA,Trebinje I,Large Hydro - Dammed,180,0,BA,42.706912,18.381028,1082,0,123,---,77
+HY15BA,BA,Trebinje II,Small Hydro - Dammed,8,0,BA,42.70664,18.3805,15.9,0,33.5,---,91
+HY16BA,BA,Visegrad G1,Large Hydro - Dammed,105,0,BA,43.76,19.289,53.67,0,79.5,---,80
+HY17BA,BA,Visegrad G2,Large Hydro - Dammed,105,0,BA,43.76,19.289,53.67,0,79.5,---,72
+HY18BA,BA,Visegrad G3,Large Hydro - Dammed,105,0,BA,43.76,19.289,53.67,0,79.5,---,79

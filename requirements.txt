@@ -1,0 +1,10 @@
+pandas
+numpy
+matplotlib
+tqdm
+ipykernel
+powerplantmatching
+gurobipy
+atlite
+linopy
+highspy
