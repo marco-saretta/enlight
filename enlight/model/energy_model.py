@@ -124,7 +124,11 @@ class EnlightModel:
         )
 
         # Electricity export
+<<<<<<< HEAD
         self.electricity_export = self.model.add_variables(
+=======
+        self.electricty_export = self.model.add_variables(
+>>>>>>> marco-first-upload
             coords=[self.times, self.bidding_zones],
             dims=["T", "Z"],
             name = 'export'
@@ -142,6 +146,10 @@ class EnlightModel:
         """
         Placeholder for adding model constraints.
         """
+<<<<<<< HEAD
+=======
+
+>>>>>>> marco-first-upload
         
         self.power_balance = self.model.add_constraints(
             (self.wind_onshore_bid
@@ -151,13 +159,21 @@ class EnlightModel:
              + self.conventional_units_bid.dot(self.data.G_Z_xr) # type: ignore
              == 
              self.demand_inflexible_classic_bid
+<<<<<<< HEAD
             + self.electricity_export
+=======
+            + self.electricty_export
+>>>>>>> marco-first-upload
             ),
             name='power_balance'
             )
         
         self.electricity_exports = self.model.add_constraints(
+<<<<<<< HEAD
             (self.lineflow.dot(self.data.L_Z_xr) == self.electricity_export), # type: ignore
+=======
+            (self.lineflow.dot(self.data.L_Z_xr) == self.electricty_export), # type: ignore
+>>>>>>> marco-first-upload
             name='electricity_exports'
             )
      
@@ -203,6 +219,12 @@ class EnlightModel:
         """
         Solve the model using Gurobi.
         """
+<<<<<<< HEAD
         self.solve_model(solver_name='gurobi')
         utils.save_model_results(self)
         # self.save_model_to_lp_file()
+=======
+        self.solve_model(solver_name='highs')
+        utils.save_model_results(self)
+        #self.save_model_to_lp_file()
+>>>>>>> marco-first-upload

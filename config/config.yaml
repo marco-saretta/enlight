@@ -22,7 +22,11 @@
 
 scenario_list:
   - scenario_1
+<<<<<<< HEAD
   # - scenario_2
+=======
+  - scenario_2
+>>>>>>> marco-first-upload
   # - scenario_3  # Optional scenario
 
 # Simulation Duration
@@ -46,8 +50,13 @@ duration:
 # ============================================================================
 
 solver_name: 
+<<<<<<< HEAD
   - "gurobi"      # Main solver
   #- "highs"     # Alternative solver, runs without a solver license
+=======
+  #- "gurobi"      # Main solver
+  - "highs"     # Alternative solver, runs without a solver license
+>>>>>>> marco-first-upload
 
 
 # ============================================================================
@@ -60,6 +69,7 @@ solver_name:
 # Comment the zones you do not want to use in the simulations.
 
 bidding_zones:
+<<<<<<< HEAD
   - DELU # Germany and Luxembourg
   - DK1  # Denmark West
   - DK2  # Denmark East
@@ -125,3 +135,50 @@ VRE_generators:
     tech: solar_pv
   - label: HYDRO_ROR
     tech: hydro_ror
+=======
+
+  # EU Member States (alphabetically)
+  - AT   # Austria
+  - BE   # Belgium
+  - BG   # Bulgaria
+  - CZ   # Czech Republic
+  - DELU # Germany and Luxembourg
+  - DK1  # Denmark West
+  - DK2  # Denmark East
+  - EE   # Estonia
+  - EL   # Greece
+  - ES   # Spain
+  - FI   # Finland
+  - FR   # France
+  - HR   # Croatia
+  - HU   # Hungary
+  - IT   # Italy
+  - LT   # Lithuania
+  - LV   # Latvia
+  - NL   # Netherlands
+  - PL   # Poland
+  - PT   # Portugal
+  - RO   # Romania
+  - SE1  # Sweden zone 1
+  - SE2  # Sweden zone 2
+  - SE3  # Sweden zone 3
+  - SE4  # Sweden zone 4
+  - SEM  # Single Electricity Market (Ireland and Northern Ireland)
+  - SI   # Slovenia
+  - SK   # Slovakia
+
+  # Extra-EU Bidding Zones (alphabetically)
+  - AL   # Albania
+  - BA   # Bosnia and Herzegovina
+  - CH   # Switzerland
+  - GB   # Great Britain
+  - ME   # Montenegro
+  - MK   # North Macedonia
+  - NO1  # Norway zone 1
+  - NO2  # Norway zone 2
+  - NO3  # Norway zone 3
+  - NO4  # Norway zone 4
+  - NO5  # Norway zone 5
+  - RS   # Serbia
+  - XK   # Kosovo
+>>>>>>> marco-first-upload

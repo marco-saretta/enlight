@@ -12,19 +12,14 @@ if __name__ == "__main__":
     runner = EnlightRunner()
 
     # Prepare input data for simulations based on the configuration in scenarios_config.yaml
-    
-    runner.prepare_data_single_simulation('scenario_1')
-    
+    #runner.prepare_data_single_simulation('scenario_1')
     #debugger = runner.data_processor
     
     # Prepare input data for simulations based on the configuration in scenarios_config.yaml
-    # runner.prepare_data_all_simulations()
+    #runner.prepare_data_all_simulations()
 
     # Run a single simulation for the specified week and save the results
-    
     runner.run_single_simulation(week=1, simulation_path=Path('simulations/scenario_1'))
-    
     #runner.enlight_model.run_model()
     # Access the model instance for debugging purposes
-
     d = runner.enlight_model
