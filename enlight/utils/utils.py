@@ -3,10 +3,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from typing import Optional
-<<<<<<< HEAD
 import xarray as xr
-=======
->>>>>>> marco-first-upload
 
 def validate_df_positive_numeric(df: pd.DataFrame, name: str, check_numeric: bool = True, check_positive: bool = True) -> None:
     """
@@ -106,11 +103,7 @@ def save_model_results(self):
         results_path = Path(self.simulation_path) / "results"
         results_path.mkdir(parents=True, exist_ok=True)
         
-<<<<<<< HEAD
         self.logger.info('Saving the results')
-=======
-        self.logger.info('Saving the reults')
->>>>>>> marco-first-upload
         try:
             # --- Step 1: Initialize dictionary with all outputs ---
             self.results_dict = {}
@@ -127,11 +120,7 @@ def save_model_results(self):
                 "solar_pv_bid_sol": get_solution(self.solar_pv_bid),
                 "hydro_ror_bid_sol": get_solution(self.hydro_ror_bid),
                 "conventional_units_sol": get_solution(self.conventional_units_bid),
-<<<<<<< HEAD
                 "electricity_export_sol": get_solution(self.electricity_export),
-=======
-                "electricty_export_sol": get_solution(self.electricty_export),
->>>>>>> marco-first-upload
                 "lineflow_sol": get_solution(self.lineflow),
             })
 
@@ -144,7 +133,6 @@ def save_model_results(self):
             )
             self.results_dict["electricity_prices"] = self.model.dual["power_balance"].to_pandas()
 
-<<<<<<< HEAD
             ###### NEWLY ADDED - MARGINAL GENERATOR ######
             # Read out the marginal generator by its unit name
             el_cap_xr = xr.DataArray(self.data.conventional_units_el_cap,
@@ -170,8 +158,6 @@ def save_model_results(self):
             self.results_dict["marginal_generator"] = marginal_generators_df            
             ################################################
 
-=======
->>>>>>> marco-first-upload
             # Save all results ---
             for name, df in self.results_dict.items():
                 if df is not None:  # only save if calculated
@@ -181,11 +167,6 @@ def save_model_results(self):
             print(f"Error saving results: {e}")
             # raise e
             
-<<<<<<< HEAD
-
-=======
-            
->>>>>>> marco-first-upload
 #### OBSOLETE FUNCTIONS - DO NOT CONSIDER ####
 
 # Function to extract results

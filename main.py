@@ -12,7 +12,7 @@ if __name__ == "__main__":
     runner = EnlightRunner()
 
     # Prepare input data for simulations based on the configuration in scenarios_config.yaml
-    #runner.prepare_data_single_simulation('scenario_1')
+    runner.prepare_data_single_simulation('scenario_1')
     #debugger = runner.data_processor
     
     # Prepare input data for simulations based on the configuration in scenarios_config.yaml

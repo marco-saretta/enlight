@@ -11,8 +11,11 @@ dependencies:
   - ipykernel
   - openpyxl
   - highs
+  - jupyterlab
+  - notebook
   - pip
   - pip:
+      - yfinance
       - atlite
       - linopy
       - highspy
