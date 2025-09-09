@@ -1,5 +1,5 @@
 # do not track turbie response files, in folder called MODEL_TO_INTEGRATE/
-#junk/*
+stuff/*
 simulations/*
 logs/*
 

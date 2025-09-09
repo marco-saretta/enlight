@@ -7,13 +7,9 @@
 # Note: This file is used by main.py to run simulations.
 
 
-# ============================================================================
-# SIMULATION PATAMETERS
-# ============================================================================
-# Defines which scenarios to run and simulation time period.
-# Scenarios represent different modeling conditions (demand, generation, etc.)
-# Comment out unwanted scenarios. Names must match scenario directories.
-# ============================================================================
+# ============================================================#
+#                 SIMULATION PATAMETERS                       #
+# ============================================================#
 
 # Scenario selection
 # ----------------------
@@ -35,10 +31,9 @@ duration:
   start_week: 1     # Valid range: 1-52
   end_week: 52      # Valid range: 1-52
 
-
-# ============================================================================
-# SOLVER CONFIGURATION
-# ============================================================================
+# ============================================================#
+#                 SOLVER CONFIGURATION                        #
+# ============================================================#
 # Selects optimization solver for energy market problems.
 # "gurobi": Very fast, requires license.
 # "highs": Ok fast, but no license required.
@@ -49,10 +44,9 @@ solver_name:
   #- "gurobi"      # Main solver
   - "highs"     # Alternative solver, runs without a solver license
 
-
-# ============================================================================
-# BIDDING ZONES CONFIGURATION
-# ============================================================================
+# ============================================================#
+#                 BIDDING ZONES CONFIGURATION                 #
+# ============================================================#
 # Defines European electricity market zones to include in simulation.
 # Comment out unwanted zones. Each zone needs corresponding input data.
 # ============================================================================

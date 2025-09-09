@@ -25,16 +25,14 @@ class DataProcessor:
         which may have side effects (such as file I/O) and performance implications.
         """
         # Initialize logger
-        self.logger.info(
-            f"INITIALIZING DATA PROCESSOR: {self.scenario_name}"
-        )
+        self.logger.info(f"INITIALIZING DATA PROCESSOR: {self.scenario_name}")
 
         # Initialize auxiliary data dictionary
         self.aux_data_dict: Dict[str, Any] = {"scenario_name": self.scenario_name}
 
         self._init_data_paths()
         self._write_bidding_zones()
-        self._write_generators() # NEWLY ADDED
+        self._write_generators()  # NEWLY ADDED
         self._load_scenarios_config()
         self._load_setup()
         self._prepare_all_renewable_sources()
@@ -63,7 +61,7 @@ class DataProcessor:
         self.path_fuel_projections = self.base_data_path / "fuel_price_projections"
 
         # Hydro paths
-        #self.path_hydro_ror = self.base_data_path / "hydro_run_of_river"
+        # self.path_hydro_ror = self.base_data_path / "hydro_run_of_river"
         self.path_hydro_reservoir = self.base_data_path / "hydro_reservoir"
         self.path_hydro_pumped = self.base_data_path / "hydro_pumped_storage"
 
@@ -118,7 +116,7 @@ class DataProcessor:
 
     def _write_generators(self) -> None:
         # The list of conventional generators is not yet useful but included for completeness.
-        #self.conventional_generators = self.config_yaml.get("conventional_generators", [])
+        # self.conventional_generators = self.config_yaml.get("conventional_generators", [])
         self.VRE_generators = self.config_yaml.get("VRE_generators", [])
 
     def _load_setup(self) -> None:
@@ -176,11 +174,10 @@ class DataProcessor:
         bid_price = float(section.at[config["bid_price_key"], scenario])
 
         # Store bid price and weather year in aux data (for later use/reporting)
-        
+
         # Store in aux data
         aux = self.aux_data_dict.setdefault(label.lower(), {})
-        aux.update({'bid_prices': bid_price, 'weather_year': weather_year})
-
+        aux.update({"bid_prices": bid_price, "weather_year": weather_year})
 
         # --- Load weather-based per-unit production profile ---
         profile_file = f"{config['wy_label']}_{weather_year}.csv"
@@ -233,9 +230,9 @@ class DataProcessor:
         production_df[common_cols] = (
             profile_df[common_cols] * cap_year[common_cols].values
         )
-        
+
         # Add the week column
-        production_df['Week'] = profile_df['Week']
+        production_df["Week"] = profile_df["Week"]
 
         return production_df
 
@@ -245,9 +242,11 @@ class DataProcessor:
         Covers: Wind Onshore, Wind Offshore, Solar PV, Hydro ROR.
         """
         self.scenario_config_df
-        sources_dict = {} # create a dictionary of dictionaries to dynamically create the sources list used to load the VRE data from the excel-configuration file.
+        sources_dict = {}  # create a dictionary of dictionaries to dynamically create the sources list used to load the VRE data from the excel-configuration file.
         for vre_gen in self.VRE_generators:
-            label, tech = vre_gen.values() # load the label and tech from the .yaml configuration file e.g. WIND_ON and wind_onshore
+            label, tech = (
+                vre_gen.values()
+            )  # load the label and tech from the .yaml configuration file e.g. WIND_ON and wind_onshore
             sources_dict[label] = {}
             sources_dict[label]["label"] = label
             sources_dict[label]["data_path"] = self.base_data_path / tech
@@ -257,48 +256,7 @@ class DataProcessor:
             for subkey in self.scenario_config_df.loc[label, "key"]:
                 sources_dict[label][subkey.replace(tech + "_", "") + "_key"] = subkey
         sources = list(sources_dict.values())
-        # sources = [
-        #     {
-        #         "label": "WIND_ON",
-        #         "data_path": self.path_wind_onshore,
-        #         "wy_key": "wind_onshore_wy",
-        #         "cap_file_key": "wind_onshore_cap_file",
-        #         "bid_price_key": "wind_onshore_bid_price",
-        #         "wy_subdir": self.weather_years_subdir,
-        #         "wy_label": "wind_onshore_wy",
-        #         "output_file": "wind_onshore_production.csv",
-        #     },
-        #     {
-        #         "label": "WIND_OFF",
-        #         "data_path": self.path_wind_offshore,
-        #         "wy_key": "wind_offshore_wy",
-        #         "cap_file_key": "wind_offshore_cap_file",
-        #         "bid_price_key": "wind_offshore_bid_price",
-        #         "wy_subdir": self.weather_years_subdir,
-        #         "wy_label": "wind_offshore_wy",
-        #         "output_file": "wind_offshore_production.csv",
-        #     },
-        #     {
-        #         "label": "SOLAR",
-        #         "data_path": self.path_solar_pv,
-        #         "wy_key": "solar_pv_wy",
-        #         "cap_file_key": "solar_pv_cap_file",
-        #         "bid_price_key": "solar_pv_bid_price",
-        #         "wy_subdir": self.weather_years_subdir,
-        #         "wy_label": "solar_pv_wy",
-        #         "output_file": "solar_pv_production.csv",
-        #     },
-        #     {
-        #         "label": "HYDRO_ROR",
-        #         "data_path": self.path_hydro_ror,
-        #         "wy_key": "hydro_ror_wy",
-        #         "cap_file_key": "hydro_ror_cap_file",
-        #         "bid_price_key": "hydro_ror_bid_price",
-        #         "wy_subdir": self.weather_years_subdir,
-        #         "wy_label": "hydro_ror_wy",
-        #         "output_file": "hydro_run_of_river_production.csv",
-        #     },
-        # ]
+
         for source in sources:
             prod_df = self.calculate_renewable_profiles(source)
             utils.save_data(
@@ -442,8 +400,8 @@ class DataProcessor:
 
         # Filter the thermal units to only include those in the selected bidding zones
         self.thermal_units = self.thermal_units_raw[
-            self.thermal_units_raw['zone_el'].isin(self.bidding_zones_list)
-            ]
+            self.thermal_units_raw["zone_el"].isin(self.bidding_zones_list)
+        ]
 
         # Save the loaded thermal plant units data to the designated output path
         utils.save_data(
@@ -495,21 +453,24 @@ class DataProcessor:
         if lines_a_b_file.exists() and lines_b_a_file.exists():
             # self.lines_a_b_raw = pd.read_csv(lines_a_b_file, index_col=0)
             # self.lines_b_a_raw = pd.read_csv(lines_b_a_file, index_col=0)
-            
 
             # self.lines_a_b = self.lines_a_b_raw[self.lines_a_b_raw.index.isin(self.bidding_zones_list)]
             # self.lines_b_a = self.lines_b_a_raw[self.lines_b_a_raw.index.isin(self.bidding_zones_list)]
 
             # New code below ensures that the source and destination zone have both been chosen as bidding zones.
-            self.lines_a_b_raw = pd.read_csv(lines_a_b_file)#, index_col=0)
-            self.lines_b_a_raw = pd.read_csv(lines_b_a_file)#, index_col=0)
+            self.lines_a_b_raw = pd.read_csv(lines_a_b_file)  # , index_col=0)
+            self.lines_b_a_raw = pd.read_csv(lines_b_a_file)  # , index_col=0)
 
             self.lines_a_b = self.lines_a_b_raw[
-                self.lines_a_b_raw[["from_zone","to_zone"]].isin(self.bidding_zones_list).all(axis=1)
-                ]
+                self.lines_a_b_raw[["from_zone", "to_zone"]]
+                .isin(self.bidding_zones_list)
+                .all(axis=1)
+            ]
             self.lines_b_a = self.lines_b_a_raw[
-                self.lines_b_a_raw[["to_zone","from_zone"]].isin(self.bidding_zones_list).all(axis=1)
-                ]
+                self.lines_b_a_raw[["to_zone", "from_zone"]]
+                .isin(self.bidding_zones_list)
+                .all(axis=1)
+            ]
 
             utils.save_data(
                 self.lines_a_b,
@@ -527,8 +488,6 @@ class DataProcessor:
             raise FileNotFoundError(
                 f"Line files not found: {lines_a_b_file} or {lines_b_a_file}"
             )
-            
-        
 
     def calculate_inflexible_demand(self, config: dict) -> pd.DataFrame:
         """
@@ -586,12 +545,12 @@ class DataProcessor:
         demand_profile[common_cols] = (
             profile_df[common_cols] * projection_row[common_cols].values
         )
-   
+
         # --- Validation ---
         utils.validate_df_positive_numeric(demand_profile, profile_file)
 
         # Filter the bidding zones chosen in config.yaml
-        demand_profile = demand_profile[self.bidding_zones_list + ['Week']]
+        demand_profile = demand_profile[self.bidding_zones_list + ["Week"]]
 
         return demand_profile
 
