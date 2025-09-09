@@ -34,6 +34,10 @@ class DataProcessor:
 
         self._init_data_paths()
         self._write_bidding_zones()
+<<<<<<< HEAD
+        self._write_generators() # NEWLY ADDED
+=======
+>>>>>>> marco-first-upload
         self._load_scenarios_config()
         self._load_setup()
         self._prepare_all_renewable_sources()
@@ -62,14 +66,24 @@ class DataProcessor:
         self.path_fuel_projections = self.base_data_path / "fuel_price_projections"
 
         # Hydro paths
+<<<<<<< HEAD
+        #self.path_hydro_ror = self.base_data_path / "hydro_run_of_river"
+=======
         self.path_hydro_ror = self.base_data_path / "hydro_run_of_river"
+>>>>>>> marco-first-upload
         self.path_hydro_reservoir = self.base_data_path / "hydro_reservoir"
         self.path_hydro_pumped = self.base_data_path / "hydro_pumped_storage"
 
         # Renewable paths
+<<<<<<< HEAD
+        # self.path_solar_pv = self.base_data_path / "solar_pv"
+        # self.path_wind_onshore = self.base_data_path / "wind_onshore"
+        # self.path_wind_offshore = self.base_data_path / "wind_offshore"
+=======
         self.path_solar_pv = self.base_data_path / "solar_pv"
         self.path_wind_onshore = self.base_data_path / "wind_onshore"
         self.path_wind_offshore = self.base_data_path / "wind_offshore"
+>>>>>>> marco-first-upload
 
         # Thermal and other paths
         self.path_thermal_plants = self.base_data_path / "thermal_plants"
@@ -115,6 +129,14 @@ class DataProcessor:
 
         self.aux_data_dict["bidding_zones"] = self.bidding_zones_list
 
+<<<<<<< HEAD
+    def _write_generators(self) -> None:
+        # The list of conventional generators is not yet useful but included for completeness.
+        #self.conventional_generators = self.config_yaml.get("conventional_generators", [])
+        self.VRE_generators = self.config_yaml.get("VRE_generators", [])
+
+=======
+>>>>>>> marco-first-upload
     def _load_setup(self) -> None:
         """
         Load scenario setup configuration from the loaded configuration DataFrame.
@@ -238,6 +260,63 @@ class DataProcessor:
         Load, process, and store renewable generation profiles and capacities.
         Covers: Wind Onshore, Wind Offshore, Solar PV, Hydro ROR.
         """
+<<<<<<< HEAD
+        self.scenario_config_df
+        sources_dict = {} # create a dictionary of dictionaries to dynamically create the sources list used to load the VRE data from the excel-configuration file.
+        for vre_gen in self.VRE_generators:
+            label, tech = vre_gen.values() # load the label and tech from the .yaml configuration file e.g. WIND_ON and wind_onshore
+            sources_dict[label] = {}
+            sources_dict[label]["label"] = label
+            sources_dict[label]["data_path"] = self.base_data_path / tech
+            sources_dict[label]["wy_subdir"] = self.weather_years_subdir
+            sources_dict[label]["wy_label"] = tech + "_wy"
+            sources_dict[label]["output_file"] = tech + "_production.csv"
+            for subkey in self.scenario_config_df.loc[label, "key"]:
+                sources_dict[label][subkey.replace(tech + "_", "") + "_key"] = subkey
+        sources = list(sources_dict.values())
+        # sources = [
+        #     {
+        #         "label": "WIND_ON",
+        #         "data_path": self.path_wind_onshore,
+        #         "wy_key": "wind_onshore_wy",
+        #         "cap_file_key": "wind_onshore_cap_file",
+        #         "bid_price_key": "wind_onshore_bid_price",
+        #         "wy_subdir": self.weather_years_subdir,
+        #         "wy_label": "wind_onshore_wy",
+        #         "output_file": "wind_onshore_production.csv",
+        #     },
+        #     {
+        #         "label": "WIND_OFF",
+        #         "data_path": self.path_wind_offshore,
+        #         "wy_key": "wind_offshore_wy",
+        #         "cap_file_key": "wind_offshore_cap_file",
+        #         "bid_price_key": "wind_offshore_bid_price",
+        #         "wy_subdir": self.weather_years_subdir,
+        #         "wy_label": "wind_offshore_wy",
+        #         "output_file": "wind_offshore_production.csv",
+        #     },
+        #     {
+        #         "label": "SOLAR",
+        #         "data_path": self.path_solar_pv,
+        #         "wy_key": "solar_pv_wy",
+        #         "cap_file_key": "solar_pv_cap_file",
+        #         "bid_price_key": "solar_pv_bid_price",
+        #         "wy_subdir": self.weather_years_subdir,
+        #         "wy_label": "solar_pv_wy",
+        #         "output_file": "solar_pv_production.csv",
+        #     },
+        #     {
+        #         "label": "HYDRO_ROR",
+        #         "data_path": self.path_hydro_ror,
+        #         "wy_key": "hydro_ror_wy",
+        #         "cap_file_key": "hydro_ror_cap_file",
+        #         "bid_price_key": "hydro_ror_bid_price",
+        #         "wy_subdir": self.weather_years_subdir,
+        #         "wy_label": "hydro_ror_wy",
+        #         "output_file": "hydro_run_of_river_production.csv",
+        #     },
+        # ]
+=======
         sources = [
             {
                 "label": "WIND_ON",
@@ -281,6 +360,7 @@ class DataProcessor:
             },
         ]
 
+>>>>>>> marco-first-upload
         for source in sources:
             prod_df = self.calculate_renewable_profiles(source)
             utils.save_data(
@@ -420,7 +500,16 @@ class DataProcessor:
             )
 
         # Load the thermal plant units data into a DataFrame
+<<<<<<< HEAD
+        self.thermal_units_raw = pd.read_csv(thermal_units_filepath, index_col=0)
+
+        # Filter the thermal units to only include those in the selected bidding zones
+        self.thermal_units = self.thermal_units_raw[
+            self.thermal_units_raw['zone_el'].isin(self.bidding_zones_list)
+            ]
+=======
         self.thermal_units = pd.read_csv(thermal_units_filepath, index_col=0)
+>>>>>>> marco-first-upload
 
         # Save the loaded thermal plant units data to the designated output path
         utils.save_data(
@@ -470,11 +559,32 @@ class DataProcessor:
 
         # Check if both transmission lines files exist
         if lines_a_b_file.exists() and lines_b_a_file.exists():
+<<<<<<< HEAD
+            # self.lines_a_b_raw = pd.read_csv(lines_a_b_file, index_col=0)
+            # self.lines_b_a_raw = pd.read_csv(lines_b_a_file, index_col=0)
+            
+
+            # self.lines_a_b = self.lines_a_b_raw[self.lines_a_b_raw.index.isin(self.bidding_zones_list)]
+            # self.lines_b_a = self.lines_b_a_raw[self.lines_b_a_raw.index.isin(self.bidding_zones_list)]
+
+            # New code below ensures that the source and destination zone have both been chosen as bidding zones.
+            self.lines_a_b_raw = pd.read_csv(lines_a_b_file)#, index_col=0)
+            self.lines_b_a_raw = pd.read_csv(lines_b_a_file)#, index_col=0)
+
+            self.lines_a_b = self.lines_a_b_raw[
+                self.lines_a_b_raw[["from_zone","to_zone"]].isin(self.bidding_zones_list).all(axis=1)
+                ]
+            self.lines_b_a = self.lines_b_a_raw[
+                self.lines_b_a_raw[["to_zone","from_zone"]].isin(self.bidding_zones_list).all(axis=1)
+                ]
+
+=======
             self.lines_a_b_raw = pd.read_csv(lines_a_b_file, index_col=0)
             self.lines_b_a_raw = pd.read_csv(lines_b_a_file, index_col=0)
             
             self.lines_a_b = self.lines_a_b_raw[self.lines_a_b_raw.index.isin(self.bidding_zones_list)]
             self.lines_b_a = self.lines_b_a_raw[self.lines_b_a_raw.index.isin(self.bidding_zones_list)]
+>>>>>>> marco-first-upload
             utils.save_data(
                 self.lines_a_b,
                 "lines_a_b.csv",
@@ -550,10 +660,20 @@ class DataProcessor:
         demand_profile[common_cols] = (
             profile_df[common_cols] * projection_row[common_cols].values
         )
+<<<<<<< HEAD
+   
+        # --- Validation ---
+        utils.validate_df_positive_numeric(demand_profile, profile_file)
+
+        # Filter the bidding zones chosen in config.yaml
+        demand_profile = demand_profile[self.bidding_zones_list + ['Week']]
+
+=======
 
         # --- Validation ---
         utils.validate_df_positive_numeric(demand_profile, profile_file)
 
+>>>>>>> marco-first-upload
         return demand_profile
 
     def _prepare_inflexible_demand_sources(self) -> None:

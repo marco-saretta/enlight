@@ -112,7 +112,7 @@ class DataLoader:
         self.solar_pv_production = self._filter_by_week(self._load_csv('solar_pv_production.csv'))
         utils.validate_df_positive_numeric(self.solar_pv_production, "solar_pv_production")
 
-        self.hydro_ror_production = self._filter_by_week(self._load_csv('hydro_run_of_river_production.csv'))
+        self.hydro_ror_production = self._filter_by_week(self._load_csv('hydro_ror_production.csv'))
         utils.validate_df_positive_numeric(self.hydro_ror_production, "hydro_ror_production")
 
     def load_demand_data(self):
@@ -137,7 +137,9 @@ class DataLoader:
         # Repeat static line capacities over all time steps
         # Shape: (T, L)
 
-        self.time_index = pd.Index(np.arange(168), name="T")
+        # self.time_index = pd.Index(np.arange(168), name="T")
+        # The series for the conventional generator costs have to be 1-indexed to match the other time series (RES, demand, etc.)
+        self.time_index = pd.Index(np.arange(1,168+1), name="T")
         self.T = len(self.time_index)
 
         self.lines_a_to_b_cap = np.outer(
@@ -224,7 +226,7 @@ class DataLoader:
             },
             dims=["G", "Z"]            # Dimension names for alignment in dot product
         )
-
+        
     def load_ptx(self):
         """Load power-to-X unit demand data."""
         self.ptx_demand_df = self._load_csv('ptx_units.csv')
