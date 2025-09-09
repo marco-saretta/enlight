@@ -1,0 +1,18 @@
+,co2_emission_pu,so2_emissions_pu
+,kg/MWh-f,kg/MWh-f
+Natural gas,205.2,1.44
+Biogas,0,0
+Coal,338.4,28.8
+Brown coal,364.32,2160
+Fuel oil,284.4,360
+Gas oil,266.76,82.8
+Oil Shale,248.5,1000
+Geothermal,0,0
+Solar Thermal,0,0
+Straw,0,176.4
+Wood chips,0,6.84
+Peat,381.6,432
+Tidal,0,
+Nuclear,0,0
+Wood pellets,0,6.84
+Waste,133.2,29.88
