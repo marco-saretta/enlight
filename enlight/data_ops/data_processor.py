@@ -313,12 +313,25 @@ class DataProcessor:
             )
 
         # Load the hydro reservoir data into DataFrames
-        self.hydro_reservoir_units_df = pd.read_csv(
+        self.hydro_reservoir_units_df_raw = pd.read_csv(
             hydro_res_units_filepath, index_col=0
         )
-        self.hydro_res_energy_wy_df = pd.read_csv(
+        self.hydro_res_energy_wy_df_raw = pd.read_csv(
             hydro_res_energy_wy_filepath, index_col=0
         )
+
+        # Filter the hydro reservoir data to only include generators and energy availability in the selected bidding zones
+        self.hydro_reservoir_units_df = self.hydro_reservoir_units_df_raw[
+            self.hydro_reservoir_units_df_raw['zone_el'].isin(self.bidding_zones_list)
+            ].copy()  # .copy() used to avoid SettingWithCopyWarning
+        self.hydro_res_energy_wy_df = self.hydro_res_energy_wy_df_raw[self.bidding_zones_list].copy()
+
+        # Add a column that indicates the capacity share of each reservoir in its bidding zone.
+        #   This is used to distribute the total energy availability in the bidding zone to the individual reservoirs.
+        total_zonal_capacity = self.hydro_reservoir_units_df.groupby("zone_el")["capacity_el"].sum()
+        individual_generator_capacity_share = (self.hydro_reservoir_units_df["capacity_el"]
+                                               / self.hydro_reservoir_units_df["zone_el"].map(total_zonal_capacity))
+        self.hydro_reservoir_units_df["capacity_share_in_zone"] = individual_generator_capacity_share
 
         # Validate the loaded data
         utils.validate_df_positive_numeric(
@@ -334,7 +347,7 @@ class DataProcessor:
         )
         utils.save_data(
             self.hydro_res_energy_wy_df,
-            "hydro_reservoir_units_energy.csv",
+            "hydro_reservoir_energy.csv",
             output_dir=self.output_path,
             logger=self.logger,
         )

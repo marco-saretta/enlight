@@ -7,6 +7,7 @@ import xarray as xr
 from enlight.data_ops import DataLoader
 import enlight.utils as utils
 
+
 class EnlightModel:
     """
     Electricity market optimization model using Linopy.
@@ -17,28 +18,28 @@ class EnlightModel:
         G (int): Number of conventional_units.
         L (int): Number of transmission lines.
     """
-    
+
     def __init__(self, week, simulation_path, logger):
-        
-        
+
+
         # Initialize logger
         self.logger = logger
         self.logger.info(
             "INITIALIZING ENLIGHT MODEL"
         )
-        
+
         self.simulation_path = simulation_path
-        self.data = DataLoader(week=week, 
+        self.data = DataLoader(week=week,
                                input_path=Path(self.simulation_path) / 'data',
-                               logger = self.logger)
-        
+                               logger=self.logger)
+
         self.model = linopy.Model()
-        
+
         self._aux_data()
         self._build_variables()
         self._build_constraints()
         self._build_objective()
-        
+
     def _aux_data(self):
         """
         Extract and define core sets and their lengths from input data.
@@ -47,21 +48,22 @@ class EnlightModel:
         self.times = list(self.data.demand_inflexible_classic.index)        # Shape: (T,)
         self.bidding_zones = self.data.bidding_zones               # Shape: (Z,)
 
-        
+     
 
         self.T = len(self.times)     # Number of time steps
         self.Z = len(self.bidding_zones)  # Number of zones
-        self.G = len(self.data.conventional_units_id) 
+        self.G = len(self.data.conventional_units_id)
+        self.G_hydro_res = len(self.data.hydro_res_units_id) 
 
-        
+
     def _build_variables(self):
         """
         Declare model variables.
-        
+
         Note: Unused variables will be excluded from the model unless referenced
                 in the objective or constraints.
         """
-        
+
         # Onshore wind production [MW]
         # Shape: (T, Z)
         self.wind_onshore_bid = self.model.add_variables(
@@ -111,16 +113,26 @@ class EnlightModel:
             dims=["T", "Z"],
             name='demand_inflexible_classic_bid'
         )
-        
-        ## Thermal generation production variable (shape: T x G)
-        ## upper bound = generator capacity repeated for all time steps
-        ## np.outer(np.ones(T), capacities) produces a (T, G) matrix
+      
+        # Thermal generation production variable (shape: T x G)
+        # upper bound = generator capacity repeated for all time steps
+        # np.outer(np.ones(T), capacities) produces a (T, G) matrix
         self.conventional_units_bid = self.model.add_variables(
             lower=0,
             upper=self.data.conventional_units_el_cap,
             coords=[self.times, self.data.conventional_units_id],
             dims=["T", "G"],
             name='conventional_units_bid'
+        )
+
+        # Hydro reservoir generator production variable (shape: T x G_res)
+        # upper bound = generator capacity repeated for all time steps
+        self.hydro_res_units_bid = self.model.add_variables(
+            lower=0,
+            upper=self.data.hydro_res_units_el_cap,  # np.array
+            coords=[self.times, self.data.hydro_res_units_id],
+            dims=["T", "G_hydro_res"],
+            name='hydro_res_units_bid'
         )
 
         # Electricity export
@@ -148,19 +160,34 @@ class EnlightModel:
              + self.wind_offshore_bid
              + self.solar_pv_bid
              + self.hydro_ror_bid
-             + self.conventional_units_bid.dot(self.data.G_Z_xr) # type: ignore
-             == 
+             + self.conventional_units_bid.dot(self.data.G_Z_xr)  # type: ignore
+             + self.hydro_res_units_bid.dot(self.data.G_hydro_res_Z_xr)
+             ==
              self.demand_inflexible_classic_bid
-            + self.electricity_export
-            ),
+             + self.electricity_export
+             ),
             name='power_balance'
             )
-        
+
         self.electricity_exports = self.model.add_constraints(
-            (self.lineflow.dot(self.data.L_Z_xr) == self.electricity_export), # type: ignore
+            (self.lineflow.dot(self.data.L_Z_xr) == self.electricity_export),  # type: ignore
             name='electricity_exports'
             )
-     
+
+        self.hydro_res_energy_availability = self.model.add_constraints(
+            # If simulating multiple weeks, this constraint HAS to be changed
+            # The weekly inflow to hydro reservoirs in each bidding zone is
+            #   allocated to all the hydro reservoir units based on their share
+            #   of the total hydro reservoir capacity in that zone.
+            # APPLY CONSTRAINT WEEKLY
+            (self.hydro_res_units_bid.sum(dim='T')
+             <= self.data.hydro_res_units_energy_availability),  # Shape: (G_hydro_res,)
+            # APPLY CONSTRAINT HOURLY to avoid one hydro clearing price across all hours
+            # (self.hydro_res_units_bid
+            #  <= self.data.hydro_res_units_energy_availability / self.T),  # Shape: (G_hydro_res,)
+            name='hydro_res_energy_availability'
+        )
+
     def _build_objective(self):
         """
         Define the objective function for profit maximization.
@@ -175,7 +202,8 @@ class EnlightModel:
                ).sum()
            
             # Important: variables with different dimensions must be in different parenthesis to be summed correctly
-            + (self.conventional_units_bid * (self.data.conventional_units_marginal_cost_df)).sum(),
+            + (self.conventional_units_bid * (self.data.conventional_units_marginal_cost_df)).sum()
+            + (self.hydro_res_units_bid * (self.data.hydro_res_units_marginal_cost_df)).sum(),
             sense="min"
         )
 
