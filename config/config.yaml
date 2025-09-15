@@ -1,0 +1,121 @@
+# ------------------------------------------------------------#
+#                ENLIGHT MODEL CONFIGURATION                  #
+# ------------------------------------------------------------#
+
+# This file contains the configuration for ENLIGHT model simulations.
+# It includes scenarios, weeks to simulate, solver configuration, and bidding zones.
+# Note: This file is used by main.py to run simulations.
+
+
+# ============================================================#
+#                 SIMULATION PATAMETERS                       #
+# ============================================================#
+
+# Scenario selection
+# ----------------------
+# Comment the scenarios to run. Note that a scenario name must match the directory name.
+# ----------------------
+
+scenario_list:
+  - scenario_1
+  - scenario_2
+  # - scenario_3  # Optional scenario
+
+# Simulation Duration
+# ----------------------
+# Sets temporal scope in weeks (1-52). ENLIGHT operates on weekly time steps.
+# Common: Full year (1-52), Seasonal (1-12, 13-25, 26-38, 39-52)
+# ----------------------
+
+duration:
+  start_week: 1     # Valid range: 1-52
+  end_week: 52      # Valid range: 1-52
+
+# ============================================================#
+#                 SOLVER CONFIGURATION                        #
+# ============================================================#
+# Selects optimization solver for energy market problems.
+# "gurobi": Very fast, requires license.
+# "highs": Ok fast, but no license required.
+# Uncomment only one solver.
+# ============================================================================
+
+solver_name: 
+  #- "gurobi"      # Main solver
+  - "highs"     # Alternative solver, runs without a solver license
+
+# ============================================================#
+#                 BIDDING ZONES CONFIGURATION                 #
+# ============================================================#
+# Defines European electricity market zones to include in simulation.
+# Comment out unwanted zones. Each zone needs corresponding input data.
+# ============================================================================
+
+# Comment the zones you do not want to use in the simulations.
+
+bidding_zones:
+  - DELU # Germany and Luxembourg
+  - DK1  # Denmark West
+  - DK2  # Denmark East
+  - FR   # France
+
+  # EU Member States (alphabetically)
+  # - AT   # Austria
+  # - BE   # Belgium
+  # - BG   # Bulgaria
+  # - CZ   # Czech Republic
+  # - DELU # Germany and Luxembourg
+  # - DK1  # Denmark West
+  # - DK2  # Denmark East
+  # - EE   # Estonia
+  # - EL   # Greece
+  # - ES   # Spain
+  # - FI   # Finland
+  # - FR   # France
+  # - HR   # Croatia
+  # - HU   # Hungary
+  # - IT   # Italy
+  # - LT   # Lithuania
+  # - LV   # Latvia
+  # - NL   # Netherlands
+  # - PL   # Poland
+  # - PT   # Portugal
+  # - RO   # Romania
+  # - SE1  # Sweden zone 1
+  # - SE2  # Sweden zone 2
+  # - SE3  # Sweden zone 3
+  # - SE4  # Sweden zone 4
+  # - SEM  # Single Electricity Market (Ireland and Northern Ireland)
+  # - SI   # Slovenia
+  # - SK   # Slovakia
+
+  # Extra-EU Bidding Zones (alphabetically)
+  # - AL   # Albania
+  # - BA   # Bosnia and Herzegovina
+  # - CH   # Switzerland
+  # - GB   # Great Britain
+  # - ME   # Montenegro
+  # - MK   # North Macedonia
+  # - NO1  # Norway zone 1
+  # - NO2  # Norway zone 2
+  # - NO3  # Norway zone 3
+  # - NO4  # Norway zone 4
+  # - NO5  # Norway zone 5
+  # - RS   # Serbia
+  # - XK   # Kosovo
+
+  # Conventional generation technologies to include in the model.
+conventional_generators:
+  - label: thermal_plants
+    tech: thermal_plants
+
+  # Renewable generation technologies to include in the model.
+VRE_generators:
+  - label: WIND_ON # "label" name in excel-file.
+    tech: wind_onshore # "key" name in excel-file.
+  - label: WIND_OFF
+    tech: wind_offshore
+  - label: SOLAR
+    tech: solar_pv
+  - label: HYDRO_ROR
+    tech: hydro_ror
