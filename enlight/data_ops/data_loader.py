@@ -43,6 +43,8 @@ class DataLoader:
         self.load_lines_data()
         self.map_transmission_lines()
         self.load_hydro_reservoir_data()
+        self.load_hydro_res_units_marginal_cost()
+        self.map_hydro_res_units_to_zones()
         self.load_conventional_units_data()
         self.load_conventional_units_marginal_cost()
         self.map_conventional_units_to_zones()
@@ -120,6 +122,8 @@ class DataLoader:
         self.demand_inflexible_classic = self._filter_by_week(self._load_csv('demand_inflexible_classic.csv'))
         utils.validate_df_positive_numeric(self.demand_inflexible_classic, "demand_inflexible_classic")
 
+        self.times = list(self.demand_inflexible_classic.index)  # this is important: if the time index of the cost dataframes don't match the model variables' then it assumes 0-cost
+
         self.demand_inflexible_ev = self._filter_by_week(self._load_csv('demand_inflexible_ev.csv'))
         utils.validate_df_positive_numeric(self.demand_inflexible_ev, "demand_inflexible_ev")
 
@@ -186,23 +190,67 @@ class DataLoader:
     def load_hydro_reservoir_data(self):
         """Load unit-specific data for various dispatchable generators."""
         self.hydro_res_units = self._load_csv('hydro_reservoir_units.csv')
-        hydro_res_energy = self._load_csv('hydro_reservoir_units_energy.csv')
+        hydro_res_energy = self._load_csv('hydro_reservoir_energy.csv')
         self.hydro_res_energy = hydro_res_energy.loc[self.week]
-        
+        self.hydro_res_units_id = list(self.hydro_res_units.index)  # Shape: (G_hydro_res,)
+
+        # We need to repeat the capacities for each hydro unit for all time steps:
+        self.hydro_res_units_el_cap = np.outer(np.ones(self.T), self.hydro_res_units.capacity_el.to_numpy())
+        # Find the energy availability allocated to each hydro reservoir unit based on its capacity
+        #   share of the total hydro reseroivr capacity in its zone.
+        self.hydro_res_units_energy_availability = (self.hydro_res_units.capacity_share_in_zone
+                                                    * self.hydro_res_units.zone_el.map(self.hydro_res_energy))
+
+    def load_hydro_res_units_marginal_cost(self):
+        # Convert the production cost pandas Series to a DataFrame with time index
+        self.hydro_res_units_marginal_cost_series = self.hydro_res_units.prodcost
+        self.hydro_res_units_marginal_cost_series.index.name = "G_hydro_res"
+
+        self.hydro_res_units_marginal_cost_df = pd.DataFrame(
+            data=np.broadcast_to(self.hydro_res_units_marginal_cost_series.to_numpy(),
+                                (len(self.times),
+                                len(self.hydro_res_units_marginal_cost_series))),
+            index=self.times,
+            columns=self.hydro_res_units_marginal_cost_series.index)
+
+    def map_hydro_res_units_to_zones(self):
+        """
+        Build binary hydro reservoir-to-zone assignment matrix (G_hydro_res x Z).
+        G_hydro_res_Z[g_hydro_res, z] = 1 if generator g_hydro_res belongs to zone z, else 0.
+        """
+        # Create dummy variables (one-hot encode) from generator zone assignment
+        self.G_hydro_res_Z_df = pd.get_dummies(self.hydro_res_units['zone_el']).astype(int)
+
+        # Ensure all zones are represented as columns, even if some have no hydro reservoirs
+        self.G_hydro_res_Z_df = self.G_hydro_res_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
+
+        # Wrap into xarray with matching dimensions
+        self.G_hydro_res_Z_xr = xr.DataArray(
+            self.G_hydro_res_Z_df.values,
+            coords={
+                "G_hydro_res": self.hydro_res_units_id,   # Generator labels (must match dims in hydro_res_bid)
+                "Z": self.bidding_zones     # Zone labels
+            },
+            dims=["G_hydro_res", "Z"]            # Dimension names for alignment in dot product
+        )
+
     def load_conventional_units_data(self):
         self.conventional_units_df = self._load_csv('conventional_thermal_units.csv')
         self.conventional_units_id = list(self.conventional_units_df.index)       # Shape: (G,)
-        self.conventional_units_marginal_cost_series = pd.Series(self.conventional_units_df.prodcost)
-        self.conventional_units_marginal_cost_series.index.name = "G"
-        
+
+        # We need to repeat the capacities for each generator for all time steps:
         self.conventional_units_el_cap = np.outer(np.ones(self.T), self.conventional_units_df.capacity_el.to_numpy())
-        
+
     def load_conventional_units_marginal_cost(self):
+        # Convert the production cost pandas Series to a DataFrame with time index
+        self.conventional_units_marginal_cost_series = self.conventional_units_df.prodcost
+        self.conventional_units_marginal_cost_series.index.name = "G"
+
         self.conventional_units_marginal_cost_df = pd.DataFrame(
             data=np.broadcast_to(self.conventional_units_marginal_cost_series.to_numpy(),
-                            (len(self.time_index),
+                            (len(self.times),
                              len(self.conventional_units_marginal_cost_series))),
-            index=self.time_index,
+            index=self.times,
             columns=self.conventional_units_marginal_cost_series.index
             )
         
