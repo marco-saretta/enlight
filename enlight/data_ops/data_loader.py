@@ -45,6 +45,9 @@ class DataLoader:
         self.load_hydro_reservoir_data()
         self.load_hydro_res_units_marginal_cost()
         self.map_hydro_res_units_to_zones()
+        self.load_hydro_pumped_data()
+        self.load_hydro_ps_units_marginal_cost()
+        self.map_hydro_ps_units_to_zones()
         self.load_conventional_units_data()
         self.load_conventional_units_marginal_cost()
         self.map_conventional_units_to_zones()
@@ -232,6 +235,59 @@ class DataLoader:
                 "Z": self.bidding_zones     # Zone labels
             },
             dims=["G_hydro_res", "Z"]            # Dimension names for alignment in dot product
+        )
+
+    def load_hydro_pumped_data(self):
+        """Load unit-specific data for various pumped hydro units."""
+        self.hydro_ps_units = self._load_csv('hydro_pumped_units.csv')
+        self.hydro_ps_units_id = list(self.hydro_ps_units.index)  # Shape: (G_hydro_ps,)
+
+        # We need to repeat the charge/discharge and storage capacities for each hydro unit for all time steps:
+        self.hydro_ps_units_el_cap = np.outer(np.ones(self.T), self.hydro_ps_units.capacity_el.to_numpy())
+        self.hydro_ps_units_storage_cap = np.outer(np.ones(self.T), self.hydro_ps_units.Storage_Capacity.to_numpy())
+
+    def load_hydro_ps_units_marginal_cost(self):
+        # Convert the production cost pandas Series to a DataFrame with time index
+            # Unlike reservoir hydro and conventional units, pumped hydro requires
+            # both bid and offer prices, so two dataframes for "marginal costs" are
+            # provided in a single dictionary
+        # Initialize lists and dicts for dynamic handling
+        bid_and_offer_col_names = ["Pumped_cons", "Pumped_prod"]
+        bid_and_offer_new_col_names = ["Bid_price", "Offer_price"]
+        self.hydro_ps_units_marginal_cost_seriess = {}
+        self.hydro_ps_units_marginal_cost_dfs = {}
+
+        # Create series and dataframes for the bid and offer prices
+            # e.g. hydro_ps_units_bid_and_offer_price_dfs["Bid_price"] = Pumped_cons from the csv
+        for k1, k2 in zip(bid_and_offer_col_names, bid_and_offer_new_col_names):
+            self.hydro_ps_units_marginal_cost_seriess[k2] = self.hydro_ps_units.loc[:,k1]
+            self.hydro_ps_units_marginal_cost_seriess[k2].index.name = "G_hydro_ps"
+            self.hydro_ps_units_marginal_cost_dfs[k2] = pd.DataFrame(
+                data=np.broadcast_to(self.hydro_ps_units_marginal_cost_seriess[k2].to_numpy(),
+                                     (len(self.times),
+                                      len(self.hydro_ps_units_marginal_cost_seriess[k2]))),
+                    index=self.times,
+                    columns=self.hydro_ps_units_marginal_cost_seriess[k2].index)
+
+    def map_hydro_ps_units_to_zones(self):
+        """
+        Build binary hydro_ps-to-zone assignment matrix (G x Z).
+        G_hydro_ps_Z[g_hydro_ps, z] = 1 if hydro ps unit G_hydro_ps belongs to zone z, else 0.
+        """
+        # Create dummy variables (one-hot encode) from generator zone assignment
+        self.G_hydro_ps_Z_df = pd.get_dummies(self.hydro_ps_units['zone_el']).astype(int)
+
+        # Ensure all zones are represented as columns, even if some have no conventional_units
+        self.G_hydro_ps_Z_df = self.G_hydro_ps_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
+
+        # Wrap into xarray with matching dimensions
+        self.G_hydro_ps_Z_xr = xr.DataArray(
+            self.G_hydro_ps_Z_df.values,
+            coords={
+                "G_hydro_ps": self.hydro_ps_units_id,   # Generator labels (must match dims in thermal_gen_bid_vol)
+                "Z": self.bidding_zones     # Zone labels
+            },
+            dims=["G_hydro_ps", "Z"]            # Dimension names for alignment in dot product
         )
 
     def load_conventional_units_data(self):

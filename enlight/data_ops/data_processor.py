@@ -362,21 +362,60 @@ class DataProcessor:
         Raises:
             FileNotFoundError: If the hydro pumped storage units file does not exist.
         """
-        hydro_ps_filepath = self.path_hydro_pumped / "hydro_pumped_storage_units.csv"
 
-        # Check if the hydro reservoir energy availability file exists
-        if not hydro_ps_filepath.exists():
+        # Load the configuration section for hydro pumped storage
+        hydro_ps_df = self.scenario_config_df.loc["HYDRO_PS"].copy()
+        hydro_ps_df.set_index("key", inplace=True)
+
+        # Extract hydro pumped storage configuration values
+        hydro_ps_units_filename = hydro_ps_df.loc[
+            "hydro_ps_units_file", self.scenario_name
+        ]
+
+        # Define file path
+        hydro_ps_units_filepath = (
+            self.path_hydro_pumped / f"{hydro_ps_units_filename}.csv"
+        )
+
+        # Check if the hydro pumped storage units file exists
+        if not hydro_ps_units_filepath.exists():
             raise FileNotFoundError(
-                f"Hydro pumped storage units file not found: {hydro_ps_filepath}"
+                f"Hydro pumped storage units file not found: {hydro_ps_units_filepath}"
             )
 
-        self.hydro_pumped_storage_units_df = pd.read_csv(hydro_ps_filepath, index_col=0)
+        # Load the hydro pumped storage data into DataFrames
+        self.hydro_pumped_units_df_raw = pd.read_csv(
+            hydro_ps_units_filepath, index_col=0
+        )
+
+        # Filter the hydro reservoir data to only include generators and energy availability in the selected bidding zones
+        self.hydro_pumped_units_df = self.hydro_pumped_units_df_raw[
+            self.hydro_pumped_units_df_raw['zone_el'].isin(self.bidding_zones_list)
+            ].copy()  # .copy() used to avoid SettingWithCopyWarning
+
+        # Save the loaded and validated hydro reservoir data to the designated output path
         utils.save_data(
-            self.hydro_pumped_storage_units_df,
-            "hydro_pumped_storage_units.csv",
+            self.hydro_pumped_units_df,
+            "hydro_pumped_units.csv",
             output_dir=self.output_path,
             logger=self.logger,
         )
+
+        # hydro_ps_filepath = self.path_hydro_pumped / "hydro_pumped_storage_units.csv"
+
+        # # Check if the hydro reservoir energy availability file exists
+        # if not hydro_ps_filepath.exists():
+        #     raise FileNotFoundError(
+        #         f"Hydro pumped storage units file not found: {hydro_ps_filepath}"
+        #     )
+
+        # self.hydro_pumped_storage_units_df = pd.read_csv(hydro_ps_filepath, index_col=0)
+        # utils.save_data(
+        #     self.hydro_pumped_storage_units_df,
+        #     "hydro_pumped_storage_units.csv",
+        #     output_dir=self.output_path,
+        #     logger=self.logger,
+        # )
 
     def _load_conventional_thermal_units_data(self) -> None:
         """

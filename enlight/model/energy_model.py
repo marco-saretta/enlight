@@ -125,7 +125,7 @@ class EnlightModel:
             name='conventional_units_bid'
         )
 
-        # Hydro reservoir generator production variable (shape: T x G_res)
+        # Hydro reservoir generator production variable (shape: T x G_hydro_res)
         # upper bound = generator capacity repeated for all time steps
         self.hydro_res_units_bid = self.model.add_variables(
             lower=0,
@@ -133,6 +133,34 @@ class EnlightModel:
             coords=[self.times, self.data.hydro_res_units_id],
             dims=["T", "G_hydro_res"],
             name='hydro_res_units_bid'
+        )
+
+        # The following three variables are for PUMPED HYDRO STORAGE:
+            # Bid / consumption - [MW]
+            # Offer / production - [MW]
+            # State of charge (SOC) - [MWh]
+        # Hydro pumped CONSUMPTION variable (shape: T x G_hydro_ps)
+        # upper bound = pumped hydro capacity repeated for all time steps
+        self.hydro_ps_units_bid = self.model.add_variables(
+            lower=0,
+            upper=self.data.hydro_ps_units_el_cap,  # np.array
+            coords=[self.times, self.data.hydro_ps_units_id],
+            dims=["T", "G_hydro_ps"],
+            name='hydro_ps_units_bid'
+        )
+        self.hydro_ps_units_offer = self.model.add_variables(
+            lower=0,
+            upper=self.data.hydro_ps_units_el_cap,  # np.array
+            coords=[self.times, self.data.hydro_ps_units_id],
+            dims=["T", "G_hydro_ps"],
+            name='hydro_ps_units_offer'
+        )
+        self.hydro_ps_units_SOC = self.model.add_variables(
+            lower=0,
+            upper=self.data.hydro_ps_units_storage_cap,  # np.array
+            coords=[self.times, self.data.hydro_ps_units_id],
+            dims=["T", "G_hydro_ps"],
+            name='hydro_ps_units_SOC'
         )
 
         # Electricity export
@@ -162,9 +190,11 @@ class EnlightModel:
              + self.hydro_ror_bid
              + self.conventional_units_bid.dot(self.data.G_Z_xr)  # type: ignore
              + self.hydro_res_units_bid.dot(self.data.G_hydro_res_Z_xr)
+             + self.hydro_ps_units_offer.dot(self.data.G_hydro_ps_Z_xr)
              ==
              self.demand_inflexible_classic_bid
              + self.electricity_export
+             + self.hydro_ps_units_bid.dot(self.data.G_hydro_ps_Z_xr)
              ),
             name='power_balance'
             )
@@ -188,13 +218,26 @@ class EnlightModel:
             name='hydro_res_energy_availability'
         )
 
+        self.hydro_ps_units_SOC_balance = self.model.add_constraints(
+            # In each hour the change in the SOC is equal to the net energy
+            #   charged/discharged. We don't require an initial SOC=0 due to the
+            #   use of .diff()
+            self.hydro_ps_units_SOC.diff(n=1, dim="T")
+            ==
+            self.hydro_ps_units_bid - self.hydro_ps_units_offer,
+            # self.hydro_ps_units_bid * ch_eff- self.hydro_ps_units_offer / dch_eff,
+            name='hydro_ps_SOC_balance'
+        )
+
     def _build_objective(self):
         """
         Define the objective function for profit maximization.
         """
         self.model.add_objective(
             expr = (
+                # Loads:
                 - self.demand_inflexible_classic_bid * self.data.voll_classic
+                # Generators:
                 + self.wind_onshore_bid * self.data.wind_onshore_bid_price
                 + self.wind_offshore_bid * self.data.wind_offshore_bid_price
                 + self.solar_pv_bid * self.data.solar_pv_bid_price
@@ -202,8 +245,12 @@ class EnlightModel:
                ).sum()
            
             # Important: variables with different dimensions must be in different parenthesis to be summed correctly
+            # Loads:
+            - (self.hydro_ps_units_bid * (self.data.hydro_ps_units_marginal_cost_dfs["Bid_price"])).sum()
+            # Generators:
             + (self.conventional_units_bid * (self.data.conventional_units_marginal_cost_df)).sum()
-            + (self.hydro_res_units_bid * (self.data.hydro_res_units_marginal_cost_df)).sum(),
+            + (self.hydro_res_units_bid * (self.data.hydro_res_units_marginal_cost_df)).sum()
+            + (self.hydro_ps_units_offer * (self.data.hydro_ps_units_marginal_cost_dfs["Offer_price"])).sum(),
             sense="min"
         )
 
