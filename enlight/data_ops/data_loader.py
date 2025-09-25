@@ -54,7 +54,9 @@ class DataLoader:
         # Optionally uncomment these as needed
         # self.load_heating()
         # self.load_ptx()
-        # self.load_bess_units()
+        self.load_bess_units()
+        self.load_bess_units_marginal_cost()
+        self.map_bess_units_to_zones()
 
 
     def _load_csv(self, filename: str, index_col=0) -> pd.DataFrame:
@@ -104,6 +106,16 @@ class DataLoader:
 
         self.voll_classic = demand_classic.get('voll')
         self.voll_ev = demand_ev.get('voll')
+
+        # Storage roundtrip efficiencies and initial SOCs
+            # BESS
+        self.bess_charging_efficiency = float(np.sqrt(self.yaml_data.get('bess_roundtrip')))  # np.float gives errors. It has to just be a Python scalar
+        self.bess_discharging_efficiency = float(np.sqrt(self.yaml_data.get('bess_roundtrip')))
+        self.bess_initial_SOC = self.yaml_data.get('bess_initial_soc')
+            # Pumped hydro storage
+        self.hydro_ps_charging_efficiency = float(np.sqrt(self.yaml_data.get('hydro_ps_roundtrip')))  # np.float gives errors. It has to just be a Python scalar
+        self.hydro_ps_discharging_efficiency = float(np.sqrt(self.yaml_data.get('hydro_ps_roundtrip')))
+        self.hydro_ps_initial_SOC = self.yaml_data.get('hydro_ps_initial_soc')
         
 
     def load_generation_data(self):
@@ -258,7 +270,7 @@ class DataLoader:
         self.hydro_ps_units_marginal_cost_dfs = {}
 
         # Create series and dataframes for the bid and offer prices
-            # e.g. hydro_ps_units_bid_and_offer_price_dfs["Bid_price"] = Pumped_cons from the csv
+            # e.g. hydro_ps_units_marginal_cost_dfs["Bid_price"] = Pumped_cons from the csv
         for k1, k2 in zip(bid_and_offer_col_names, bid_and_offer_new_col_names):
             self.hydro_ps_units_marginal_cost_seriess[k2] = self.hydro_ps_units.loc[:,k1]
             self.hydro_ps_units_marginal_cost_seriess[k2].index.name = "G_hydro_ps"
@@ -267,7 +279,7 @@ class DataLoader:
                                      (len(self.times),
                                       len(self.hydro_ps_units_marginal_cost_seriess[k2]))),
                     index=self.times,
-                    columns=self.hydro_ps_units_marginal_cost_seriess[k2].index)
+                    columns=self.hydro_ps_units_id)
 
     def map_hydro_ps_units_to_zones(self):
         """
@@ -307,7 +319,7 @@ class DataLoader:
                             (len(self.times),
                              len(self.conventional_units_marginal_cost_series))),
             index=self.times,
-            columns=self.conventional_units_marginal_cost_series.index
+            columns=self.conventional_units_id
             )
         
     def map_conventional_units_to_zones(self):
@@ -342,3 +354,51 @@ class DataLoader:
     def load_bess_units(self):
         """Load battery energy storage system (BESS) unit data."""
         self.bess_units_df = self._load_csv('bess_units.csv')
+        self.bess_units_id = list(self.bess_units_df.index)  # Shape: (G_bess,)
+
+        # We need to repeat the charge/discharge and storage capacities for each bess unit for all time steps:
+        self.bess_units_el_cap = np.outer(np.ones(self.T), self.bess_units_df.capacity_el.to_numpy())
+        self.bess_units_storage_cap = np.outer(np.ones(self.T), self.bess_units_df.storage_capacity.to_numpy())
+
+    def load_bess_units_marginal_cost(self):
+        # Convert the production cost pandas Series to a DataFrame with time index
+            # Like pumped hydro storage, bess requires both bid and offer prices,
+            # so two dataframes for "marginal costs" are provided in a single dictionary
+        # Initialize lists and dicts for dynamic handling
+        bid_and_offer_col_names = ["charge_bid_price", "discharge_bid_price"]
+        bid_and_offer_new_col_names = ["Bid_price", "Offer_price"]
+        self.bess_units_marginal_cost_seriess = {}
+        self.bess_units_marginal_cost_dfs = {}
+
+        # Create series and dataframes for the bid and offer prices
+            # e.g. bess_units_marginal_cost_dfs["Bid_price"] = charge_bid_price from the csv
+        for k1, k2 in zip(bid_and_offer_col_names, bid_and_offer_new_col_names):
+            self.bess_units_marginal_cost_seriess[k2] = self.bess_units_df.loc[:,k1]
+            self.bess_units_marginal_cost_seriess[k2].index.name = "G_bess"
+            self.bess_units_marginal_cost_dfs[k2] = pd.DataFrame(
+                data=np.broadcast_to(self.bess_units_marginal_cost_seriess[k2].to_numpy(),
+                                     (len(self.times),
+                                      len(self.bess_units_marginal_cost_seriess[k2]))),
+                    index=self.times,
+                    columns=self.bess_units_id)
+
+    def map_bess_units_to_zones(self):
+        """
+        Build binary BESS-to-zone assignment matrix (G_bess x Z).
+        G_bess_Z[g_bess, z] = 1 if BESS unit g_bess belongs to zone z, else 0.
+        """
+        # Create dummy variables (one-hot encode) from generator zone assignment
+        self.G_bess_Z_df = pd.get_dummies(self.bess_units_df['zone_el']).astype(int)
+
+        # Ensure all zones are represented as columns, even if some have no conventional_units
+        self.G_bess_Z_df = self.G_bess_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
+
+        # Wrap into xarray with matching dimensions
+        self.G_bess_Z_xr = xr.DataArray(
+            self.G_bess_Z_df.values,
+            coords={
+                "G_bess": self.bess_units_id,   # Generator labels (must match dims in thermal_gen_bid_vol)
+                "Z": self.bidding_zones     # Zone labels
+            },
+            dims=["G_bess", "Z"]            # Dimension names for alignment in dot product
+        )

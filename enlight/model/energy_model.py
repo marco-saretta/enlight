@@ -163,6 +163,34 @@ class EnlightModel:
             name='hydro_ps_units_SOC'
         )
 
+        # The following three variables are for BESS:
+            # Bid / charge - [MW]
+            # Offer / discharge - [MW]
+            # State of charge (SOC) - [MWh]
+        # BESS charge variable (shape: T x G_hydro_ps)
+        # upper bound = BESS power capacity repeated for all time steps
+        self.bess_units_bid = self.model.add_variables(
+            lower=0,
+            upper=self.data.bess_units_el_cap,  # np.array
+            coords=[self.times, self.data.bess_units_id],
+            dims=["T", "G_bess"],
+            name='bess_units_bid'
+        )
+        self.bess_units_offer = self.model.add_variables(
+            lower=0,
+            upper=self.data.bess_units_el_cap,  # np.array
+            coords=[self.times, self.data.bess_units_id],
+            dims=["T", "G_bess"],
+            name='bess_units_offer'
+        )
+        self.bess_units_SOC = self.model.add_variables(
+            lower=0,
+            upper=self.data.bess_units_storage_cap,  # np.array
+            coords=[self.times, self.data.bess_units_id],
+            dims=["T", "G_bess"],
+            name='bess_units_SOC'
+        )
+
         # Electricity export
         self.electricity_export = self.model.add_variables(
             coords=[self.times, self.bidding_zones],
@@ -191,10 +219,12 @@ class EnlightModel:
              + self.conventional_units_bid.dot(self.data.G_Z_xr)  # type: ignore
              + self.hydro_res_units_bid.dot(self.data.G_hydro_res_Z_xr)
              + self.hydro_ps_units_offer.dot(self.data.G_hydro_ps_Z_xr)
+             + self.bess_units_offer.dot(self.data.G_bess_Z_xr)
              ==
              self.demand_inflexible_classic_bid
              + self.electricity_export
              + self.hydro_ps_units_bid.dot(self.data.G_hydro_ps_Z_xr)
+             + self.bess_units_bid.dot(self.data.G_bess_Z_xr)
              ),
             name='power_balance'
             )
@@ -212,21 +242,53 @@ class EnlightModel:
             # APPLY CONSTRAINT WEEKLY
             (self.hydro_res_units_bid.sum(dim='T')
              <= self.data.hydro_res_units_energy_availability),  # Shape: (G_hydro_res,)
-            # APPLY CONSTRAINT HOURLY to avoid one hydro clearing price across all hours
-            # (self.hydro_res_units_bid
-            #  <= self.data.hydro_res_units_energy_availability / self.T),  # Shape: (G_hydro_res,)
             name='hydro_res_energy_availability'
         )
 
-        self.hydro_ps_units_SOC_balance = self.model.add_constraints(
-            # In each hour the change in the SOC is equal to the net energy
-            #   charged/discharged. We don't require an initial SOC=0 due to the
-            #   use of .diff()
-            self.hydro_ps_units_SOC.diff(n=1, dim="T")
+        # Pumped hydro storage SOC balance constraints
+        self.hydro_ps_units_SOC_initial_balance = self.model.add_constraints(
+            # In the first hour the change in SOC is equal to the net energy
+            #   charged/discharged plus the initial SOC.
+            self.hydro_ps_units_SOC.isel(T=0)  # same as [0, :] for a 2D array
             ==
-            self.hydro_ps_units_bid - self.hydro_ps_units_offer,
-            # self.hydro_ps_units_bid * ch_eff- self.hydro_ps_units_offer / dch_eff,
+            self.hydro_ps_units_bid.isel(T=0) * self.data.hydro_ps_charging_efficiency
+            - self.hydro_ps_units_offer.isel(T=0) / self.data.hydro_ps_discharging_efficiency
+            + self.data.hydro_ps_initial_SOC * self.data.hydro_ps_units_storage_cap[0,:],  # Shape: (G_hydro_ps,). The storage cap is identical in all hours so "0" is simply used.
+            name='hydro_ps_SOC_initial_balance'
+        )
+
+        self.hydro_ps_units_SOC_balance = self.model.add_constraints(  # Shape: (T-1, G_hydro_ps)
+            # In each hour the change in the SOC is equal to the net energy
+            #   charged/discharged.
+            # self.hydro_ps_units_SOC.diff(n=1, dim="T")
+            self.hydro_ps_units_SOC.isel(T=slice(1, None))  # same as [1:, :] for a 2D array
+            - self.hydro_ps_units_SOC.isel(T=slice(None, -1))  # same as [:-1, :] for a 2D array
+            ==
+            self.hydro_ps_units_bid.isel(T=slice(1, None)) * self.data.hydro_ps_charging_efficiency
+            - self.hydro_ps_units_offer.isel(T=slice(1, None)) / self.data.hydro_ps_discharging_efficiency,
             name='hydro_ps_SOC_balance'
+        )
+
+        # BESS SOC balance constraints
+        self.bess_units_SOC_initial_balance = self.model.add_constraints(
+            # Identical to pumped hydro storage
+            self.bess_units_SOC.isel(T=0)
+            ==
+            self.bess_units_bid.isel(T=0) * self.data.bess_charging_efficiency
+            - self.bess_units_offer.isel(T=0) / self.data.bess_discharging_efficiency
+            + self.data.bess_initial_SOC * self.data.bess_units_storage_cap[0,:],  # Shape: (G_bess,)
+            name='bess_SOC_initial_balance'
+        )
+
+        self.bess_units_SOC_balance = self.model.add_constraints(  # Shape: (T-1, G_bess)
+            # Identical to pumped hydro storage SOC balance except
+            #   for the charging/discharging efficiencies
+            self.bess_units_SOC.isel(T=slice(1, None))
+            - self.bess_units_SOC.isel(T=slice(None, -1))
+            ==
+            self.bess_units_bid.isel(T=slice(1, None)) * self.data.bess_charging_efficiency
+            - self.bess_units_offer.isel(T=slice(1, None)) / self.data.bess_discharging_efficiency,
+            name='bess_SOC_balance'
         )
 
     def _build_objective(self):
@@ -247,10 +309,12 @@ class EnlightModel:
             # Important: variables with different dimensions must be in different parenthesis to be summed correctly
             # Loads:
             - (self.hydro_ps_units_bid * (self.data.hydro_ps_units_marginal_cost_dfs["Bid_price"])).sum()
+            - (self.bess_units_bid * (self.data.bess_units_marginal_cost_dfs["Bid_price"])).sum()
             # Generators:
             + (self.conventional_units_bid * (self.data.conventional_units_marginal_cost_df)).sum()
             + (self.hydro_res_units_bid * (self.data.hydro_res_units_marginal_cost_df)).sum()
-            + (self.hydro_ps_units_offer * (self.data.hydro_ps_units_marginal_cost_dfs["Offer_price"])).sum(),
+            + (self.hydro_ps_units_offer * (self.data.hydro_ps_units_marginal_cost_dfs["Offer_price"])).sum()
+            + (self.bess_units_offer * (self.data.bess_units_marginal_cost_dfs["Offer_price"])).sum(),
             sense="min"
         )
 
