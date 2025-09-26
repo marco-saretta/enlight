@@ -258,6 +258,16 @@ class DataLoader:
         self.hydro_ps_units_el_cap = np.outer(np.ones(self.T), self.hydro_ps_units.capacity_el.to_numpy())
         self.hydro_ps_units_storage_cap = np.outer(np.ones(self.T), self.hydro_ps_units.Storage_Capacity.to_numpy())
 
+        # Create an xarray DataArray with the same dimensions and coordinates
+        #   as the model variables will have to avoid "UserWarning". Set the values
+        #   in all other time steps than T=0 to zero.
+        hydro_ps_initial_SOC_x_storage_cap = self.hydro_ps_initial_SOC * self.hydro_ps_units_storage_cap
+        hydro_ps_initial_SOC_x_storage_cap[1:, :] = 0  # Initial SOC only applies in the first hour (T=0)
+        self.hydro_ps_initial_SOC_x_storage_cap_xr = xr.DataArray(
+            data=hydro_ps_initial_SOC_x_storage_cap,
+            dims=["T", "G_hydro_ps"],
+            coords=(self.times, self.hydro_ps_units_id))
+
     def load_hydro_ps_units_marginal_cost(self):
         # Convert the production cost pandas Series to a DataFrame with time index
             # Unlike reservoir hydro and conventional units, pumped hydro requires
@@ -359,6 +369,15 @@ class DataLoader:
         # We need to repeat the charge/discharge and storage capacities for each bess unit for all time steps:
         self.bess_units_el_cap = np.outer(np.ones(self.T), self.bess_units_df.capacity_el.to_numpy())
         self.bess_units_storage_cap = np.outer(np.ones(self.T), self.bess_units_df.storage_capacity.to_numpy())
+
+        # Create an xarray DataArray of the initial SOC in MWh to avoid "UserWarning".
+        #   This is identical to the hydro_ps initial SOC handling above.
+        bess_initial_SOC_x_storage_cap = self.bess_initial_SOC * self.bess_units_storage_cap
+        bess_initial_SOC_x_storage_cap[1:, :] = 0  # Initial SOC only applies in the first hour (T=0)
+        self.bess_initial_SOC_x_storage_cap_xr = xr.DataArray(
+            data=bess_initial_SOC_x_storage_cap,
+            dims=["T", "G_bess"],
+            coords=(self.times, self.bess_units_id))
 
     def load_bess_units_marginal_cost(self):
         # Convert the production cost pandas Series to a DataFrame with time index

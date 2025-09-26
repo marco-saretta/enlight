@@ -245,55 +245,32 @@ class EnlightModel:
             name='hydro_res_energy_availability'
         )
 
-        # Pumped hydro storage SOC balance constraints
-        self.hydro_ps_units_SOC_initial_balance = self.model.add_constraints(
-            # In the first hour the change in SOC is equal to the net energy
-            #   charged/discharged plus the initial SOC.
-            self.hydro_ps_units_SOC.isel(T=0)  # same as [0, :] for a 2D array
-            ==
-            self.hydro_ps_units_bid.isel(T=0) * self.data.hydro_ps_charging_efficiency
-            - self.hydro_ps_units_offer.isel(T=0) / self.data.hydro_ps_discharging_efficiency
-            + self.data.hydro_ps_initial_SOC * self.data.hydro_ps_units_storage_cap[0,:],  # Shape: (G_hydro_ps,). The storage cap is identical in all hours so "0" is simply used.
-            name='hydro_ps_SOC_initial_balance'
-        )
-
-        self.hydro_ps_units_SOC_balance = self.model.add_constraints(  # Shape: (T-1, G_hydro_ps)
+        self.hydro_ps_units_SOC_balance = self.model.add_constraints(  # Shape: (T, G_hydro_ps)
             # In each hour the change in the SOC is equal to the net energy
-            #   charged/discharged.
-            # self.hydro_ps_units_SOC.diff(n=1, dim="T")
-            self.hydro_ps_units_SOC.isel(T=slice(1, None))  # same as [1:, :] for a 2D array
-            - self.hydro_ps_units_SOC.isel(T=slice(None, -1))  # same as [:-1, :] for a 2D array
+            #   charged/discharged. In the first hour we add the initial SOC in MWh.
+            self.hydro_ps_units_SOC.diff(n=1, dim="T")  # .isel(T=slice(1, None)) is the reason for "UserWarning". It messes with the coordinates.
+            - self.data.hydro_ps_initial_SOC_x_storage_cap_xr  # =0 for all T.index > 0
             ==
-            self.hydro_ps_units_bid.isel(T=slice(1, None)) * self.data.hydro_ps_charging_efficiency
-            - self.hydro_ps_units_offer.isel(T=slice(1, None)) / self.data.hydro_ps_discharging_efficiency,
+            self.hydro_ps_units_bid * self.data.hydro_ps_charging_efficiency
+            - self.hydro_ps_units_offer / self.data.hydro_ps_discharging_efficiency
+            ,
             name='hydro_ps_SOC_balance'
         )
 
-        # BESS SOC balance constraints
-        self.bess_units_SOC_initial_balance = self.model.add_constraints(
-            # Identical to pumped hydro storage
-            self.bess_units_SOC.isel(T=0)
+        self.bess_units_SOC_balance = self.model.add_constraints(  # Shape: (T, G_bess)
+            # Identical to pumped hydro storage SOC.
+            self.bess_units_SOC.diff(n=1, dim="T")
+            - self.data.bess_initial_SOC_x_storage_cap_xr
             ==
-            self.bess_units_bid.isel(T=0) * self.data.bess_charging_efficiency
-            - self.bess_units_offer.isel(T=0) / self.data.bess_discharging_efficiency
-            + self.data.bess_initial_SOC * self.data.bess_units_storage_cap[0,:],  # Shape: (G_bess,)
-            name='bess_SOC_initial_balance'
-        )
-
-        self.bess_units_SOC_balance = self.model.add_constraints(  # Shape: (T-1, G_bess)
-            # Identical to pumped hydro storage SOC balance except
-            #   for the charging/discharging efficiencies
-            self.bess_units_SOC.isel(T=slice(1, None))
-            - self.bess_units_SOC.isel(T=slice(None, -1))
-            ==
-            self.bess_units_bid.isel(T=slice(1, None)) * self.data.bess_charging_efficiency
-            - self.bess_units_offer.isel(T=slice(1, None)) / self.data.bess_discharging_efficiency,
+            self.bess_units_bid * self.data.bess_charging_efficiency
+            - self.bess_units_offer / self.data.bess_discharging_efficiency
+            ,
             name='bess_SOC_balance'
         )
 
     def _build_objective(self):
         """
-        Define the objective function for profit maximization.
+        Define the objective function for minimization of negative social welfare.
         """
         self.model.add_objective(
             expr = (
