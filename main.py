@@ -23,3 +23,12 @@ if __name__ == "__main__":
     # runner.enlight_model.run_model()
     # Access the model instance for debugging purposes
     d = runner.enlight_model
+
+
+    import pandas as pd
+    import numpy as np
+    tech_df = pd.read_csv("data/technology_data/technology_data.csv", index_col=0, skiprows=[1])
+    print((tech_df['Ramp down'] * 60).min())
+    print((tech_df['Ramp up'] * 60).min())
+    # Even the least flexible technologies e.g. nuclear can fully ramp up or down within an hour.
+    #   Since the DA market is solved in an hourly basis, this makes ramp rates obsolete.
