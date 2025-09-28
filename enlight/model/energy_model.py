@@ -113,6 +113,16 @@ class EnlightModel:
             dims=["T", "Z"],
             name='demand_inflexible_classic_bid'
         )
+
+        # Classic flexible demand [MW]
+        # Shape: (T, Z)
+        self.demand_flexible_classic_bid = self.model.add_variables(
+            lower=0,
+            upper=self.data.flexible_demands_dfs['demand_flexible_classic']['capacity'],  # Shape: (T, Z)
+            coords=[self.times, self.bidding_zones],
+            dims=["T", "Z"],
+            name='demand_flexible_classic_bid'
+        )
       
         # Thermal generation production variable (shape: T x G)
         # upper bound = generator capacity repeated for all time steps
@@ -164,6 +174,7 @@ class EnlightModel:
              + self.hydro_res_units_bid.dot(self.data.G_hydro_res_Z_xr)
              ==
              self.demand_inflexible_classic_bid
+             + self.demand_flexible_classic_bid
              + self.electricity_export
              ),
             name='power_balance'
@@ -188,6 +199,13 @@ class EnlightModel:
             name='hydro_res_energy_availability'
         )
 
+        self.demand_flexible_classic_limit = self.model.add_constraints(  # "amount" is the maximum weekly consumption of the flexible load in zone z
+            self.demand_flexible_classic_bid.sum(dim='T')
+            <= self.data.flexible_demands_dfs['demand_flexible_classic']['amount']
+            ,
+            name='demand_flexible_classic_limit'
+        )
+
     def _build_objective(self):
         """
         Define the objective function for profit maximization.
@@ -195,6 +213,7 @@ class EnlightModel:
         self.model.add_objective(
             expr = (
                 - self.demand_inflexible_classic_bid * self.data.voll_classic
+                - self.demand_flexible_classic_bid * self.data.wtp_classic
                 + self.wind_onshore_bid * self.data.wind_onshore_bid_price
                 + self.wind_offshore_bid * self.data.wind_offshore_bid_price
                 + self.solar_pv_bid * self.data.solar_pv_bid_price
