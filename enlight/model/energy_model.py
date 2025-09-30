@@ -135,7 +135,7 @@ class EnlightModel:
             name='conventional_units_bid'
         )
 
-        # Hydro reservoir generator production variable (shape: T x G_res)
+        # Hydro reservoir generator production variable (shape: T x G_hydro_res)
         # upper bound = generator capacity repeated for all time steps
         self.hydro_res_units_bid = self.model.add_variables(
             lower=0,
@@ -143,6 +143,62 @@ class EnlightModel:
             coords=[self.times, self.data.hydro_res_units_id],
             dims=["T", "G_hydro_res"],
             name='hydro_res_units_bid'
+        )
+
+        # The following three variables are for PUMPED HYDRO STORAGE:
+            # Bid / consumption - [MW]
+            # Offer / production - [MW]
+            # State of charge (SOC) - [MWh]
+        # Hydro pumped CONSUMPTION variable (shape: T x G_hydro_ps)
+        # upper bound = pumped hydro capacity repeated for all time steps
+        self.hydro_ps_units_bid = self.model.add_variables(
+            lower=0,
+            upper=self.data.hydro_ps_units_el_cap,  # np.array
+            coords=[self.times, self.data.hydro_ps_units_id],
+            dims=["T", "G_hydro_ps"],
+            name='hydro_ps_units_bid'
+        )
+        self.hydro_ps_units_offer = self.model.add_variables(
+            lower=0,
+            upper=self.data.hydro_ps_units_el_cap,  # np.array
+            coords=[self.times, self.data.hydro_ps_units_id],
+            dims=["T", "G_hydro_ps"],
+            name='hydro_ps_units_offer'
+        )
+        self.hydro_ps_units_SOC = self.model.add_variables(
+            lower=0,
+            upper=self.data.hydro_ps_units_storage_cap,  # np.array
+            coords=[self.times, self.data.hydro_ps_units_id],
+            dims=["T", "G_hydro_ps"],
+            name='hydro_ps_units_SOC'
+        )
+
+        # The following three variables are for BESS:
+            # Bid / charge - [MW]
+            # Offer / discharge - [MW]
+            # State of charge (SOC) - [MWh]
+        # BESS charge variable (shape: T x G_hydro_ps)
+        # upper bound = BESS power capacity repeated for all time steps
+        self.bess_units_bid = self.model.add_variables(
+            lower=0,
+            upper=self.data.bess_units_el_cap,  # np.array
+            coords=[self.times, self.data.bess_units_id],
+            dims=["T", "G_bess"],
+            name='bess_units_bid'
+        )
+        self.bess_units_offer = self.model.add_variables(
+            lower=0,
+            upper=self.data.bess_units_el_cap,  # np.array
+            coords=[self.times, self.data.bess_units_id],
+            dims=["T", "G_bess"],
+            name='bess_units_offer'
+        )
+        self.bess_units_SOC = self.model.add_variables(
+            lower=0,
+            upper=self.data.bess_units_storage_cap,  # np.array
+            coords=[self.times, self.data.bess_units_id],
+            dims=["T", "G_bess"],
+            name='bess_units_SOC'
         )
 
         # Electricity export
@@ -172,10 +228,14 @@ class EnlightModel:
              + self.hydro_ror_bid
              + self.conventional_units_bid.dot(self.data.G_Z_xr)  # type: ignore
              + self.hydro_res_units_bid.dot(self.data.G_hydro_res_Z_xr)
+             + self.hydro_ps_units_offer.dot(self.data.G_hydro_ps_Z_xr)
+             + self.bess_units_offer.dot(self.data.G_bess_Z_xr)
              ==
              self.demand_inflexible_classic_bid
              + self.demand_flexible_classic_bid
              + self.electricity_export
+             + self.hydro_ps_units_bid.dot(self.data.G_hydro_ps_Z_xr)
+             + self.bess_units_bid.dot(self.data.G_bess_Z_xr)
              ),
             name='power_balance'
             )
@@ -186,16 +246,14 @@ class EnlightModel:
             )
 
         self.hydro_res_energy_availability = self.model.add_constraints(
-            # If simulating multiple weeks, this constraint HAS to be changed
+            # If simulating multiple weeks, this constraint HAS to be modified
             # The weekly inflow to hydro reservoirs in each bidding zone is
             #   allocated to all the hydro reservoir units based on their share
             #   of the total hydro reservoir capacity in that zone.
             # APPLY CONSTRAINT WEEKLY
             (self.hydro_res_units_bid.sum(dim='T')
              <= self.data.hydro_res_units_energy_availability),  # Shape: (G_hydro_res,)
-            # APPLY CONSTRAINT HOURLY to avoid one hydro clearing price across all hours
-            # (self.hydro_res_units_bid
-            #  <= self.data.hydro_res_units_energy_availability / self.T),  # Shape: (G_hydro_res,)
+
             name='hydro_res_energy_availability'
         )
 
@@ -204,16 +262,41 @@ class EnlightModel:
             <= self.data.flexible_demands_dfs['demand_flexible_classic']['amount']
             ,
             name='demand_flexible_classic_limit'
+          
+        self.hydro_ps_units_SOC_balance = self.model.add_constraints(  # Shape: (T, G_hydro_ps)
+            # In each hour the change in the SOC is equal to the net energy
+            #   charged/discharged. In the first hour we add the initial SOC in MWh.
+            self.hydro_ps_units_SOC.diff(n=1, dim="T")  # .isel(T=slice(1, None)) is the reason for "UserWarning". It messes with the coordinates.
+            - self.data.hydro_ps_initial_SOC_x_storage_cap_xr  # =0 for all T.index > 0
+            ==
+            self.hydro_ps_units_bid * self.data.hydro_ps_charging_efficiency
+            - self.hydro_ps_units_offer / self.data.hydro_ps_discharging_efficiency
+            ,
+            name='hydro_ps_SOC_balance'
+        )
+
+        self.bess_units_SOC_balance = self.model.add_constraints(  # Shape: (T, G_bess)
+            # Identical to pumped hydro storage SOC.
+            self.bess_units_SOC.diff(n=1, dim="T")
+            - self.data.bess_initial_SOC_x_storage_cap_xr
+            ==
+            self.bess_units_bid * self.data.bess_charging_efficiency
+            - self.bess_units_offer / self.data.bess_discharging_efficiency
+            ,
+            name='bess_SOC_balance'
         )
 
     def _build_objective(self):
         """
-        Define the objective function for profit maximization.
+        Define the objective function for minimization of negative social welfare.
         """
         self.model.add_objective(
             expr = (
+                # Loads:
                 - self.demand_inflexible_classic_bid * self.data.voll_classic
                 - self.demand_flexible_classic_bid * self.data.wtp_classic
+                # Generators:
+
                 + self.wind_onshore_bid * self.data.wind_onshore_bid_price
                 + self.wind_offshore_bid * self.data.wind_offshore_bid_price
                 + self.solar_pv_bid * self.data.solar_pv_bid_price
@@ -221,8 +304,14 @@ class EnlightModel:
                ).sum()
            
             # Important: variables with different dimensions must be in different parenthesis to be summed correctly
+            # Loads:
+            - (self.hydro_ps_units_bid * (self.data.hydro_ps_units_marginal_cost_dfs["Bid_price"])).sum()
+            - (self.bess_units_bid * (self.data.bess_units_marginal_cost_dfs["Bid_price"])).sum()
+            # Generators:
             + (self.conventional_units_bid * (self.data.conventional_units_marginal_cost_df)).sum()
-            + (self.hydro_res_units_bid * (self.data.hydro_res_units_marginal_cost_df)).sum(),
+            + (self.hydro_res_units_bid * (self.data.hydro_res_units_marginal_cost_df)).sum()
+            + (self.hydro_ps_units_offer * (self.data.hydro_ps_units_marginal_cost_dfs["Offer_price"])).sum()
+            + (self.bess_units_offer * (self.data.bess_units_marginal_cost_dfs["Offer_price"])).sum(),
             sense="min"
         )
 

@@ -19,7 +19,12 @@ if __name__ == "__main__":
     # runner.prepare_data_all_simulations()
 
     # Run a single simulation for the specified week and save the results
-    runner.run_single_simulation(week=25, simulation_path=Path('simulations/scenario_1'))
+    runner.run_single_simulation(week=1, simulation_path=Path('simulations/scenario_1'))
     # runner.enlight_model.run_model()
     # Access the model instance for debugging purposes
     d = runner.enlight_model
+
+    # The zonal prices may not correspond exactly to production costs of the marginal generator
+        # if that generator is a hydro reservoir unit with a binding constraint on energy availability.
+        # the dual value of the zonal energy availability constraint reflects this deviation.
+    # print(d.hydro_res_energy_availability.dual)
