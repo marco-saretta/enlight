@@ -45,6 +45,7 @@ class DataProcessor:
         self._load_fuel_prices()
         self._load_transmission_lines_data()
         self._prepare_inflexible_demand_sources()
+        self._load_flexible_demand_sources()
         # Save aux data to YAML after all processing
         self._save_aux_data_to_yaml()
 
@@ -678,6 +679,74 @@ class DataProcessor:
                 output_dir=self.output_path,
                 logger=self.logger,
             )
+
+    def _load_flexible_demand_sources(self) -> None:
+        """
+        Load data for flexible loads.
+
+        This method retrieves the flexible loads data from specified CSV files,
+        checks for its existence, and loads it into a DataFrame. The data is then saved
+        to a specified output path. This is done for weekly (maximum) amount and hourly capacity,
+        and for multiple types of flexible loads.
+
+        Raises:
+            FileNotFoundError: If any of the flexible load files do not exist.
+        """
+        # Hardcoded list of flexible load types for now.
+        # flex_demands = ["DEMAND_FLEX_CLA", "DEMAND_FLEX_IND", "DEMAND_FLEX_HOU", "DEMAND_FLEX_PUB", "DEMAND_FLEX_EV"]
+        flex_demands = ["DEMAND_FLEX_CLA", "DEMAND_FLEX_EV"]  # Key in config file
+        # subdir_labels = ["demand_flexible_classic", "demand_flexible_industry", "demand_flexible_household", "demand_flexible_public", "demand_flexible_ev"]
+        subdir_labels = ["demand_flexible_classic", "demand_flexible_ev"]  # more descriptive name and subfolder name
+        parameter_names = ["amount", "capacity"]  # used for file names
+        alternative_parameter_names = ["amount", "cap"]  # used for keys in the excel config file
+
+        # Load the configuration section for the flexible loads
+        flex_demands_df = self.scenario_config_df.loc[flex_demands].copy()
+        flex_demands_df.set_index("key", inplace=True)
+
+        # Extract flexible loads configuration values,
+        #   and verify that the files exist,
+        flex_demands_dfs_raw = {}
+        self.flex_demands_dfs = {}
+        for flex_load, subdir_label in zip(flex_demands, subdir_labels):
+            # Load WTP for each flexible load type
+            voll_flex = float(flex_demands_df.loc[  # extract the willingness-to-pay from the excel config file
+                flex_load.lower() + "_wtp",
+                self.scenario_name
+                ])
+            self.aux_data_dict[subdir_label] = {"wtp": voll_flex}  # use subdir_label because it's more descriptive
+
+            # Load (weekly) amount and (hourly) capacity for each flexible load type
+            for param_name, alt_param_name in zip(parameter_names, alternative_parameter_names):
+                file = flex_demands_df.loc[
+                    flex_load.lower() + f"_{alt_param_name}_file", self.scenario_name
+                    ]
+                
+                # Define the path to the CSV file of the flexible load data
+                filepath = self.base_data_path / subdir_label / f"{param_name}" / f"{file}.csv"
+
+                # Check if the flexible load amount file exists
+                if not filepath.exists():
+                    raise FileNotFoundError(
+                        f"Flexible load amount file not found: {filepath}"
+                    )
+                # Load the flexible load data into DataFrames and save them in the dictionary
+                flex_demands_dfs_raw[flex_load + f"_{param_name}"] = pd.read_csv(filepath, index_col=0)
+                # Filter the flexible units to only include those in the selected bidding zones
+                self.flex_demands_dfs[flex_load + f"_{param_name}"] = flex_demands_dfs_raw[flex_load + f"_{param_name}"][self.bidding_zones_list].copy()
+                
+                # Validate the loaded data
+                utils.validate_df_positive_numeric(
+                    self.flex_demands_dfs[flex_load + f"_{param_name}"],
+                    flex_load + f"_{param_name}"
+                )
+                # Save the loaded flexible demands data to the designated output path
+                utils.save_data(
+                    self.flex_demands_dfs[flex_load + f"_{param_name}"],
+                    subdir_label + f"_{param_name}.csv",  # subdir_label used instead of flex_load to get a more descriptive filename
+                    output_dir=self.output_path,
+                    logger=self.logger,
+                )
 
     def _save_aux_data_to_yaml(self) -> None:
         """Save auxiliary data dictionary to a YAML file."""

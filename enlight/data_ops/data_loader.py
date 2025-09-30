@@ -39,8 +39,9 @@ class DataLoader:
         
         # Load CSV datasets
         self.load_generation_data()
-        self.load_demand_data()
+        self.load_inflexible_demand_data()
         self.load_lines_data()
+        self.load_flexible_demand_data()  # -> uses self.T from load_lines_data()
         self.map_transmission_lines()
         self.load_hydro_reservoir_data()
         self.load_hydro_res_units_marginal_cost()
@@ -93,6 +94,10 @@ class DataLoader:
         hydro_ror = self.yaml_data.get('hydro_ror', {})
         demand_classic = self.yaml_data.get('demand_inflexible_classic', {})
         demand_ev = self.yaml_data.get('demand_inflexible_ev', {})
+        # The flexible demand data is set up to also be run dynamically,
+        #    for now it's hardcoded like the other values for simplicity.
+        demand_flexible_classic = self.yaml_data.get('demand_flexible_classic', {})
+        demand_flexible_ev = self.yaml_data.get('demand_flexible_ev', {})
 
         self.wind_onshore_bid_price = wind_on.get('bid_prices')
         self.wind_offshore_bid_price = wind_off.get('bid_prices')
@@ -106,6 +111,8 @@ class DataLoader:
 
         self.voll_classic = demand_classic.get('voll')
         self.voll_ev = demand_ev.get('voll')
+        self.wtp_classic = demand_flexible_classic.get('wtp')
+        self.wtp_ev = demand_flexible_ev.get('wtp')
 
         # Storage roundtrip efficiencies and initial SOCs
             # BESS
@@ -132,7 +139,7 @@ class DataLoader:
         self.hydro_ror_production = self._filter_by_week(self._load_csv('hydro_ror_production.csv'))
         utils.validate_df_positive_numeric(self.hydro_ror_production, "hydro_ror_production")
 
-    def load_demand_data(self):
+    def load_inflexible_demand_data(self):
         """Load inflexible demand data (classic and EV) filtered by week and validate."""
         self.demand_inflexible_classic = self._filter_by_week(self._load_csv('demand_inflexible_classic.csv'))
         utils.validate_df_positive_numeric(self.demand_inflexible_classic, "demand_inflexible_classic")
@@ -141,6 +148,31 @@ class DataLoader:
 
         self.demand_inflexible_ev = self._filter_by_week(self._load_csv('demand_inflexible_ev.csv'))
         utils.validate_df_positive_numeric(self.demand_inflexible_ev, "demand_inflexible_ev")
+
+    def load_flexible_demand_data(self):
+        """Load flexible demand data filtered by week and validate."""
+        # subdir_labels = ["demand_flexible_classic", "demand_flexible_industry", "demand_flexible_household", "demand_flexible_public", "demand_flexible_ev"]
+        subdir_labels = ["demand_flexible_classic", "demand_flexible_ev"]  # data for the others are not yet available
+        parameter_names = ["amount", "capacity"]  # params used to model flexible demand
+        
+        self.flexible_demands_dfs = {
+            flex_load: {param: pd.DataFrame() for param in parameter_names}
+            for flex_load in subdir_labels
+        }  # Nested dict to hold DataFrames for each flexible load type and the two parameters
+        
+        for flex_load in subdir_labels:  # e.g. "demand_flexible_classic"
+            for param in parameter_names: # "amount" or "capacity"
+                flex_dem_df = self._load_csv(f"{flex_load}_{param}.csv")
+                
+                # Repeat the maximum capacity for all time steps
+                if param == "capacity":
+                    self.flexible_demands_dfs[flex_load][param] = np.outer(np.ones(self.T),
+                                                                           flex_dem_df.loc[self.week].to_numpy())
+                else:  # param == "amount" in which case we only need the values for the specific week w/o repetition
+                    self.flexible_demands_dfs[flex_load][param] = flex_dem_df.loc[self.week]
+
+        # call in energy_model.py as e.g.:
+        #   self.data.flexible_demands_dfs['demand_flexible_classic']['capacity']
 
     def load_lines_data(self):
         """Load transmission line capacity or flow data for both directions."""
