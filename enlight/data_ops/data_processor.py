@@ -330,13 +330,6 @@ class DataProcessor:
             ].copy()  # .copy() used to avoid SettingWithCopyWarning
         self.hydro_res_energy_wy_df = self.hydro_res_energy_wy_df_raw[self.bidding_zones_list].copy()
 
-        # Add a column that indicates the capacity share of each reservoir in its bidding zone.
-        #   This is used to distribute the total energy availability in the bidding zone to the individual reservoirs.
-        total_zonal_capacity = self.hydro_reservoir_units_df.groupby("zone_el")["capacity_el"].sum()
-        individual_generator_capacity_share = (self.hydro_reservoir_units_df["capacity_el"]
-                                               / self.hydro_reservoir_units_df["zone_el"].map(total_zonal_capacity))
-        self.hydro_reservoir_units_df["capacity_share_in_zone"] = individual_generator_capacity_share
-
         # Validate the loaded data
         utils.validate_df_positive_numeric(
             self.hydro_res_energy_wy_df, "hydro_res_energy_availability"

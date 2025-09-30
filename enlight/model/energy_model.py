@@ -235,13 +235,14 @@ class EnlightModel:
             )
 
         self.hydro_res_energy_availability = self.model.add_constraints(
-            # If simulating multiple weeks, this constraint HAS to be changed
+            # If simulating multiple weeks, this constraint HAS to be modified
             # The weekly inflow to hydro reservoirs in each bidding zone is
             #   allocated to all the hydro reservoir units based on their share
             #   of the total hydro reservoir capacity in that zone.
             # APPLY CONSTRAINT WEEKLY
             (self.hydro_res_units_bid.sum(dim='T')
              <= self.data.hydro_res_units_energy_availability),  # Shape: (G_hydro_res,)
+
             name='hydro_res_energy_availability'
         )
 
