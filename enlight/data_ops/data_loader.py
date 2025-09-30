@@ -196,10 +196,6 @@ class DataLoader:
 
         # We need to repeat the capacities for each hydro unit for all time steps:
         self.hydro_res_units_el_cap = np.outer(np.ones(self.T), self.hydro_res_units.capacity_el.to_numpy())
-        # Find the energy availability allocated to each hydro reservoir unit based on its capacity
-        #   share of the total hydro reseroivr capacity in its zone.
-        self.hydro_res_units_energy_availability = (self.hydro_res_units.capacity_share_in_zone
-                                                    * self.hydro_res_units.zone_el.map(self.hydro_res_energy))
 
     def load_hydro_res_units_marginal_cost(self):
         # Convert the production cost pandas Series to a DataFrame with time index
