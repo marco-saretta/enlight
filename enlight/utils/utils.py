@@ -4,6 +4,8 @@ import numpy as np
 from pathlib import Path
 from typing import Optional
 import xarray as xr
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def validate_df_positive_numeric(df: pd.DataFrame, name: str, check_numeric: bool = True, check_positive: bool = True) -> None:
     """
@@ -199,7 +201,72 @@ def save_model_results(self):
     except Exception as e:
         print(f"Error saving results: {e}")
         # raise e
-            
+    
+def make_aggregated_supply_and_demand_curves(demand_curve_unsorted, supply_curve_unsorted, colors=['#990000', '#2F3EEA']):
+    '''
+    Plots the aggregated supply and demand curves provided (unsorted) as:
+    - demand_curve_unsorted: np.ndarray (2, D)
+    - supply_curve_unsorted: np.ndarray( 2, S)
+    Where D and S is the number of demands and suppliers.
+    In both arrays:
+        1st row should be QUANTITY: consumption required or unit capacity
+        2nd row is PRICE: bid or offer
+
+    The function returns the plot object:
+    - fig
+    - ax
+    '''
+    # Get the decreasing order of bids based on their WTPs
+    demand_merit_order = np.argsort(demand_curve_unsorted[1, :])[::-1]
+    # Get the increasing order of offers based on their marginal costs
+    supply_merit_order = np.argsort(supply_curve_unsorted[1, :])
+
+    # Sort the bids in decreasing order based on their WTPs
+    demand_curve = demand_curve_unsorted[:, demand_merit_order].copy()
+    # Sort the offers in increasing order based on their marginal costs
+    supply_curve = supply_curve_unsorted[:, supply_merit_order].copy()
+
+    # Aggregate the quantity of the bids
+    demand_curve[0,:] = np.cumsum(demand_curve[0,:])
+    # Aggregate the quantity of the offers
+    supply_curve[0,:] = np.cumsum(supply_curve[0,:])
+    # Insert starting point of the curve. Without these the curves start at the capacity of the first bid/offer which would be counter-intuitive.
+    demand_curve = np.insert(demand_curve, 0, np.array((0,demand_curve[1,0])), 1)
+    supply_curve = np.insert(supply_curve, 0, np.array((0, supply_curve[1,0])), 1)
+
+    fig, ax = plt.subplots(figsize=(8,6))
+    y_max = max(max(supply_curve[1, :]), max(demand_curve[1, :]))
+    y_min = min(min(supply_curve[1, :]), min(demand_curve[1, :]))
+
+    # Draw aggregate demand and supply curves
+    # 'steps-pre' draws the lines at the x-coordinate given. 'steps-post' would draw the line at the next x-coordinate.
+    sns.lineplot(ax=ax,
+                 x=demand_curve[0, :],
+                 y=demand_curve[1, :],
+                 drawstyle='steps-pre',
+                 color=colors[0],
+                 label='demand')
+    sns.lineplot(ax=ax,
+                 x=supply_curve[0, :],
+                 y=supply_curve[1, :],
+                 drawstyle='steps-pre',
+                 color=colors[1],
+                 label='supply')
+
+    # Show a wider price range
+    ax.set_ylim((min(y_min, -0.05*y_max), 1.05*y_max))
+
+    # Add vertical line at the end of the demand curve to show
+    #   the intersection with the supply curve
+    ax.axvline(x=demand_curve[0, -1],
+               ymin=ax.get_ylim()[0],
+               ymax=demand_curve[1, -1]/ax.get_ylim()[1],
+               c=colors[0],
+               ls='--')
+
+    # Return the plot object so it can be used for visualizing results on top of the aggregated market curves as well
+    return fig, ax
+
 #### OBSOLETE FUNCTIONS - DO NOT CONSIDER ####
 
 # Function to extract results

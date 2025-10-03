@@ -105,7 +105,8 @@ class DataLoader:
 
     def load_generation_data(self):
         """Load all renewable generation time-series data filtered by week and validate them."""
-        self.wind_onshore_production = self._filter_by_week(self._load_csv('wind_onshore_production.csv'))
+        self.wind_onshore_production_year = self._load_csv('wind_onshore_production.csv')
+        self.wind_onshore_production = self._filter_by_week(self.wind_onshore_production_year)
         utils.validate_df_positive_numeric(self.wind_onshore_production, "wind_onshore_production")
 
         self.wind_offshore_production = self._filter_by_week(self._load_csv('wind_offshore_production.csv'))

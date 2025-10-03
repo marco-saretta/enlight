@@ -5,6 +5,7 @@ from tqdm import tqdm
 from enlight.data_ops import DataProcessor
 from enlight.model import EnlightModel
 import enlight.utils as utils
+from enlight.data_ops import DataVisualizer
 
 
 class EnlightRunner:
@@ -100,3 +101,17 @@ class EnlightRunner:
     def run_all_simulations(self) -> None:
         """Run all simulations for the configured scenarios (placeholder method)."""
         pass
+
+    def visualize_data(self, scenario_name, week, simulation_path: Path) -> None:
+        """Visualize the data using DataVisualizer (placeholder method)."""
+        self.visualizer = DataVisualizer(scenario_name=scenario_name,
+                                    config_yaml=self.config_yaml,
+                                    week=week,  # week doesn't matter here but needed to initialize DataLoader object
+                                    input_path=simulation_path,
+                                    logger=self.logger)
+        self.visualizer.plot_annual_total_loads()
+        self.visualizer.plot_total_installed_capacity()
+        # self.visualizer.plot_profiles()
+        self.visualizer.plot_aggregated_supply_and_demand_curves(example_hour=12)
+
+        self.logger.info("Data visualization completed.")
