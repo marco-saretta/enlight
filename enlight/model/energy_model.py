@@ -248,12 +248,9 @@ class EnlightModel:
         self.hydro_res_energy_availability = self.model.add_constraints(
             # If simulating multiple weeks, this constraint HAS to be modified
             # The weekly inflow to hydro reservoirs in each bidding zone is
-            #   allocated to all the hydro reservoir units based on their share
-            #   of the total hydro reservoir capacity in that zone.
-            # APPLY CONSTRAINT WEEKLY
-            (self.hydro_res_units_bid.sum(dim='T')
-             <= self.data.hydro_res_units_energy_availability),  # Shape: (G_hydro_res,)
-
+            #   allocated to all the hydro reservoir units in that zone
+            (self.hydro_res_units_bid.sum(dim='T').dot(self.data.G_hydro_res_Z_xr)
+             <= self.data.hydro_res_energy),  # Shape: (Z,)
             name='hydro_res_energy_availability'
         )
 
@@ -262,6 +259,7 @@ class EnlightModel:
             <= self.data.flexible_demands_dfs['demand_flexible_classic']['amount']
             ,
             name='demand_flexible_classic_limit'
+        )
           
         self.hydro_ps_units_SOC_balance = self.model.add_constraints(  # Shape: (T, G_hydro_ps)
             # In each hour the change in the SOC is equal to the net energy
