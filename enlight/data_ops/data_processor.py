@@ -40,11 +40,13 @@ class DataProcessor:
         self._load_hydro_reservoir_data()
         self._load_hydro_pumped_storage()
         self._load_conventional_thermal_units_data()
+        self._load_bess()
         self._load_ptx_plants()
         self._load_dh_plants()
         self._load_fuel_prices()
         self._load_transmission_lines_data()
         self._prepare_inflexible_demand_sources()
+        self._load_flexible_demand_sources()
         # Save aux data to YAML after all processing
         self._save_aux_data_to_yaml()
 
@@ -76,6 +78,9 @@ class DataProcessor:
         self.path_district_heating = self.base_data_path / "district_heating"
         self.path_ptx = self.base_data_path / "ptx"
         self.path_lines = self.base_data_path / "lines"
+
+        # BESS path
+        self.path_bess = self.base_data_path / "bess"
 
         # Common subdirectories
         self.capacity_projections_subdir = "capacity_projections"
@@ -171,7 +176,7 @@ class DataProcessor:
                         indexed by time, with columns as bidding zones.
         """
 
-        label = config["label"]
+        label = config["label"]  # e.g., "WIND_ON"
         scenario = self.scenario_name
 
         # --- Extract scenario-specific parameters ---
@@ -336,13 +341,6 @@ class DataProcessor:
             ].copy()  # .copy() used to avoid SettingWithCopyWarning
         self.hydro_res_energy_wy_df = self.hydro_res_energy_wy_df_raw[self.bidding_zones_list].copy()
 
-        # Add a column that indicates the capacity share of each reservoir in its bidding zone.
-        #   This is used to distribute the total energy availability in the bidding zone to the individual reservoirs.
-        total_zonal_capacity = self.hydro_reservoir_units_df.groupby("zone_el")["capacity_el"].sum()
-        individual_generator_capacity_share = (self.hydro_reservoir_units_df["capacity_el"]
-                                               / self.hydro_reservoir_units_df["zone_el"].map(total_zonal_capacity))
-        self.hydro_reservoir_units_df["capacity_share_in_zone"] = individual_generator_capacity_share
-
         # Validate the loaded data
         utils.validate_df_positive_numeric(
             self.hydro_res_energy_wy_df, "hydro_res_energy_availability"
@@ -372,18 +370,46 @@ class DataProcessor:
         Raises:
             FileNotFoundError: If the hydro pumped storage units file does not exist.
         """
-        hydro_ps_filepath = self.path_hydro_pumped / "hydro_pumped_storage_units.csv"
 
-        # Check if the hydro reservoir energy availability file exists
-        if not hydro_ps_filepath.exists():
+        # Load the configuration section for hydro pumped storage
+        hydro_ps_df = self.scenario_config_df.loc["HYDRO_PS"].copy()
+        hydro_ps_df.set_index("key", inplace=True)
+
+        # Extract the pumped hydro storage roundtrip efficiency and
+        #   initial SOC and store them in the auxiliary yaml data dictionary
+        self.aux_data_dict["hydro_ps_roundtrip"] = float(hydro_ps_df.loc["hydro_ps_roundtrip", self.scenario_name])
+        self.aux_data_dict["hydro_ps_initial_soc"] = float(hydro_ps_df.loc["hydro_ps_initial_soc", self.scenario_name])
+
+        # Extract hydro pumped storage configuration values
+        hydro_ps_units_filename = hydro_ps_df.loc[
+            "hydro_ps_units_file", self.scenario_name
+        ]
+
+        # Define file path
+        hydro_ps_units_filepath = (
+            self.path_hydro_pumped / f"{hydro_ps_units_filename}.csv"
+        )
+
+        # Check if the hydro pumped storage units file exists
+        if not hydro_ps_units_filepath.exists():
             raise FileNotFoundError(
-                f"Hydro pumped storage units file not found: {hydro_ps_filepath}"
+                f"Hydro pumped storage units file not found: {hydro_ps_units_filepath}"
             )
 
-        self.hydro_pumped_storage_units_df = pd.read_csv(hydro_ps_filepath, index_col=0)
+        # Load the hydro pumped storage data into DataFrames
+        self.hydro_pumped_units_df_raw = pd.read_csv(
+            hydro_ps_units_filepath, index_col=0
+        )
+
+        # Filter the hydro reservoir data to only include generators and energy availability in the selected bidding zones
+        self.hydro_pumped_units_df = self.hydro_pumped_units_df_raw[
+            self.hydro_pumped_units_df_raw['zone_el'].isin(self.bidding_zones_list)
+            ].copy()  # .copy() used to avoid SettingWithCopyWarning
+
+        # Save the loaded and validated hydro reservoir data to the designated output path
         utils.save_data(
-            self.hydro_pumped_storage_units_df,
-            "hydro_pumped_storage_units.csv",
+            self.hydro_pumped_units_df,
+            "hydro_pumped_units.csv",
             output_dir=self.output_path,
             logger=self.logger,
         )
@@ -430,6 +456,59 @@ class DataProcessor:
         utils.save_data(
             self.thermal_units,
             "conventional_thermal_units.csv",
+            output_dir=self.output_path,
+            logger=self.logger,
+        )
+
+    def _load_bess(self) -> None:
+        """
+        Load and process data for battery energy storage system (BESS) units.
+
+        This method retrieves the BESS units data from a specified CSV file,
+        checks for its existence, loads it into a DataFrame, and saves it to the designated output path.
+
+        Raises:
+            FileNotFoundError: If the BESS units file does not exist.
+        """
+
+        # Load the configuration section for hydro pumped storage
+        bess_df = self.scenario_config_df.loc["BESS"].copy()
+        bess_df.set_index("key", inplace=True)
+
+        # Extract the BESS roundtrip efficiency and initial SOC and store them in the auxiliary yaml data dictionary
+        self.aux_data_dict["bess_roundtrip"] = float(bess_df.loc["bess_roundtrip", self.scenario_name])
+        self.aux_data_dict["bess_initial_soc"] = float(bess_df.loc["bess_initial_soc", self.scenario_name])
+
+        # Extract hydro pumped storage configuration values
+        bess_units_filename = bess_df.loc[
+            "bess_units_file", self.scenario_name
+        ]
+
+        # Define file path
+        bess_units_filepath = (
+            self.path_bess / f"{bess_units_filename}.csv"
+        )
+
+        # Check if the hydro pumped storage units file exists
+        if not bess_units_filepath.exists():
+            raise FileNotFoundError(
+                f"BESS units file not found: {bess_units_filepath}"
+            )
+
+        # Load the hydro pumped storage data into DataFrames
+        self.bess_units_df_raw = pd.read_csv(
+            bess_units_filepath, index_col=0
+        )
+
+        # Filter the hydro reservoir data to only include generators and energy availability in the selected bidding zones
+        self.bess_units_df = self.bess_units_df_raw[
+            self.bess_units_df_raw['zone_el'].isin(self.bidding_zones_list)
+            ].copy()  # .copy() used to avoid SettingWithCopyWarning
+
+        # Save the loaded and validated hydro reservoir data to the designated output path
+        utils.save_data(
+            self.bess_units_df,
+            "bess_units.csv",
             output_dir=self.output_path,
             logger=self.logger,
         )
@@ -612,6 +691,74 @@ class DataProcessor:
                 output_dir=self.output_path,
                 logger=self.logger,
             )
+
+    def _load_flexible_demand_sources(self) -> None:
+        """
+        Load data for flexible loads.
+
+        This method retrieves the flexible loads data from specified CSV files,
+        checks for its existence, and loads it into a DataFrame. The data is then saved
+        to a specified output path. This is done for weekly (maximum) amount and hourly capacity,
+        and for multiple types of flexible loads.
+
+        Raises:
+            FileNotFoundError: If any of the flexible load files do not exist.
+        """
+        # Hardcoded list of flexible load types for now.
+        # flex_demands = ["DEMAND_FLEX_CLA", "DEMAND_FLEX_IND", "DEMAND_FLEX_HOU", "DEMAND_FLEX_PUB", "DEMAND_FLEX_EV"]
+        flex_demands = ["DEMAND_FLEX_CLA", "DEMAND_FLEX_EV"]  # Key in config file
+        # subdir_labels = ["demand_flexible_classic", "demand_flexible_industry", "demand_flexible_household", "demand_flexible_public", "demand_flexible_ev"]
+        subdir_labels = ["demand_flexible_classic", "demand_flexible_ev"]  # more descriptive name and subfolder name
+        parameter_names = ["amount", "capacity"]  # used for file names
+        alternative_parameter_names = ["amount", "cap"]  # used for keys in the excel config file
+
+        # Load the configuration section for the flexible loads
+        flex_demands_df = self.scenario_config_df.loc[flex_demands].copy()
+        flex_demands_df.set_index("key", inplace=True)
+
+        # Extract flexible loads configuration values,
+        #   and verify that the files exist,
+        flex_demands_dfs_raw = {}
+        self.flex_demands_dfs = {}
+        for flex_load, subdir_label in zip(flex_demands, subdir_labels):
+            # Load WTP for each flexible load type
+            voll_flex = float(flex_demands_df.loc[  # extract the willingness-to-pay from the excel config file
+                flex_load.lower() + "_wtp",
+                self.scenario_name
+                ])
+            self.aux_data_dict[subdir_label] = {"wtp": voll_flex}  # use subdir_label because it's more descriptive
+
+            # Load (weekly) amount and (hourly) capacity for each flexible load type
+            for param_name, alt_param_name in zip(parameter_names, alternative_parameter_names):
+                file = flex_demands_df.loc[
+                    flex_load.lower() + f"_{alt_param_name}_file", self.scenario_name
+                    ]
+                
+                # Define the path to the CSV file of the flexible load data
+                filepath = self.base_data_path / subdir_label / f"{param_name}" / f"{file}.csv"
+
+                # Check if the flexible load amount file exists
+                if not filepath.exists():
+                    raise FileNotFoundError(
+                        f"Flexible load amount file not found: {filepath}"
+                    )
+                # Load the flexible load data into DataFrames and save them in the dictionary
+                flex_demands_dfs_raw[flex_load + f"_{param_name}"] = pd.read_csv(filepath, index_col=0)
+                # Filter the flexible units to only include those in the selected bidding zones
+                self.flex_demands_dfs[flex_load + f"_{param_name}"] = flex_demands_dfs_raw[flex_load + f"_{param_name}"][self.bidding_zones_list].copy()
+                
+                # Validate the loaded data
+                utils.validate_df_positive_numeric(
+                    self.flex_demands_dfs[flex_load + f"_{param_name}"],
+                    flex_load + f"_{param_name}"
+                )
+                # Save the loaded flexible demands data to the designated output path
+                utils.save_data(
+                    self.flex_demands_dfs[flex_load + f"_{param_name}"],
+                    subdir_label + f"_{param_name}.csv",  # subdir_label used instead of flex_load to get a more descriptive filename
+                    output_dir=self.output_path,
+                    logger=self.logger,
+                )
 
     def _save_aux_data_to_yaml(self) -> None:
         """Save auxiliary data dictionary to a YAML file."""

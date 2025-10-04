@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # runner.prepare_data_all_simulations()
 
     # Run a single simulation for the specified week and save the results
-    runner.run_single_simulation(week=25, simulation_path=Path('simulations/scenario_1'))
+    runner.run_single_simulation(week=1, simulation_path=Path('simulations/scenario_1'))
     # runner.enlight_model.run_model()
     # Access the model instance for debugging purposes
     d = runner.enlight_model
@@ -33,5 +33,3 @@ if __name__ == "__main__":
         bids_accepted=d.demand_inflexible_classic_bid.solution,
         zonal_prices=d.results_dict['electricity_prices']
     )
-
-# %%

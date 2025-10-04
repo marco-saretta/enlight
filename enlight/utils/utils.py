@@ -174,23 +174,6 @@ def save_model_results(self):
         marginal_generators_df.index = self.data.times
 
         self.results_dict["marginal_generator"] = marginal_generators_df
-
-        # The code below is used to explain why the marginal hydro reservoir is a given hour
-        #   is NOT equivalent to the electricity price in that hour. It is due to the temporal coupling
-        #   of the hydro reservoir energy availability constraint.
-        hydro_reservoir_energy_utilized = (self.hydro_res_units_bid.solution.sum(axis=0)
-                                           / self.data.hydro_res_units_energy_availability)
-        tol = 1e-5  # used to avoid floating point precision issues
-        self.results_dict["marginal_energy_availability_cost"] = (
-            self.data.hydro_res_units.loc[
-                hydro_reservoir_energy_utilized[  # units between 0 and 1 have not fully depleted their reservoir energy for that week
-                    (hydro_reservoir_energy_utilized > 0)
-                    & (hydro_reservoir_energy_utilized < 1-tol)
-                ].G_hydro_res.values  # get the unit IDs in order to select the undepleted reservoirs from the hydro reservoir dataframe
-            ]
-            .groupby("zone_el")  # group by bidding zone since congestion might occur
-            .prodcost.min()  # the cheapest undepleted hydro reservoir unit sets the price
-        )
         ################################################
 
         # Save all results ---
