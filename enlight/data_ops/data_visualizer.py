@@ -1,9 +1,6 @@
-from pathlib import Path
 from logging import Logger 
-from dataclasses import dataclass
 import numpy as np
 import pandas as pd
-import xarray as xr
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -11,36 +8,27 @@ import enlight.utils as utils
 from enlight.data_ops import DataProcessor
 from enlight.data_ops import DataLoader
 
-@dataclass
+
 class DataVisualizer:
     """
-    A class for visualizing the model inputs data using xarray and matplotlib.
+    A class for visualizing the model inputs data using pandas, matplotlib, and seaborn..
 
     Attributes:
-        data_loader (DataLoader): An instance of DataLoader to load the data.
+    - dataprocessor_obj (DataProcessor): An instance of DataProcessor to load the raw data.
+    - dataloader_obj (DataLoader): An instance of DataLoader to load the (model-ready) data.
+    - week: the same week as was chosen for the DataLoader object. Only used for titles in plots.
+    - logger: logger
     """
-    scenario_name: str  # req. DataProcessor
-    config_yaml: dict  # req. DataProcessor
-    week: int  # req. DataLoader
-    input_path: Path  # req. DataLoader
-    logger: Logger  # req. both
-
-    def __post_init__(self):
+    
+    def __init__(self, dataprocessor_obj, dataloader_obj, week, logger):
         """Initialize the DataLoader instance."""
+        self.logger = logger
         self.logger.info("INITIALIZING DATA VISUALIZER")
-        self.input_path = Path(self.input_path).resolve()  # to get the absolute data path
 
-        self.data_raw = DataProcessor(
-            scenario_name=self.scenario_name,  # Name of the scenario
-            config_yaml=self.config_yaml,  # Configuration for the scenario
-            logger=self.logger,  # Logger for logging messages
-        )
+        self.data_raw = dataprocessor_obj  # rename for convenience
+        self.data = dataloader_obj  # rename for convenience
+        self.week = week
 
-        # We're interested in the entire year.
-        self.data = DataLoader(week=self.week,
-                              input_path=self.input_path / 'data',
-                              logger=self.logger)
-        
         self.start_date = f"01-01-{self.data.prediction_year}"
         self.dates = pd.date_range(start=self.start_date, periods=8760, freq='h')
 
@@ -70,13 +58,29 @@ class DataVisualizer:
 
     def plot_total_installed_capacity(self) -> None:
         """Plot the system total installed capacity and average annual load."""
+        # GENERATION:
+
         # Retrieve the installed capacities of conventional units by fuel type and technology
         cap_conv_by_fuel = self.data.conventional_units_df.groupby('fuel')['capacity_el'].sum()
+        # Retrieve the installed capacities of hydro reservoirs
+        cap_hydro_res = pd.Series({
+            'Reservoir hydro': self.data.hydro_res_units.capacity_el.sum()
+        })
 
         # Retrieve the installed capacities of VRE units by technology
         cap_VRE_by_tech = pd.Series()
         for k, tech_df in self.data_raw.cap_year_dfs.items():
-            cap_VRE_by_tech.loc[k] = tech_df[self.data.bidding_zones].sum().sum()
+            # The string operators are simply used to change the series index
+            #   from simply e.g. "wind_onshore" to "Wind onshore".
+            cap_VRE_by_tech.loc[k.replace('_', ' ').capitalize()] = tech_df[self.data.bidding_zones].sum().sum()
+
+        # STORAGE:
+        cap_bess = pd.Series({
+            'BESS': self.data.bess_units_df.capacity_el.sum()
+        })
+        cap_hydro_ps = pd.Series({
+            'Pumped hydro': self.data.hydro_ps_units.capacity_el.sum()
+        })
 
         # Calculate the hourly inflexible demand by type by averaging over the year
         mean_inflex_dem_by_type = pd.Series()
@@ -85,12 +89,21 @@ class DataVisualizer:
             # and sum over the selected bidding zones to the the hourly system demand
             mean_inflex_dem_by_type.loc[k] = dem_df[self.data.bidding_zones].div(8760).sum()
         
+        # Flexible demand is represented by its capacity
+        cap_flex_dem_classic = self.data.flexible_demands_dfs['demand_flexible_classic']['capacity'].sum(axis=1)[0]
+
         # exclude unused demand types
         mean_inflex_dem_by_type = mean_inflex_dem_by_type.drop(labels='demand_inflexible_ev')
         mean_inflex_dem_by_type.index = ['mean inflex class dem']
 
         # Combine all conventional and VRE installed capacities
-        installed_caps = pd.concat([ cap_conv_by_fuel, cap_VRE_by_tech])  #, mean_inflex_dem_by_type])
+        installed_caps = pd.concat([
+            cap_conv_by_fuel,
+            cap_hydro_res,
+            cap_VRE_by_tech,
+            cap_bess,
+            cap_hydro_ps
+        ])
 
         # Plot the installed capacities and mean inflexible demand
         fig, ax = plt.subplots(figsize=(12,6))
@@ -99,6 +112,7 @@ class DataVisualizer:
                     y=installed_caps.div(1e3).values,  # MW -> GW
                     color=self.dtu_colors[1])
         ax.axhline(y=mean_inflex_dem_by_type.div(1e3).values, color=self.dtu_colors[0], linestyle='--', label='Avg. hourly inflexible classic demand [GW]')
+        ax.axhline(y=cap_flex_dem_classic/1e3, color=self.dtu_colors[0], linestyle='-.', label='Capacity of flexible demand [GW]')
         ax.legend()
         ax.tick_params(axis='x', rotation=45)
         ax.set_xlabel("Installed capacity by feedstock, VRE technology, & inflexible demand type")
@@ -155,53 +169,12 @@ class DataVisualizer:
         fig.tight_layout()
         plt.show()
 
-    def plot_aggregated_supply_and_demand_curves(self, example_hour, show=True) -> None:
+    def plot_aggregated_supply_and_demand_curves(self, example_hour) -> None:
         """Plot aggregated supply and demand curves."""
-        # Placeholder for actual implementation
-        h = example_hour  # descriptive name as input, but simple name is more functional
 
-        # Collect all of the demand
-        self.demand_curve_raw = np.vstack([
-            # 1st column is the bid quantity
-                # Inflexible demands
-                    # classic
-            [self.data.demand_inflexible_classic.sum(axis=1).iloc[h]  #,
-                # Flexible demands
-                    # classic
-                    # 1/4 of the inflexible demand is currently visualized as flexible until merging with the branch that has flexible demand
-            #self.data.demand_inflexible_classic.sum(axis=1).div(4).iloc[h]
-            ]
-            ,
-            # 2nd column is the bid price (VOLL or WTP)
-            [self.data.voll_classic  #,
-            #self.data.voll_classic/10
-            ]
-        ])
-
-        # Collect all of the supply
-        self.supply_curve_raw = np.vstack([
-            # 1st column is the offer quantity
-            np.hstack([
-                # VREs
-                self.data.solar_pv_production.sum(axis=1).iloc[h],
-                self.data.wind_onshore_production.sum(axis=1).iloc[h],
-                self.data.wind_offshore_production.sum(axis=1).iloc[h],
-                # Dispatchable
-                self.data.conventional_units_df.capacity_el.values,
-                self.data.hydro_res_units.capacity_el.values
-            ])
-            ,
-            # 2nd column is the offer price (marginal cost)
-            np.hstack([
-                # VREs
-                self.data.solar_pv_bid_price,
-                self.data.wind_onshore_bid_price,
-                self.data.wind_offshore_bid_price,
-                # Dispatchable
-                self.data.conventional_units_df.prodcost.values,
-                self.data.hydro_res_units.prodcost.values
-            ])
-        ])
+        # Get the unsorted market curves
+        # This is kept as a method ONLY to save the raw curves for easier inspection
+        self.demand_curve_raw, self.supply_curve_raw = utils.get_unsorted_aggregated_market_curves_from_dataloader_object(example_hour=example_hour, dataloader_obj=self.data)
 
         # Feed the unsorted demand and supply data into the function that
         #   aggregates them and readies them for a step plot
@@ -210,32 +183,7 @@ class DataVisualizer:
             supply_curve_unsorted=self.supply_curve_raw,
             colors=self.dtu_colors
         )
-        ax.set_title(f"Aggregated supply and demand curves on {self.dates[self.week*7*24+h]}")
+        ax.set_title(f"Aggregated supply and demand curves on {self.dates[self.week*7*24+example_hour]}")
         
         # Show or return the plot object to allow for adding results on top of the figure
-        if show:
-            plt.show()
-            return None
-        return fig, ax
-    
-    def plot_aggregated_curves_with_zonal_prices(self, example_hour, bids_accepted, zonal_prices):
-        '''
-        Overlay the aggregated supply and demand curves with the zonal electricity prices
-        '''
-        fig, ax = self.plot_aggregated_supply_and_demand_curves(example_hour=example_hour, show=False)
-        q_eq = bids_accepted.isel(T=example_hour).sum()
-        p_eqs = zonal_prices.iloc[example_hour]
-
-        df = pd.DataFrame({
-            "q_eq": [q_eq.item()] * len(p_eqs),  # repeat scalar
-            "q": bids_accepted.isel(T=example_hour),
-            "p_eq": p_eqs.values
-        }, index=p_eqs.index)
-        df["Z"] = df.index
-
-        sns.scatterplot(ax=ax, data=df, x="q_eq", y="p_eq", s=200, style="Z")
-        ax.set_ylim(ax.get_ylim()[0], 1.25*max(p_eqs.values))
         plt.show()
-
-        return None
-

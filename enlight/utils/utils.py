@@ -6,6 +6,7 @@ from typing import Optional
 import xarray as xr
 import matplotlib.pyplot as plt
 import seaborn as sns
+import linopy
 
 def validate_df_positive_numeric(df: pd.DataFrame, name: str, check_numeric: bool = True, check_positive: bool = True) -> None:
     """
@@ -98,6 +99,19 @@ def save_data(
 
     return file_path
 
+def check_vars_list(vre_list: list, dem_list: list, gen_units_list: list, stor_units_list: list, model_vars: linopy.variables.Variables):
+    # Verifies that all variables are indeed accounted for when post-calculating social welfare.
+    #   Only 'export' and 'SOC'-variables may be overlooked.
+    stor_expanded = []
+    for s in stor_units_list:
+        stor_expanded.extend([f"{s}_offer", f"{s}_bid"])
+    vars_accounted_for = vre_list + dem_list + gen_units_list + stor_expanded + ['lineflow']
+    vars_accounted_for = list(map(lambda x: x.replace("_sol",""), vars_accounted_for))
+    vars_unaccounted_for = set(model_vars) - set(vars_accounted_for)
+    for v in vars_unaccounted_for:
+        if not (v.endswith('_SOC') or v == 'export'):
+            raise Exception(f"Variable {v} is not accounted for in the calculation of social welfare.\nAll variables unaccounted for are: {vars_unaccounted_for} of which SOC's and export shouldn't be accounted for.")
+
 def save_model_results(self):
     """
     Calculate and save results from the optimized model.
@@ -116,22 +130,33 @@ def save_model_results(self):
 
         # --- Step 2: Calculate values ---
         self.results_dict.update({
-            "demand_inflexible_classic_sol": get_solution(self.demand_inflexible_classic_bid),
-            "wind_onshore_bid_sol": get_solution(self.wind_onshore_bid),
-            "wind_offshore_bid_sol": get_solution(self.wind_offshore_bid),
-            "solar_pv_bid_sol": get_solution(self.solar_pv_bid),
-            "hydro_ror_bid_sol": get_solution(self.hydro_ror_bid),
-            "conventional_units_sol": get_solution(self.conventional_units_bid),
+            # Bids
+            "demand_inflexible_classic_bid_sol": get_solution(self.demand_inflexible_classic_bid),
+            "demand_flexible_classic_bid_sol": get_solution(self.demand_flexible_classic_bid),
+            "hydro_ps_units_bid_sol": get_solution(self.hydro_ps_units_bid),
+            "bess_units_bid_sol": get_solution(self.bess_units_bid),
+
+            # Offers
+            "wind_onshore_offer_sol": get_solution(self.wind_onshore_offer),
+            "wind_offshore_offer_sol": get_solution(self.wind_offshore_offer),
+            "solar_pv_offer_sol": get_solution(self.solar_pv_offer),
+            "hydro_ror_offer_sol": get_solution(self.hydro_ror_offer),
+            "conventional_units_offer_sol": get_solution(self.conventional_units_offer),
+            "hydro_res_units_offer_sol": get_solution(self.hydro_res_units_offer),
+            "hydro_ps_units_offer_sol": get_solution(self.hydro_ps_units_offer),
+            "bess_units_offer_sol": get_solution(self.bess_units_offer),
+
+            # Transmission
             "electricity_export_sol": get_solution(self.electricity_export),
             "lineflow_sol": get_solution(self.lineflow),
         })
 
         # Derived results
-        self.results_dict["demand_inflexible_classic_curt"] = (
-            self.data.demand_inflexible_classic - self.results_dict["demand_inflexible_classic_sol"]
+        self.results_dict["demand_inflexible_classic_bid_curt"] = (
+            self.data.demand_inflexible_classic - self.results_dict["demand_inflexible_classic_bid_sol"]
         )
         self.results_dict["wind_on_bid_vol_curt"] = (
-            self.data.wind_onshore_production - self.results_dict["wind_onshore_bid_sol"]
+            self.data.wind_onshore_production - self.results_dict["wind_onshore_offer_sol"]
         )
         self.results_dict["electricity_prices"] = self.model.dual["power_balance"].to_pandas()
 
@@ -143,9 +168,9 @@ def save_model_results(self):
 
         marginal_thermal_generators = np.empty(len(self.times)+1, dtype=pd.DataFrame)
         for h, h_idx in zip(self.times, self.data.time_index):
-            marginal_thermal_generators_prod = self.conventional_units_bid.solution.sel(T=h)[
-                (self.conventional_units_bid.solution.sel(T=h) > 0)  # is the generator activated?
-                & (self.conventional_units_bid.solution.sel(T=h) < el_cap_xr.sel(T=h))  # is it at full capacity?
+            marginal_thermal_generators_prod = self.conventional_units_offer.solution.sel(T=h)[
+                (self.conventional_units_offer.solution.sel(T=h) > 0)  # is the generator activated?
+                & (self.conventional_units_offer.solution.sel(T=h) < el_cap_xr.sel(T=h))  # is it at full capacity?
                 ]
             marginal_thermal_generators[h_idx] = self.data.conventional_units_marginal_cost_df.loc[
                 h, marginal_thermal_generators_prod.G
@@ -158,9 +183,9 @@ def save_model_results(self):
         # # Read out the marginal hydro reservoir generator by its unit name
         marginal_hydro_generators = np.empty(len(self.data.time_index)+1, dtype=pd.DataFrame)
         for h, h_idx in zip(self.times, self.data.time_index):
-            marginal_hydro_generators_prod = self.hydro_res_units_bid.solution.sel(T=h)[
-                (self.hydro_res_units_bid.solution.sel(T=h) > 0) # is the generator activated?
-                & (self.hydro_res_units_bid.solution.sel(T=h) < el_cap_hydro_xr.sel(T=h)) # is it at full capacity?
+            marginal_hydro_generators_prod = self.hydro_res_units_offer.solution.sel(T=h)[
+                (self.hydro_res_units_offer.solution.sel(T=h) > 0) # is the generator activated?
+                & (self.hydro_res_units_offer.solution.sel(T=h) < el_cap_hydro_xr.sel(T=h)) # is it at full capacity?
                 ]
             marginal_hydro_generators[h_idx] = self.data.hydro_res_units_marginal_cost_df.loc[
                 h, marginal_hydro_generators_prod.G_hydro_res
@@ -184,6 +209,103 @@ def save_model_results(self):
     except Exception as e:
         print(f"Error saving results: {e}")
         # raise e
+
+    self.logger.info("Processing the results")
+
+    # Process the results to reproduce the social welfare from the optimization model
+    try:
+        self.results_econ = {"revenues":{} , "costs":{}, 
+                         "profits":{}, "profits_sw": {},
+                         "profits_tot": {},
+                         "consumer surplus" : float,
+                         "producer surplus" : float,
+                         "producer surplus perceived" : float,
+                         "social welfare": float,
+                         "social welfare perceived": float}
+
+
+        # List generators that are given BY ZONE - in this case only: VRE technologies.
+        #   And put relevant data in a corresponding dictionary.
+        vre_list = ['wind_onshore_offer_sol', 'wind_offshore_offer_sol', 'solar_pv_offer_sol', 'hydro_ror_offer_sol']
+        VRE_costs = dict(zip(vre_list, [self.data.wind_onshore_bid_price, self.data.wind_offshore_bid_price, self.data.solar_pv_bid_price, self.data.hydro_ror_bid_price]))
+
+        # List demands and put relevant data in a dict.
+        dem_list = ['demand_inflexible_classic_bid_sol', 'demand_flexible_classic_bid_sol']
+        dem_bid_price = dict(zip(dem_list, [self.data.voll_classic, self.data.wtp_classic]))
+
+        # List generators that are given BY UNIT.
+        gen_units_list = ['conventional_units_offer_sol', 'hydro_res_units_offer_sol']
+        gen_units_map_to_zone = dict(zip(gen_units_list, [self.data.G_Z_df, self.data.G_hydro_res_Z_df]))
+        gen_units_marginal_cost_dfs = dict(zip(gen_units_list, [self.data.conventional_units_marginal_cost_df, self.data.hydro_res_units_marginal_cost_df]))
+
+        # List storage types (BY UNIT).
+        stor_units_list = ['bess_units', 'hydro_ps_units']
+        stor_units_map_to_zone = dict(zip(stor_units_list, [self.data.G_bess_Z_df, self.data.G_hydro_ps_Z_df]))
+        stor_units_marginal_cost_dfs = dict(zip(stor_units_list, [self.data.bess_units_marginal_cost_dfs, self.data.hydro_ps_units_marginal_cost_dfs]))
+
+        # Verify that all variables are indeed accounted for. Only 'export' and 'SOC'-variables may be overlooked.
+        check_vars_list(vre_list=vre_list,
+                        dem_list=dem_list,
+                        gen_units_list=gen_units_list,
+                        stor_units_list=stor_units_list,
+                        model_vars=self.model.variables)
+
+        # Get VRE revenues and operatings costs
+        for vre in vre_list:
+            vre_ = vre.replace("_offer_sol", "")  # prettifying keys
+            self.results_econ["revenues"][vre_] = (self.results_dict[vre].mul(self.results_dict['electricity_prices'], axis='columns')).sum(axis=0)  # sum across hours
+            self.results_econ["costs"][vre_] = (self.results_dict[vre] * VRE_costs[vre]).sum(axis=0)
+
+        # Get demands utilities and power costs
+        for dem in dem_list:
+            dem_ = dem.replace("_bid_sol","")
+            self.results_econ["revenues"][dem_] = (self.results_dict[dem] * dem_bid_price[dem]).sum(axis=0)
+            self.results_econ["costs"][dem_] = (self.results_dict[dem].mul(self.results_dict['electricity_prices'], axis='columns')).sum(axis=0)
+
+        # Get conventional and hydro res units revenues and operatings costs
+        for gen in gen_units_list:
+            gen_ = gen.replace("_offer_sol", "")
+            self.results_econ["revenues"][gen_] = (self.results_dict[gen] * (self.results_dict['electricity_prices'].dot(gen_units_map_to_zone[gen].T))).sum(axis=0)
+            self.results_econ["costs"][gen_] = (self.results_dict[gen] * gen_units_marginal_cost_dfs[gen]).sum(axis=0)
+
+        # Get storage revenues and costs
+        # The "true" revenue of the bess is the revenue of the offer. The "true" cost is the power cost from the bid. However, when adding all profits one needs to take the bid revenue and the offer cost into account as well. This is what's done in "profits_sw".
+        for stor_ in stor_units_list:
+            # Auxiliary variables
+            stor_offer = stor_ + "_offer_sol"
+            stor_bid = stor_ + "_bid_sol"
+            # Get the offer revenue and bid power costs
+            self.results_econ["revenues"][stor_] = (self.results_dict[stor_offer] * (self.results_dict['electricity_prices'].dot(stor_units_map_to_zone[stor_].T))).sum(axis=0)
+            self.results_econ["costs"][stor_] = (self.results_dict[stor_bid] * (self.results_dict['electricity_prices'].dot(stor_units_map_to_zone[stor_].T))).sum(axis=0)
+
+            # Calculate the social welfare when considering the bid as a "normal" load and the offer as a "normal" generator.
+            profit_offer = (self.results_dict[stor_offer] * (self.results_dict['electricity_prices'].dot(stor_units_map_to_zone[stor_].T)) - self.results_dict[stor_offer] * stor_units_marginal_cost_dfs[stor_]["Offer_price"]).sum(axis=0)
+            
+            profit_bid = (self.results_dict[stor_bid] * stor_units_marginal_cost_dfs[stor_]['Bid_price'] - self.results_dict[stor_bid] * (self.results_dict['electricity_prices'].dot(stor_units_map_to_zone[stor_].T))).sum(axis=0)
+            
+            self.results_econ['profits_sw'][stor_] = (profit_offer + profit_bid).sum()
+
+        # Transmission System Operater: congestion rent
+        # Align index (they are slightly different)
+        self.data.L_Z_df.index = self.results_dict['lineflow_sol'].columns
+        self.results_econ['profits']['lineflow'] = (-self.results_dict['lineflow_sol'].dot(self.data.L_Z_df) * self.results_dict['electricity_prices']).sum(axis=0)
+
+        # Calculate profits for other participants
+        for k in self.results_econ['revenues'].keys():
+            self.results_econ['profits'][k] = self.results_econ['revenues'][k] - self.results_econ['costs'][k]
+            self.results_econ['profits_tot'][k] = float(np.round(self.results_econ['profits'][k].sum()/1e9,4))
+
+        # Compare social welfare from this function and from the model.
+        self.results_econ["consumer surplus"] = sum(map(lambda x: self.results_econ['profits'][x.replace("_bid_sol","")].sum(), dem_list))
+        self.results_econ["producer surplus"] = sum(map(lambda x: self.results_econ['profits'][x.replace("_offer_sol","")].sum(), vre_list+gen_units_list+stor_units_list+['lineflow']))
+        self.results_econ["producer surplus perceived"] = sum(map(lambda x: self.results_econ['profits'][x.replace("_offer_sol","")].sum(), vre_list+gen_units_list+['lineflow'])) + sum(map(lambda x: self.results_econ['profits_sw'][x].sum(), stor_units_list))
+        self.results_econ["social welfare"] =  self.results_econ["producer surplus"] + self.results_econ["consumer surplus"]
+        self.results_econ["social welfare perceived"] =  self.results_econ["producer surplus perceived"] + self.results_econ["consumer surplus"]
+
+    except Exception as e:
+        print(f"Error processing results: {e}")
+        # raise e
+    self.logger.info('Results processed')
     
 def make_aggregated_supply_and_demand_curves(demand_curve_unsorted, supply_curve_unsorted, colors=['#990000', '#2F3EEA']):
     '''
@@ -237,18 +359,90 @@ def make_aggregated_supply_and_demand_curves(demand_curve_unsorted, supply_curve
                  label='supply')
 
     # Show a wider price range
-    ax.set_ylim((min(y_min, -0.05*y_max), 1.05*y_max))
+    ax.set_ylim((min(1.05*y_min, 0.95*y_min), 1.05*y_max))
 
     # Add vertical line at the end of the demand curve to show
     #   the intersection with the supply curve
-    ax.axvline(x=demand_curve[0, -1],
-               ymin=ax.get_ylim()[0],
-               ymax=demand_curve[1, -1]/ax.get_ylim()[1],
-               c=colors[0],
-               ls='--')
+    ax.plot(
+        [demand_curve[0, -1], demand_curve[0, -1]],  # at the equilibrium amount
+        [ax.get_ylim()[0], demand_curve[1, -1]],  # from the bottom of the plot to the WTP of the last demand
+        color=colors[0],
+        linestyle='--'
+    )
 
     # Return the plot object so it can be used for visualizing results on top of the aggregated market curves as well
     return fig, ax
+
+def get_unsorted_aggregated_market_curves_from_dataloader_object(example_hour, dataloader_obj):
+    '''
+    This function calculates the unsorted aggregated market curves from a DataLoader object.
+    Its output is used as input to make_aggregated_supply_and_demand_curves(). It is used
+    to visualize both data and results which is why it is included simply as a function and not
+    as a method.
+    '''
+    h = example_hour  # descriptive name as input, but simple name is more functional
+
+    # Collect all of the DEMAND
+    demand_curve_raw = np.vstack([
+        # 1st column is the bid quantity
+        np.hstack([
+        # Inflexible demands
+            # classic
+            dataloader_obj.demand_inflexible_classic.sum(axis=1).iloc[h],
+        # Flexible demands
+            # classic
+            dataloader_obj.flexible_demands_dfs['demand_flexible_classic']['capacity'].sum(axis=1)[h],
+            # Storage
+                # BESS
+            dataloader_obj.bess_units_df.capacity_el.values,
+                # PHS
+            dataloader_obj.hydro_ps_units.capacity_el.values
+        ])
+        ,
+        # 2nd column is the bid price (VOLL or WTP)
+        np.hstack([
+            dataloader_obj.voll_classic,
+            dataloader_obj.wtp_classic,
+            dataloader_obj.bess_units_marginal_cost_dfs['Bid_price'].iloc[h].values,
+            dataloader_obj.hydro_ps_units_marginal_cost_dfs['Bid_price'].iloc[h].values
+        ])
+    ])
+
+
+    # Collect all of the SUPPLY
+    supply_curve_raw = np.vstack([
+        # 1st column is the offer quantity
+        np.hstack([
+        # VREs
+            dataloader_obj.solar_pv_production.sum(axis=1).iloc[h],
+            dataloader_obj.wind_onshore_production.sum(axis=1).iloc[h],
+            dataloader_obj.wind_offshore_production.sum(axis=1).iloc[h],
+            dataloader_obj.hydro_ror_production.sum(axis=1).iloc[h],
+        # Dispatchable
+            dataloader_obj.conventional_units_df.capacity_el.values,
+            dataloader_obj.hydro_res_units.capacity_el.values,
+        # Storages
+            dataloader_obj.bess_units_df.capacity_el.values,
+            dataloader_obj.hydro_ps_units.capacity_el.values
+        ])
+        ,
+        # 2nd column is the offer price (marginal cost)
+        np.hstack([
+        # VREs
+            dataloader_obj.solar_pv_bid_price,
+            dataloader_obj.wind_onshore_bid_price,
+            dataloader_obj.wind_offshore_bid_price,
+            dataloader_obj.hydro_ror_bid_price,
+        # Dispatchable
+            dataloader_obj.conventional_units_df.prodcost.values,
+            dataloader_obj.hydro_res_units.prodcost.values,
+        # Storages
+            dataloader_obj.bess_units_marginal_cost_dfs['Offer_price'].iloc[h].values,
+            dataloader_obj.hydro_ps_units_marginal_cost_dfs['Offer_price'].iloc[h].values
+        ])
+    ])
+
+    return demand_curve_raw, supply_curve_raw
 
 #### OBSOLETE FUNCTIONS - DO NOT CONSIDER ####
 
