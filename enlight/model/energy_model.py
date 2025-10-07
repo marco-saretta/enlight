@@ -19,7 +19,7 @@ class EnlightModel:
         L (int): Number of transmission lines.
     """
 
-    def __init__(self, week, simulation_path, logger):
+    def __init__(self, dataloader_obj, simulation_path, logger):#week, simulation_path, logger):
 
 
         # Initialize logger
@@ -29,9 +29,10 @@ class EnlightModel:
         )
 
         self.simulation_path = simulation_path
-        self.data = DataLoader(week=week,
-                               input_path=Path(self.simulation_path) / 'data',
-                               logger=self.logger)
+        self.data = dataloader_obj
+        # self.data = DataLoader(week=week,
+        #                        input_path=Path(self.simulation_path) / 'data',
+        #                        logger=self.logger)
 
         self.model = linopy.Model()
 
@@ -66,42 +67,42 @@ class EnlightModel:
 
         # Onshore wind production [MW]
         # Shape: (T, Z)
-        self.wind_onshore_bid = self.model.add_variables(
+        self.wind_onshore_offer = self.model.add_variables(
             lower=0,
             upper=self.data.wind_onshore_production.values,   # Shape: (T, Z)
             coords=[self.times, self.bidding_zones],
             dims=["T", "Z"],
-            name='wind_onshore_bid'
+            name='wind_onshore_offer'
         )
         
         # Offshore wind production [MW]
         # Shape: (T, Z)
-        self.wind_offshore_bid = self.model.add_variables(
+        self.wind_offshore_offer = self.model.add_variables(
             lower=0,
             upper=self.data.wind_offshore_production.values,   # Shape: (T, Z)
             coords=[self.times, self.bidding_zones],
             dims=["T", "Z"],
-            name='wind_offshore_bid'
+            name='wind_offshore_offer'
         )
         
         # Solar PV production [MW]
         # Shape: (T, Z)
-        self.solar_pv_bid = self.model.add_variables(
+        self.solar_pv_offer = self.model.add_variables(
             lower=0,
             upper=self.data.solar_pv_production.values,   # Shape: (T, Z)
             coords=[self.times, self.bidding_zones],
             dims=["T", "Z"],
-            name='solar_pv_bid'
+            name='solar_pv_offer'
         )
         
         # Hydro ROR production [MW]
         # Shape: (T, Z)
-        self.hydro_ror_bid = self.model.add_variables(
+        self.hydro_ror_offer = self.model.add_variables(
             lower=0,
             upper=self.data.hydro_ror_production.values,   # Shape: (T, Z)
             coords=[self.times, self.bidding_zones],
             dims=["T", "Z"],
-            name='hydro_ror_bid'
+            name='hydro_ror_offer'
         )
 
         # Classic demand [MW]
@@ -127,22 +128,22 @@ class EnlightModel:
         # Thermal generation production variable (shape: T x G)
         # upper bound = generator capacity repeated for all time steps
         # np.outer(np.ones(T), capacities) produces a (T, G) matrix
-        self.conventional_units_bid = self.model.add_variables(
+        self.conventional_units_offer = self.model.add_variables(
             lower=0,
             upper=self.data.conventional_units_el_cap,
             coords=[self.times, self.data.conventional_units_id],
             dims=["T", "G"],
-            name='conventional_units_bid'
+            name='conventional_units_offer'
         )
 
         # Hydro reservoir generator production variable (shape: T x G_hydro_res)
         # upper bound = generator capacity repeated for all time steps
-        self.hydro_res_units_bid = self.model.add_variables(
+        self.hydro_res_units_offer = self.model.add_variables(
             lower=0,
             upper=self.data.hydro_res_units_el_cap,  # np.array
             coords=[self.times, self.data.hydro_res_units_id],
             dims=["T", "G_hydro_res"],
-            name='hydro_res_units_bid'
+            name='hydro_res_units_offer'
         )
 
         # The following three variables are for PUMPED HYDRO STORAGE:
@@ -222,12 +223,12 @@ class EnlightModel:
         """
         
         self.power_balance = self.model.add_constraints(
-            (self.wind_onshore_bid
-             + self.wind_offshore_bid
-             + self.solar_pv_bid
-             + self.hydro_ror_bid
-             + self.conventional_units_bid.dot(self.data.G_Z_xr)  # type: ignore
-             + self.hydro_res_units_bid.dot(self.data.G_hydro_res_Z_xr)
+            (self.wind_onshore_offer
+             + self.wind_offshore_offer
+             + self.solar_pv_offer
+             + self.hydro_ror_offer
+             + self.conventional_units_offer.dot(self.data.G_Z_xr)  # type: ignore
+             + self.hydro_res_units_offer.dot(self.data.G_hydro_res_Z_xr)
              + self.hydro_ps_units_offer.dot(self.data.G_hydro_ps_Z_xr)
              + self.bess_units_offer.dot(self.data.G_bess_Z_xr)
              ==
@@ -245,14 +246,18 @@ class EnlightModel:
             name='electricity_exports'
             )
 
-        self.hydro_res_energy_availability = self.model.add_constraints(
-            # If simulating multiple weeks, this constraint HAS to be modified
-            # The weekly inflow to hydro reservoirs in each bidding zone is
-            #   allocated to all the hydro reservoir units in that zone
-            (self.hydro_res_units_bid.sum(dim='T').dot(self.data.G_hydro_res_Z_xr)
-             <= self.data.hydro_res_energy),  # Shape: (Z,)
-            name='hydro_res_energy_availability'
-        )
+        # For specifically the following constraint we need to check if any
+        #   hydro reservoir units are even in the model. Because if not, the
+        #   model will break.
+        if np.max(self.data.hydro_res_energy) > 0:
+            # self.bess_units_bid is empty if there are no hydro_res_units but
+            #   self.data.hydro_res_energy is not empty. It contains 0's in the
+            #   chosen bidding zones if they don't have any hydro reservoir energy.
+            self.hydro_res_energy_availability = self.model.add_constraints(
+                (self.hydro_res_units_offer.sum(dim='T').dot(self.data.G_hydro_res_Z_xr)
+                <= self.data.hydro_res_energy),  # Shape: (Z,)
+                name='hydro_res_energy_availability'
+            )
 
         self.demand_flexible_classic_limit = self.model.add_constraints(  # "amount" is the maximum weekly consumption of the flexible load in zone z
             self.demand_flexible_classic_bid.sum(dim='T')
@@ -295,10 +300,10 @@ class EnlightModel:
                 - self.demand_flexible_classic_bid * self.data.wtp_classic
                 # Generators:
 
-                + self.wind_onshore_bid * self.data.wind_onshore_bid_price
-                + self.wind_offshore_bid * self.data.wind_offshore_bid_price
-                + self.solar_pv_bid * self.data.solar_pv_bid_price
-                + self.hydro_ror_bid * self.data.hydro_ror_bid_price
+                + self.wind_onshore_offer * self.data.wind_onshore_bid_price
+                + self.wind_offshore_offer * self.data.wind_offshore_bid_price
+                + self.solar_pv_offer * self.data.solar_pv_bid_price
+                + self.hydro_ror_offer * self.data.hydro_ror_bid_price
                ).sum()
            
             # Important: variables with different dimensions must be in different parenthesis to be summed correctly
@@ -306,8 +311,8 @@ class EnlightModel:
             - (self.hydro_ps_units_bid * (self.data.hydro_ps_units_marginal_cost_dfs["Bid_price"])).sum()
             - (self.bess_units_bid * (self.data.bess_units_marginal_cost_dfs["Bid_price"])).sum()
             # Generators:
-            + (self.conventional_units_bid * (self.data.conventional_units_marginal_cost_df)).sum()
-            + (self.hydro_res_units_bid * (self.data.hydro_res_units_marginal_cost_df)).sum()
+            + (self.conventional_units_offer * (self.data.conventional_units_marginal_cost_df)).sum()
+            + (self.hydro_res_units_offer * (self.data.hydro_res_units_marginal_cost_df)).sum()
             + (self.hydro_ps_units_offer * (self.data.hydro_ps_units_marginal_cost_dfs["Offer_price"])).sum()
             + (self.bess_units_offer * (self.data.bess_units_marginal_cost_dfs["Offer_price"])).sum(),
             sense="min"

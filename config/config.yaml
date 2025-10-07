@@ -54,10 +54,10 @@ solver_name:
 # Comment the zones you do not want to use in the simulations.
 
 bidding_zones:
-  - DELU # Germany and Luxembourg
+  # - DELU # Germany and Luxembourg
   - DK1  # Denmark West
   - DK2  # Denmark East
-  - FR   # France
+  # - FR   # France
 
   # EU Member States (alphabetically)
   # - AT   # Austria
@@ -96,8 +96,8 @@ bidding_zones:
   # - GB   # Great Britain
   # - ME   # Montenegro
   # - MK   # North Macedonia
-  # - NO1  # Norway zone 1
-  # - NO2  # Norway zone 2
+  - NO1  # Norway zone 1
+  - NO2  # Norway zone 2
   # - NO3  # Norway zone 3
   # - NO4  # Norway zone 4
   # - NO5  # Norway zone 5
