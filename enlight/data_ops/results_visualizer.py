@@ -20,7 +20,7 @@ class ResultsVisualizer:
     week: int
     logger: Logger
 
-    def __init__(self, enlightmodel_obj, week, logger):
+    def __init__(self, enlightmodel_obj, week, palette, logger):
         self.logger = logger
         self.logger.info("INITIALIZING RESULTS VISUALIZER")
 
@@ -31,12 +31,8 @@ class ResultsVisualizer:
         
         self.start_date = f"01-01-{self.data.prediction_year}"
         self.dates = pd.date_range(start=self.start_date, periods=8760, freq='h')
-        self.dtu_colors = ['#990000', '#2F3EEA', '#1FD082', '#030F4F', '#F6D04D', '#FC7634', '#F7BBB1', '#E83F48', '#008835', '#79238E']
-        
-        # Set plotting configurations incl. palette for easier and consistent plotting
-        sns.set_palette(self.dtu_colors)  # seaborn
-        plt.rcParams['axes.prop_cycle'] = plt.cycler(color=self.dtu_colors)  # matplotlib.pyplot
-        sns.set_context("talk")     # larger fonts for presentations
+        # self.dtu_colors = ['#990000', '#2F3EEA', '#1FD082', '#030F4F', '#F6D04D', '#FC7634', '#F7BBB1', '#E83F48', '#008835', '#79238E']
+        self.palette = palette
 
     def plot_aggregated_curves_with_zonal_prices(self, example_hour):
         '''
@@ -67,9 +63,9 @@ class ResultsVisualizer:
         fig, ax = utils.make_aggregated_supply_and_demand_curves(
                     demand_curve_unsorted=demand_curve_raw,
                     supply_curve_unsorted=supply_curve_raw,
-                    colors=self.dtu_colors
+                    colors=self.palette
         )
-        ax.set_title(f"Aggregated supply and demand curves on {self.dates[self.week*7*24+example_hour]}")
+        ax.set_title(f"Aggregated supply and demand curves on {self.dates[(self.week-1)*7*24+example_hour]}")
         
         # Calculate the observed equilibrium quantity in the example hour from the optimal solution
         q_eq = sum(  # sum the total network consumption for each demand type in the chosen hour
@@ -100,8 +96,7 @@ class ResultsVisualizer:
 
         fig, ax = plt.subplots(figsize=(10,6))
 
-        #palette = self.dtu_colors[:len(df_prices.columns)]
-        sns.lineplot(ax=ax, data=df_prices)#, palette=palette)
+        sns.lineplot(ax=ax, data=df_prices)
         ax.set_title("Zonal price duration curves")
         ax.set_ylabel("Power price [€/MWh]")
         plt.show()

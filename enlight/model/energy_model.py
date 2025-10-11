@@ -2,9 +2,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import linopy
-import xarray as xr
 
-from enlight.data_ops import DataLoader
 import enlight.utils as utils
 
 
@@ -15,24 +13,22 @@ class EnlightModel:
     Attributes:
         T (int): Number of time steps.
         Z (int): Number of zones.
-        G (int): Number of conventional_units.
+        G (int): Number of conventional units.
         L (int): Number of transmission lines.
+        G_hydro_res (int): Number of hydro reservoir units.
+        G_hydro_ps (int): Number of pumped hydro storage units.
+        G_bess (int): Number of battery energy storage system units.
     """
 
-    def __init__(self, dataloader_obj, simulation_path, logger):#week, simulation_path, logger):
-
-
+    def __init__(self, dataloader_obj, simulation_path, logger):
         # Initialize logger
         self.logger = logger
+        self.data = dataloader_obj
         self.logger.info(
-            "INITIALIZING ENLIGHT MODEL"
+            f"INITIALIZING ENLIGHT MODEL FOR WEEK {self.data.week}"
         )
 
         self.simulation_path = simulation_path
-        self.data = dataloader_obj
-        # self.data = DataLoader(week=week,
-        #                        input_path=Path(self.simulation_path) / 'data',
-        #                        logger=self.logger)
 
         self.model = linopy.Model()
 
@@ -343,5 +339,5 @@ class EnlightModel:
         Solve the model using Gurobi.
         """
         self.solve_model(solver_name='gurobi')
-        utils.save_model_results(self)
+        utils.save_model_results(self, week=self.data.week)
         # self.save_model_to_lp_file()

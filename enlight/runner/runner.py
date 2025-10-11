@@ -25,6 +25,7 @@ class EnlightRunner:
 
         self._load_config()
         self._create_directories()
+        self._load_plot_config()
 
     def _load_config(self) -> None:
         """Load configuration from YAML file."""
@@ -62,7 +63,13 @@ class EnlightRunner:
 
         self.logger.info("Directories for simulations created.")
 
-    def prepare_data_single_simulation(self, scenario_name) -> None:
+    def _load_plot_config(self) -> None:
+        # Ensure consistent color palette across plots
+        dtu_colors = ['#990000', '#2F3EEA', '#1FD082', '#030F4F', '#F6D04D', '#FC7634', '#F7BBB1', '#E83F48', '#008835', '#79238E']
+        self.palette = dtu_colors
+        utils.load_plot_config(palette=self.palette)
+
+    def prepare_data_single_scenario(self, scenario_name) -> None:
         """Prepare input data for each scenario."""
         # Prepare data using DataProcessor for each scenario
         self.data_processor = DataProcessor(
@@ -73,7 +80,7 @@ class EnlightRunner:
 
         self.logger.info(f"{scenario_name} : Data preparation completed.")
 
-    def prepare_data_all_simulations(self) -> None:
+    def prepare_data_all_scenarios(self) -> None:
         """Prepare input data for each scenario."""
         # Prepare data using DataProcessor for each scenario
         for scenario_name in tqdm(self.scenario_list, desc="Preparing the input data"):
@@ -92,6 +99,37 @@ class EnlightRunner:
             input_path=Path(simulation_path) / 'data',
             logger=self.logger)
         
+    def load_data_all_simulations(self, simulation_path: Path) -> None:
+        '''
+        This method loads data for an entire year (the year given
+        in the scenario fed to DataProcessor.)
+        
+        The method loads all of the processed data from that DataProcessor
+        instance into 52 separate DataLoader objects. Afterwards this is
+        used to instantiate 52 EnlightModels to get the electricity profiles
+        and DA dispatch for the entire year.
+        '''
+        # Initialize empty dict to store all of the DataLoader instances.
+        self.data_loader_dict = {}
+
+        # Load the number of weeks defined in the yaml file.
+        self.weeks = range(self.start_week, self.end_week+1)
+        self.num_weeks = len(self.weeks)
+
+        # Only not "self.weeks" during testing of the classes
+        # self.sim_weeks = self.weeks
+        self.sim_weeks = [self.weeks[0], self.weeks[-1]]
+
+        # Load all of the data into separate DataLoader instances:
+        for w in self.sim_weeks:
+            self.data_loader_dict[f"week_{w}"] = (
+                DataLoader(
+                    week=w,
+                    input_path=Path(simulation_path) / 'data',
+                    logger=self.logger
+                )
+            )
+
     def run_single_simulation(self, simulation_path) -> None:
         """
         Run a single simulation for a given week and simulation path.
@@ -110,18 +148,55 @@ class EnlightRunner:
         # Run the model
         self.enlight_model.run_model()
 
-    def run_all_simulations(self) -> None:
-        """Run all simulations for the configured scenarios (placeholder method)."""
-        pass
+    def run_all_simulations(self, simulation_path: Path) -> None:
+        """
+        Run all simulations (i.e. weeks) for the configured scenarios.
+        """
+        # Initialize empty dict to store all of the DataLoader instances.
+        self.enlight_models_dict = {}
+
+        # Load all of the data into separate DataLoader instances:
+        for w in self.sim_weeks:
+            # Create EnlightModel instance for the given week w
+            self.enlight_models_dict[f"week_{w}"] = (
+                EnlightModel(
+                    dataloader_obj=self.data_loader_dict[f"week_{w}"],
+                    simulation_path=simulation_path,
+                    logger=self.logger
+                )
+            )
+            # Run the DA market model for the given week w and save the results
+            self.enlight_models_dict[f"week_{w}"].run_model()
+
+        # Combine the weekly electricity prices to get a single dataframe with
+        #   all of the electricity prices in the year specified in the config file.
+        result = 'electricity_prices'
+        df_result = utils.combine_simulations_result(
+            weeks=self.sim_weeks,
+            result_path=simulation_path / 'results',
+            result=result)
+        self.df_result = df_result.set_index("T")
+
+        utils.save_data(
+            data=self.df_result,
+            filename=f"test_yearly_{result}.csv",
+            output_dir=simulation_path / 'results',
+            logger=self.logger
+        )
+        # save df prics..
 
     def visualize_data(self, week: int, example_hour: int) -> None:
         """Visualize the data using DataVisualizer (placeholder method)."""
-        self.data_vis = DataVisualizer(
-            dataprocessor_obj=self.data_processor,
-            dataloader_obj=self.data,
-            week=week,  # used only in a plot title
-            logger=self.logger
-        )
+        # Check if the attribute has already been initialized
+        #   by e.g. visualize_NBS_data().
+        if not hasattr(self, "data_vis"):
+            self.data_vis = DataVisualizer(
+                dataprocessor_obj=self.data_processor,
+                dataloader_obj=self.data,
+                week=week,  # used only in a plot title
+                palette=self.palette,  # used to ensure consistent plots
+                logger=self.logger
+            )
         self.data_vis.plot_annual_total_loads()
         self.data_vis.plot_total_installed_capacity()
         self.data_vis.plot_profiles()
@@ -139,6 +214,7 @@ class EnlightRunner:
             self.res_vis = ResultsVisualizer(
                 enlightmodel_obj=self.enlight_model,
                 week=self.enlight_model.data.week,
+                palette=self.palette,  # used to ensure consistent plots
                 logger=self.logger
             )
             self.res_vis.plot_aggregated_curves_with_zonal_prices(example_hour=example_hour)
@@ -146,3 +222,25 @@ class EnlightRunner:
             self.res_vis.plot_DA_schedule()
 
             self.logger.info("Results visualization completed.")
+
+    def visualize_NBS_data(self, z0: str, prices_path: Path, week: int):
+        '''
+        Visualizes any interesting input data for the NBS.
+        The week is currently not interesting but may become
+        so in the future. It is needed to initialize the
+        DataVisualizer instance.
+        '''
+        # Check if the attribute has already been initialized
+        #   by e.g. visualize_data().
+        if not hasattr(self, "data_vis"):
+            self.data_vis = DataVisualizer(
+                dataprocessor_obj=self.data_processor,
+                dataloader_obj=self.data,
+                week=week,  # used only in a plot title
+                palette=self.palette,  # used to ensure consistent plots
+                logger=self.logger
+            )
+        
+        # Calls methods
+        self.data_vis.visualize_NBS_inputs(z0=z0, prices_path=prices_path)
+        

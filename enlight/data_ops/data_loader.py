@@ -191,7 +191,7 @@ class DataLoader:
 
         # self.time_index = pd.Index(np.arange(168), name="T")
         # The series for the conventional generator costs have to be 1-indexed to match the other time series (RES, demand, etc.)
-        self.time_index = pd.Index(np.arange(1,168+1), name="T")
+        self.time_index = pd.Index(np.arange(1,len(self.times)+1), name="T")
         self.T = len(self.time_index)
 
         self.lines_a_to_b_cap = np.outer(

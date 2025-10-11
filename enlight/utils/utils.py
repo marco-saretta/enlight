@@ -112,11 +112,11 @@ def check_vars_list(vre_list: list, dem_list: list, gen_units_list: list, stor_u
         if not (v.endswith('_SOC') or v == 'export'):
             raise Exception(f"Variable {v} is not accounted for in the calculation of social welfare.\nAll variables unaccounted for are: {vars_unaccounted_for} of which SOC's and export shouldn't be accounted for.")
 
-def save_model_results(self):
+def save_model_results(self, week: int):
     """
     Calculate and save results from the optimized model.
     """
-    results_path = Path(self.simulation_path) / "results"
+    results_path = Path(self.simulation_path) / "results" / f"week_{week}"
     results_path.mkdir(parents=True, exist_ok=True)
     
     self.logger.info('Saving the results')
@@ -443,6 +443,37 @@ def get_unsorted_aggregated_market_curves_from_dataloader_object(example_hour, d
     ])
 
     return demand_curve_raw, supply_curve_raw
+
+def combine_simulations_result(weeks: list, result_path: Path, result: str):
+    '''
+    This function combines dataframes of a single result e.g. electricity prices
+    across multiple simulations (weeks) to arrive at a combined dataframe for all of the
+    simulations, e.g. the electricity prices for the entire year specified in configuration file.
+    '''
+    # Initialize an empty dict to store all of the dataframes after loading
+    df_dict = {}
+    for w in weeks:
+        df_dict[f"week_{w}"] = pd.read_csv(result_path / f"week_{w}/{result}.csv")
+    df_combined = pd.concat(df_dict.values())  # e.g. electricity prices in the entire year
+    return df_combined
+
+def hourly_int_index_to_datetime(df: pd.DataFrame, year0: int):
+    '''
+    This function takes a dataframe with index T being the hours from 1-8760 in a year
+    and returns the dataframe with datetime index instead.
+    '''
+    start_date = f"01-01-{year0}"
+    dates = pd.date_range(start=start_date, periods=8760, freq='h')
+
+    df_dt = df.copy()  # Avoid changing the original df
+    df_dt.index = df.index-1  # Hours are from 1-8760 but we need 0-indexing
+    df_dt = df_dt.set_index(dates[df_dt.index])  # Set datetime corresponding to the hours as new index
+    return df_dt
+
+def load_plot_config(palette):
+    # Set palette for easier and consistent plotting
+    sns.set_palette(palette)  # seaborn
+    plt.rcParams['axes.prop_cycle'] = plt.cycler(color=palette)  # matplotlib.pyplot
 
 #### OBSOLETE FUNCTIONS - DO NOT CONSIDER ####
 

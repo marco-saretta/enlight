@@ -37,16 +37,16 @@ class DataProcessor:
         self._load_setup()
         self._init_data_visualizer_dicts()  # NEWLY ADDED - needed for DataVisualizer
         self._prepare_all_renewable_sources()
-        self._load_hydro_reservoir_data()
-        self._load_hydro_pumped_storage()
-        self._load_conventional_thermal_units_data()
-        self._load_bess()
-        self._load_ptx_plants()
-        self._load_dh_plants()
-        self._load_fuel_prices()
-        self._load_transmission_lines_data()
+        self._process_hydro_reservoir_data()  # "process" = "load, process and save"
+        self._process_hydro_pumped_storage()
+        self._process_conventional_thermal_units_data()
+        self._process_bess()
+        self._process_ptx_plants()
+        self._process_dh_plants()
+        self._process_fuel_prices()
+        self._process_transmission_lines_data()
         self._prepare_inflexible_demand_sources()
-        self._load_flexible_demand_sources()
+        self._process_flexible_demand_sources()
         # Save aux data to YAML after all processing
         self._save_aux_data_to_yaml()
 
@@ -152,6 +152,8 @@ class DataProcessor:
 
     def _init_data_visualizer_dicts(self) -> None:
         """Initialize dictionaries needed for DataVisualizer."""
+        self.prod_dfs = {}  # useful for visualizing yearly data of production
+        self.cons_dfs = {}  # useful for visualizing yearly data of consumption
         self.profile_dfs = {}  # needed in DataVisualizer
         self.projection_row_seriess = {}  # needed in DataVisualizer
         self.cap_year_dfs = {}  # needed in DataVisualizer
@@ -271,17 +273,17 @@ class DataProcessor:
         sources = list(sources_dict.values())
 
         for source in sources:
-            (prod_df,
+            (self.prod_dfs[source["aux_label"]],
              self.profile_dfs[source["aux_label"]],
              self.cap_year_dfs[source["aux_label"]]) = self.calculate_renewable_profiles(source)
             utils.save_data(
-                prod_df,
+                self.prod_dfs[source["aux_label"]],
                 source["output_file"],
                 output_dir=self.output_path,
                 logger=self.logger,
             )
 
-    def _load_hydro_reservoir_data(self) -> None:
+    def _process_hydro_reservoir_data(self) -> None:
         """
         Load and process data for hydro reservoir units.
 
@@ -360,7 +362,7 @@ class DataProcessor:
             logger=self.logger,
         )
 
-    def _load_hydro_pumped_storage(self) -> None:
+    def _process_hydro_pumped_storage(self) -> None:
         """
         Load and process data for hydro pumped storage units.
 
@@ -414,7 +416,7 @@ class DataProcessor:
             logger=self.logger,
         )
 
-    def _load_conventional_thermal_units_data(self) -> None:
+    def _process_conventional_thermal_units_data(self) -> None:
         """
         Load data for thermal generation units.
 
@@ -460,7 +462,7 @@ class DataProcessor:
             logger=self.logger,
         )
 
-    def _load_bess(self) -> None:
+    def _process_bess(self) -> None:
         """
         Load and process data for battery energy storage system (BESS) units.
 
@@ -513,16 +515,16 @@ class DataProcessor:
             logger=self.logger,
         )
 
-    def _load_ptx_plants(self) -> None:
+    def _process_ptx_plants(self) -> None:
         pass
 
-    def _load_dh_plants(self) -> None:
+    def _process_dh_plants(self) -> None:
         pass
 
-    def _load_fuel_prices(self) -> None:
+    def _process_fuel_prices(self) -> None:
         pass
 
-    def _load_transmission_lines_data(self) -> None:
+    def _process_transmission_lines_data(self) -> None:
         """
         Load data for transmission lines.
 
@@ -682,17 +684,17 @@ class DataProcessor:
         ]
 
         for config in source_configs:
-            (scaled_df,
+            (self.cons_dfs[config["aux_label"]],
              self.profile_dfs[config["aux_label"]],
              self.projection_row_seriess[config["aux_label"]]) = self.calculate_inflexible_demand(config)
             utils.save_data(
-                scaled_df,
+                self.cons_dfs[config["aux_label"]],
                 config["output_file"],
                 output_dir=self.output_path,
                 logger=self.logger,
             )
 
-    def _load_flexible_demand_sources(self) -> None:
+    def _process_flexible_demand_sources(self) -> None:
         """
         Load data for flexible loads.
 

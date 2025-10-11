@@ -12,32 +12,44 @@ if __name__ == "__main__":
     # Create an instance of the EnlightRunner
     runner = EnlightRunner()
 
-    # Prepare input data for simulations based on the configuration in scenarios_config.yaml
-    # Creates instance of DataProcessor:
-    runner.prepare_data_single_simulation('scenario_1')
-    # debugger = runner.data_processor
+    w=1  # needed for DataLoader
+    h=133  # needed for .visualize_data() and .visualize_results()
 
-    w=1
-    # Creates instance of DataLoader:
-    runner.load_data_single_simulation(week=w, simulation_path=Path('simulations/scenario_1'))
+    '''Combination of methods to VISUALIZE INPUT data:'''
+    # # Creates instance of the DataProcessor:
+    # runner.prepare_data_single_scenario('scenario_1')
+    # # Creates instance of the DataLoader:
+    # runner.load_data_single_simulation(week=w, simulation_path=Path('simulations/scenario_1'))
+    # # Creates instance of the DataVisualizer. Data has to be prepared when running this:
+    # runner.visualize_data(week=w, example_hour=h)
 
-    h=133
-    # Creates instance of DataVisualizer. Data has to be prepared when running this:
-    runner.visualize_data(week=w, example_hour=h)
-    
-    # Prepare input data for simulations based on the configuration in scenarios_config.yaml
-    # runner.prepare_data_all_simulations()
-
-    # Run a single simulation for the specified week and save the results
-    runner.run_single_simulation(simulation_path=Path('simulations/scenario_1'))
-    # runner.enlight_model.run_model()
-    # Access the model instance for debugging purposes
-    d = runner.enlight_model
-
-    runner.visualize_results(example_hour=h)
+    '''Combination of methods to RUN a SINGLE simulation
+    and SHOW RESULTS for that simulation:'''
+    # runner.load_data_single_simulation(week=w, simulation_path=Path('simulations/scenario_1'))
+    # # Creates instance of the EnlightModel
+    # runner.run_single_simulation(simulation_path=Path('simulations/scenario_1'))
+    # d=runner.enlight_model
+    # # Creates instance of the ResultsVisualizer.
+    # runner.visualize_results(example_hour=h)
 
     # Verify social welfare calculations
-    print(f"{d.results_econ['social welfare']/1e9:.6f} b.€")
-    print(f"{d.results_econ['social welfare perceived']/1e9:.6f} b.€")
-    print(f"{d.model.objective.value/1e9:.6f} b.€")
+    # print(f"{d.results_econ['social welfare']/1e9:.6f} b.€")
+    # print(f"{d.results_econ['social welfare perceived']/1e9:.6f} b.€")
+    # print(f"{d.model.objective.value/1e9:.6f} b.€")
+
+    '''Combination of methods to RUN ALL simulations:'''
+    # runner.load_data_all_simulations(simulation_path=Path('simulations/scenario_1'))
+    # runner.run_all_simulations(simulation_path=Path('simulations/scenario_1'))
+
+    '''Combination of methods to VISUALIZE NBS INPUTS:'''
+    # 'week' needed to initialize DataVisualizer because that requires DataLoader...
+    runner.prepare_data_single_scenario('scenario_1')  # -> simplest way to load the raw data
+    runner.load_data_single_simulation(week=w, simulation_path=Path('simulations/scenario_1'))
+    runner.visualize_NBS_data(
+        z0='DK2',
+        prices_path=Path('simulations/scenario_1/results/yearly_electricity_prices.csv'),
+        week=w
+    )  # week is irrelevant for the plots currently produced
+
+
 # %%

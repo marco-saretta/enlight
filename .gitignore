@@ -1,6 +1,8 @@
 # do not track turbie response files, in folder called MODEL_TO_INTEGRATE/
 stuff/*
 simulations/*
+# Can't make the line below work...
+!simulations/scenario_1/results/yearly_electricity_prices.csv
 logs/*
 
 # Byte-compiled / optimized / DLL files
