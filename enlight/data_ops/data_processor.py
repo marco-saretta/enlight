@@ -35,6 +35,7 @@ class DataProcessor:
         self._write_generators()  # NEWLY ADDED
         self._load_scenarios_config()
         self._load_setup()
+        self._init_data_visualizer_dicts()  # NEWLY ADDED - needed for DataVisualizer
         self._prepare_all_renewable_sources()
         self._load_hydro_reservoir_data()
         self._load_hydro_pumped_storage()
@@ -149,6 +150,12 @@ class DataProcessor:
 
         self.aux_data_dict["prediction_year"] = self.prediction_year
 
+    def _init_data_visualizer_dicts(self) -> None:
+        """Initialize dictionaries needed for DataVisualizer."""
+        self.profile_dfs = {}  # needed in DataVisualizer
+        self.projection_row_seriess = {}  # needed in DataVisualizer
+        self.cap_year_dfs = {}  # needed in DataVisualizer
+
     def calculate_renewable_profiles(self, config: dict) -> pd.DataFrame:
         """
         Compute renewable generation profiles by combining weather-based per-unit profiles
@@ -239,7 +246,7 @@ class DataProcessor:
         # Add the week column
         production_df["Week"] = profile_df["Week"]
 
-        return production_df
+        return production_df, profile_df, cap_year
 
     def _prepare_all_renewable_sources(self) -> None:
         """
@@ -254,6 +261,7 @@ class DataProcessor:
             )  # load the label and tech from the .yaml configuration file e.g. WIND_ON and wind_onshore
             sources_dict[label] = {}
             sources_dict[label]["label"] = label
+            sources_dict[label]["aux_label"] = tech
             sources_dict[label]["data_path"] = self.base_data_path / tech
             sources_dict[label]["wy_subdir"] = self.weather_years_subdir
             sources_dict[label]["wy_label"] = tech + "_wy"
@@ -263,7 +271,9 @@ class DataProcessor:
         sources = list(sources_dict.values())
 
         for source in sources:
-            prod_df = self.calculate_renewable_profiles(source)
+            (prod_df,
+             self.profile_dfs[source["aux_label"]],
+             self.cap_year_dfs[source["aux_label"]]) = self.calculate_renewable_profiles(source)
             utils.save_data(
                 prod_df,
                 source["output_file"],
@@ -644,7 +654,7 @@ class DataProcessor:
         # Filter the bidding zones chosen in config.yaml
         demand_profile = demand_profile[self.bidding_zones_list + ["Week"]]
 
-        return demand_profile
+        return demand_profile, profile_df, projection_row
 
     def _prepare_inflexible_demand_sources(self) -> None:
         """
@@ -672,7 +682,9 @@ class DataProcessor:
         ]
 
         for config in source_configs:
-            scaled_df = self.calculate_inflexible_demand(config)
+            (scaled_df,
+             self.profile_dfs[config["aux_label"]],
+             self.projection_row_seriess[config["aux_label"]]) = self.calculate_inflexible_demand(config)
             utils.save_data(
                 scaled_df,
                 config["output_file"],

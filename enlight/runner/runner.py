@@ -3,8 +3,11 @@ from typing import Dict, List
 import yaml
 from tqdm import tqdm
 from enlight.data_ops import DataProcessor
+from enlight.data_ops import DataLoader
 from enlight.model import EnlightModel
 import enlight.utils as utils
+from enlight.data_ops import DataVisualizer
+from enlight.data_ops import ResultsVisualizer
 
 
 class EnlightRunner:
@@ -82,7 +85,14 @@ class EnlightRunner:
 
             self.logger.info(f"{scenario_name} : Data preparation completed.")
 
-    def run_single_simulation(self, week: int, simulation_path: Path) -> None:
+    def load_data_single_simulation(self, week: int, simulation_path: Path) -> None:
+        # Initialize DataLoader object to be used in EnlightModel:
+        self.data = DataLoader(
+            week=week,
+            input_path=Path(simulation_path) / 'data',
+            logger=self.logger)
+        
+    def run_single_simulation(self, simulation_path) -> None:
         """
         Run a single simulation for a given week and simulation path.
 
@@ -90,9 +100,12 @@ class EnlightRunner:
             week: The week number for the simulation
             simulation_path: The path to the simulation data
         """
-        # Initialize EnlightModel for the given week and path
+        
+        # Initialize EnlightModel with the given data #for the given week and path
         self.enlight_model = EnlightModel(
-            week=week, simulation_path=simulation_path, logger=self.logger
+            dataloader_obj=self.data,
+            simulation_path=simulation_path,
+            logger=self.logger
         )
         # Run the model
         self.enlight_model.run_model()
@@ -100,3 +113,36 @@ class EnlightRunner:
     def run_all_simulations(self) -> None:
         """Run all simulations for the configured scenarios (placeholder method)."""
         pass
+
+    def visualize_data(self, week: int, example_hour: int) -> None:
+        """Visualize the data using DataVisualizer (placeholder method)."""
+        self.data_vis = DataVisualizer(
+            dataprocessor_obj=self.data_processor,
+            dataloader_obj=self.data,
+            week=week,  # used only in a plot title
+            logger=self.logger
+        )
+        self.data_vis.plot_annual_total_loads()
+        self.data_vis.plot_total_installed_capacity()
+        self.data_vis.plot_profiles()
+        self.data_vis.plot_aggregated_supply_and_demand_curves(example_hour=example_hour)
+
+        self.logger.info("Data visualization completed.")
+
+    def visualize_results(self, example_hour: int):
+        '''
+        Visualize the market clearing with the zonal prices.
+        '''
+        if self.enlight_model.model.status != 'ok':
+            self.logger.info("No results can be shown. Please run the model first")
+        else:
+            self.res_vis = ResultsVisualizer(
+                enlightmodel_obj=self.enlight_model,
+                week=self.enlight_model.data.week,
+                logger=self.logger
+            )
+            self.res_vis.plot_aggregated_curves_with_zonal_prices(example_hour=example_hour)
+            self.res_vis.plot_price_duration_curve()
+            self.res_vis.plot_DA_schedule()
+
+            self.logger.info("Results visualization completed.")
