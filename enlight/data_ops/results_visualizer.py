@@ -14,29 +14,22 @@ class ResultsVisualizer:
 
     Attributes:
     - data_loader (DataLoader): An instance of DataLoader to load the data.
-    - week: int used for titles in plots
     """
     englightmodel_obj: EnlightModel
-    week: int
     logger: Logger
 
-    def __init__(self, enlightmodel_obj, week, logger):
+    def __init__(self, enlightmodel_obj, palette, logger):
         self.logger = logger
         self.logger.info("INITIALIZING RESULTS VISUALIZER")
 
         self.enlight_model = enlightmodel_obj
-        self.week = week
 
         self.data = self.enlight_model.data  # for easier handling
         
         self.start_date = f"01-01-{self.data.prediction_year}"
         self.dates = pd.date_range(start=self.start_date, periods=8760, freq='h')
-        self.dtu_colors = ['#990000', '#2F3EEA', '#1FD082', '#030F4F', '#F6D04D', '#FC7634', '#F7BBB1', '#E83F48', '#008835', '#79238E']
-        
-        # Set plotting configurations incl. palette for easier and consistent plotting
-        sns.set_palette(self.dtu_colors)  # seaborn
-        plt.rcParams['axes.prop_cycle'] = plt.cycler(color=self.dtu_colors)  # matplotlib.pyplot
-        sns.set_context("talk")     # larger fonts for presentations
+        # self.dtu_colors = ['#990000', '#2F3EEA', '#1FD082', '#030F4F', '#F6D04D', '#FC7634', '#F7BBB1', '#E83F48', '#008835', '#79238E']
+        self.palette = palette
 
     def plot_aggregated_curves_with_zonal_prices(self, example_hour):
         '''
@@ -67,9 +60,9 @@ class ResultsVisualizer:
         fig, ax = utils.make_aggregated_supply_and_demand_curves(
                     demand_curve_unsorted=demand_curve_raw,
                     supply_curve_unsorted=supply_curve_raw,
-                    colors=self.dtu_colors
+                    colors=self.palette
         )
-        ax.set_title(f"Aggregated supply and demand curves on {self.dates[self.week*7*24+example_hour]}")
+        ax.set_title(f"Aggregated supply and demand curves on {self.dates[example_hour]}")
         
         # Calculate the observed equilibrium quantity in the example hour from the optimal solution
         q_eq = sum(  # sum the total network consumption for each demand type in the chosen hour
@@ -100,13 +93,12 @@ class ResultsVisualizer:
 
         fig, ax = plt.subplots(figsize=(10,6))
 
-        #palette = self.dtu_colors[:len(df_prices.columns)]
-        sns.lineplot(ax=ax, data=df_prices)#, palette=palette)
+        sns.lineplot(ax=ax, data=df_prices)
         ax.set_title("Zonal price duration curves")
         ax.set_ylabel("Power price [€/MWh]")
         plt.show()
 
-    def plot_DA_schedule(self):
+    def plot_DA_schedule(self, starting_hour: int):
         '''
         This function uses the list of model.variables along
         with the model solution from results_dict to produce a
@@ -115,7 +107,6 @@ class ResultsVisualizer:
         Only uses:
         - self.enlight_model.model.variables
         - self.enlight_model.results_dict
-        - self.data.week
         '''
 
         # Build lists of all the offers (generators/storage) and
@@ -132,7 +123,7 @@ class ResultsVisualizer:
                 list_keys_cons.append(var + '_sol')
 
         # 
-        df_dispatch = pd.DataFrame({
+        self.df_dispatch_full = pd.DataFrame({
             # key=technology/demand type
             # value=the total hourly dispatch across the network
             var: self.enlight_model.results_dict[var].sum(axis=1)
@@ -143,9 +134,9 @@ class ResultsVisualizer:
             (var.endswith('offer_sol') or var.endswith('bid_sol'))
         })
 
-        # For more informational plot, change the index to datetime
-        current_hour = self.week*168
-        df_dispatch.index = self.dates[current_hour: current_hour+168]
+        # For more informational plot, include only a single week and change the index to datetime
+        df_dispatch = self.df_dispatch_full.loc[starting_hour: starting_hour+167]  # reduced to only a single week. Selecting rows is end-inclusive
+        df_dispatch.index = self.dates[starting_hour: starting_hour+168]
 
         # Plot the generation as an area chart by technology
         fig, ax = plt.subplots(figsize=(16,8))
@@ -165,6 +156,6 @@ class ResultsVisualizer:
 
         ax.tick_params(axis='x', rotation=30)
         ax.set_ylabel("Power generated/consumed [GW]")
-        ax.set_title(f'Dispatch schedule of Week {self.data.week}')
+        ax.set_title(f"Dispatch schedule for {df_dispatch.index[0].strftime('%d/%b--%H:%M')} to {df_dispatch.index[-1].strftime('%d/%b--%H:%M')}")
         ax.legend(bbox_to_anchor=(1.1, 1.05))
         plt.show()
