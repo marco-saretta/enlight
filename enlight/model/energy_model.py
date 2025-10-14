@@ -25,7 +25,7 @@ class EnlightModel:
         self.logger = logger
         self.data = dataloader_obj
         self.logger.info(
-            f"INITIALIZING ENLIGHT MODEL FOR WEEK {self.data.week}"
+            f"INITIALIZING ENLIGHT MODEL"# FOR WEEK {self.data.week}"
         )
 
         self.simulation_path = simulation_path
@@ -41,17 +41,17 @@ class EnlightModel:
         """
         Extract and define core sets and their lengths from input data.
         """
-        self.time_index = pd.Index(np.arange(168), name="T")
-        self.times = list(self.data.demand_inflexible_classic.index)        # Shape: (T,)
-        self.bidding_zones = self.data.bidding_zones               # Shape: (Z,)
-
-     
+        self.times = list(self.data.demand_inflexible_classic.index)  # Shape: (T,)
+        self.time_index = pd.Index(np.arange(len(self.times)), name="T")
+        self.bidding_zones = self.data.bidding_zones  # Shape: (Z,)
 
         self.T = len(self.times)     # Number of time steps
         self.Z = len(self.bidding_zones)  # Number of zones
         self.G = len(self.data.conventional_units_id)
-        self.G_hydro_res = len(self.data.hydro_res_units_id) 
-
+        self.G_hydro_res = len(self.data.hydro_res_units_id)
+        self.G_hydro_ps = len(self.data.hydro_ps_units_id)
+        self.G_bess = len(self.data.bess_units_id)
+        self.W = self.data.W  # Number of weeks included
 
     def _build_variables(self):
         """
@@ -206,7 +206,7 @@ class EnlightModel:
         )
         
         self.lineflow = self.model.add_variables(
-            lower = -self.data.lines_b_to_a_cap,
+            lower = -self.data.lines_b_to_a_cap,  # shape: (T, L)
             upper = self.data.lines_a_to_b_cap,
             coords = [self.times, self.data.line_labels],
             dims=["T", "L"],
@@ -245,23 +245,46 @@ class EnlightModel:
         # For specifically the following constraint we need to check if any
         #   hydro reservoir units are even in the model. Because if not, the
         #   model will break.
+        self.hydro_res_energy_availability = {}
         if np.max(self.data.hydro_res_energy) > 0:
-            # self.bess_units_bid is empty if there are no hydro_res_units but
+            # e.g. self.bess_units_bid is empty if there are no hydro_res_units but
             #   self.data.hydro_res_energy is not empty. It contains 0's in the
             #   chosen bidding zones if they don't have any hydro reservoir energy.
-            self.hydro_res_energy_availability = self.model.add_constraints(
-                (self.hydro_res_units_offer.sum(dim='T').dot(self.data.G_hydro_res_Z_xr)
-                <= self.data.hydro_res_energy),  # Shape: (Z,)
-                name='hydro_res_energy_availability'
-            )
+            '''MODIFIED constraint:'''
+            # self.hydro_res_energy_availability[w] = self.model.add_constraints(
+            #    # DESIRED formulation:
+            #    # (self.data.T_W_xr.T.dot(
+            #    #     self.hydro_res_units_offer.sum(dim='T').dot(
+            #    #         self.data.G_hydro_res_Z_xr
+            #    #     )
+            #    # )
+            #    <= self.data.hydro_res_energy.loc[w]),  # Shape: (W, Z)
+            #    name=f'hydro_res_energy_availability_{w}'
+            # )
+            for w in range(1, self.data.W+1):
+                # If this is not done as a loop we instead create W x Z constraints with TxG variables in each constraint (easily more than 2 million in each constraint where most are multiplied by 0)
+                hours_in_week = self.data.T_W_xr.coords["T"][
+                    self.data.T_W_xr.sel(W=w) == 1
+                ]  # e.g. [1, 2, 3, ..., 167, 168] in week 1 or [8569, 8570, ..., 8759, 8760] in week 52
+                self.hydro_res_energy_availability[w] = self.model.add_constraints(
+                    (self.hydro_res_units_offer.sel(T=hours_in_week).dot(  # shape: (168, G_hydro_res). Last week has 24 extra hours...
+                        self.data.G_hydro_res_Z_xr)  # shape: (168, Z)
+                    ).sum("T")  # shape: (Z,)
+                    <=
+                    self.data.hydro_res_energy.loc[w]  # shape: (Z,)
+                    ,
+                    name=f"hydro_res_energy_availability_{w}"
+                )
 
+        '''MODIFIED constraint:'''
         self.demand_flexible_classic_limit = self.model.add_constraints(  # "amount" is the maximum weekly consumption of the flexible load in zone z
-            self.demand_flexible_classic_bid.sum(dim='T')
-            <= self.data.flexible_demands_dfs['demand_flexible_classic']['amount']
+            (self.data.T_W_xr * self.demand_flexible_classic_bid).sum("T")  # shape: (W, Z)
+            <=
+            self.data.flexible_demands_dfs["demand_flexible_classic"]["amount"]
             ,
             name='demand_flexible_classic_limit'
         )
-          
+
         self.hydro_ps_units_SOC_balance = self.model.add_constraints(  # Shape: (T, G_hydro_ps)
             # In each hour the change in the SOC is equal to the net energy
             #   charged/discharged. In the first hour we add the initial SOC in MWh.
@@ -316,9 +339,9 @@ class EnlightModel:
 
         print('obj added')
 
-    def solve_model(self, solver_name='gurobi'):
+    def solve_model(self, solver_name):
         """
-        Solve the model using the specified solver.
+        Solve the model using the solver specified in yaml config file.
         """
         self.logger.info("Start solving model")
         self.model.solve(solver_name=solver_name)
@@ -336,8 +359,8 @@ class EnlightModel:
 
     def run_model(self):
         """
-        Solve the model using Gurobi.
+        Solve the model using the specified solver.
         """
-        self.solve_model(solver_name='gurobi')
-        utils.save_model_results(self, week=self.data.week)
+        self.solve_model(solver_name=self.data.solver_name)
+        utils.save_model_results(self)#, week=self.data.week)
         # self.save_model_to_lp_file()

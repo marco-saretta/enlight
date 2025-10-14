@@ -21,14 +21,14 @@ class DataVisualizer:
     - logger: logger
     """
     
-    def __init__(self, dataprocessor_obj, dataloader_obj, week, palette, logger):
+    def __init__(self, dataprocessor_obj, dataloader_obj, palette, logger):# week, palette, logger):
         """Initialize the DataLoader instance."""
         self.logger = logger
         self.logger.info("INITIALIZING DATA VISUALIZER")
 
         self.data_raw = dataprocessor_obj  # rename for convenience
         self.data = dataloader_obj  # rename for convenience
-        self.week = week
+        # self.week = week
 
         self.start_date = f"01-01-{self.data.prediction_year}"
         self.dates = pd.date_range(start=self.start_date, periods=8760, freq='h')
@@ -121,7 +121,7 @@ class DataVisualizer:
         fig.tight_layout()
         plt.show()
 
-    def plot_profiles(self) -> None:
+    def plot_profiles(self, starting_hour: int) -> None:
         '''
         Plot time series profiles for:
         - Hourly VRE (capacity factors)
@@ -150,7 +150,7 @@ class DataVisualizer:
             profile_z = profile_dict[profile_label][self.data.bidding_zones]
 
             # plot the profile for an example WEEK
-            profile_z.iloc[4368:4368+168].plot.line(ax=ax[profile_idx, 0], color=self.palette[:len(profile_z.columns)])
+            profile_z.iloc[starting_hour:starting_hour+168].plot.line(ax=ax[profile_idx, 0], color=self.palette[:len(profile_z.columns)])
 
             # iterate through the bidding zones. Iteration needed to include decreasing opaqueness for the zones
             for i, col in enumerate(profile_z.columns):
@@ -184,7 +184,7 @@ class DataVisualizer:
             supply_curve_unsorted=self.supply_curve_raw,
             colors=self.palette
         )
-        ax.set_title(f"Aggregated supply and demand curves on {self.dates[(self.week-1)*7*24+example_hour]}")
+        ax.set_title(f"Aggregated supply and demand curves on {self.dates[example_hour]}")
         
         # Show or return the plot object to allow for adding results on top of the figure
         plt.show()

@@ -9,13 +9,21 @@ import yaml
 
 @dataclass
 class DataProcessor:
-    """Data processor for energy system scenarios."""
+    """
+    Data processor for energy system scenarios.
+    It loads the raw data and preprocesses it so the data is
+    ready for DataLoader which makes it ready to be used directly
+    in linopy.
+    The data only has to be re-saved (overwritten) when the model
+    configuration files have been changed.
+    """
 
     scenario_name: str
     config_yaml: dict
     logger: Logger
     base_config_path: Path = Path("config")
     base_data_path: Path = Path("data")
+    overwrite_preprocessed_data: bool = True
 
     def __post_init__(self) -> None:
         """
@@ -48,7 +56,8 @@ class DataProcessor:
         self._prepare_inflexible_demand_sources()
         self._process_flexible_demand_sources()
         # Save aux data to YAML after all processing
-        self._save_aux_data_to_yaml()
+        if self.overwrite_preprocessed_data:
+            self._save_aux_data_to_yaml()
 
     def _init_data_paths(self) -> None:
         """Initialize all data directory paths according to the updated folder structure."""
@@ -144,6 +153,9 @@ class DataProcessor:
 
         # Extract and copy the setup configuration section from the DataFrame
         self.setup_config_df = self.scenario_config_df.loc[setup_label].copy()
+
+        # Extract and copy the solver chosen in the configuration yaml-file
+        self.aux_data_dict["solver_name"] = self.config_yaml.get("solver_name")
 
         # Store the setup configuration and determine the prediction year from the scenario name
         self.prediction_year = int(self.setup_config_df[self.scenario_name])  # type: ignore
@@ -245,8 +257,8 @@ class DataProcessor:
             profile_df[common_cols] * cap_year[common_cols].values
         )
 
-        # Add the week column
-        production_df["Week"] = profile_df["Week"]
+        # # Add the week column
+        # production_df["Week"] = profile_df["Week"]
 
         return production_df, profile_df, cap_year
 
@@ -276,12 +288,14 @@ class DataProcessor:
             (self.prod_dfs[source["aux_label"]],
              self.profile_dfs[source["aux_label"]],
              self.cap_year_dfs[source["aux_label"]]) = self.calculate_renewable_profiles(source)
-            utils.save_data(
-                self.prod_dfs[source["aux_label"]],
-                source["output_file"],
-                output_dir=self.output_path,
-                logger=self.logger,
-            )
+            
+            if self.overwrite_preprocessed_data:
+                utils.save_data(
+                    self.prod_dfs[source["aux_label"]],
+                    source["output_file"],
+                    output_dir=self.output_path,
+                    logger=self.logger,
+                )
 
     def _process_hydro_reservoir_data(self) -> None:
         """
@@ -349,18 +363,19 @@ class DataProcessor:
         )
 
         # Save the loaded and validated hydro reservoir data to the designated output path
-        utils.save_data(
-            self.hydro_reservoir_units_df,
-            "hydro_reservoir_units.csv",
-            output_dir=self.output_path,
-            logger=self.logger,
-        )
-        utils.save_data(
-            self.hydro_res_energy_wy_df,
-            "hydro_reservoir_energy.csv",
-            output_dir=self.output_path,
-            logger=self.logger,
-        )
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.hydro_reservoir_units_df,
+                "hydro_reservoir_units.csv",
+                output_dir=self.output_path,
+                logger=self.logger,
+            )
+            utils.save_data(
+                self.hydro_res_energy_wy_df,
+                "hydro_reservoir_energy.csv",
+                output_dir=self.output_path,
+                logger=self.logger,
+            )
 
     def _process_hydro_pumped_storage(self) -> None:
         """
@@ -409,12 +424,13 @@ class DataProcessor:
             ].copy()  # .copy() used to avoid SettingWithCopyWarning
 
         # Save the loaded and validated hydro reservoir data to the designated output path
-        utils.save_data(
-            self.hydro_pumped_units_df,
-            "hydro_pumped_units.csv",
-            output_dir=self.output_path,
-            logger=self.logger,
-        )
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.hydro_pumped_units_df,
+                "hydro_pumped_units.csv",
+                output_dir=self.output_path,
+                logger=self.logger,
+            )
 
     def _process_conventional_thermal_units_data(self) -> None:
         """
@@ -455,12 +471,13 @@ class DataProcessor:
         ]
 
         # Save the loaded thermal plant units data to the designated output path
-        utils.save_data(
-            self.thermal_units,
-            "conventional_thermal_units.csv",
-            output_dir=self.output_path,
-            logger=self.logger,
-        )
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.thermal_units,
+                "conventional_thermal_units.csv",
+                output_dir=self.output_path,
+                logger=self.logger,
+            )
 
     def _process_bess(self) -> None:
         """
@@ -508,12 +525,13 @@ class DataProcessor:
             ].copy()  # .copy() used to avoid SettingWithCopyWarning
 
         # Save the loaded and validated hydro reservoir data to the designated output path
-        utils.save_data(
-            self.bess_units_df,
-            "bess_units.csv",
-            output_dir=self.output_path,
-            logger=self.logger,
-        )
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.bess_units_df,
+                "bess_units.csv",
+                output_dir=self.output_path,
+                logger=self.logger,
+            )
 
     def _process_ptx_plants(self) -> None:
         pass
@@ -576,18 +594,19 @@ class DataProcessor:
                 .all(axis=1)
             ]
 
-            utils.save_data(
-                self.lines_a_b,
-                "lines_a_b.csv",
-                output_dir=self.output_path,
-                logger=self.logger,
-            )
-            utils.save_data(
-                self.lines_b_a,
-                "lines_b_a.csv",
-                output_dir=self.output_path,
-                logger=self.logger,
-            )
+            if self.overwrite_preprocessed_data:
+                utils.save_data(
+                    self.lines_a_b,
+                    "lines_a_b.csv",
+                    output_dir=self.output_path,
+                    logger=self.logger,
+                )
+                utils.save_data(
+                    self.lines_b_a,
+                    "lines_b_a.csv",
+                    output_dir=self.output_path,
+                    logger=self.logger,
+                )
         else:
             raise FileNotFoundError(
                 f"Line files not found: {lines_a_b_file} or {lines_b_a_file}"
@@ -654,7 +673,7 @@ class DataProcessor:
         utils.validate_df_positive_numeric(demand_profile, profile_file)
 
         # Filter the bidding zones chosen in config.yaml
-        demand_profile = demand_profile[self.bidding_zones_list + ["Week"]]
+        demand_profile = demand_profile[self.bidding_zones_list]# + ["Week"]]
 
         return demand_profile, profile_df, projection_row
 
@@ -687,12 +706,14 @@ class DataProcessor:
             (self.cons_dfs[config["aux_label"]],
              self.profile_dfs[config["aux_label"]],
              self.projection_row_seriess[config["aux_label"]]) = self.calculate_inflexible_demand(config)
-            utils.save_data(
-                self.cons_dfs[config["aux_label"]],
-                config["output_file"],
-                output_dir=self.output_path,
-                logger=self.logger,
-            )
+
+            if self.overwrite_preprocessed_data:
+                utils.save_data(
+                    self.cons_dfs[config["aux_label"]],
+                    config["output_file"],
+                    output_dir=self.output_path,
+                    logger=self.logger,
+                )
 
     def _process_flexible_demand_sources(self) -> None:
         """
@@ -755,12 +776,13 @@ class DataProcessor:
                     flex_load + f"_{param_name}"
                 )
                 # Save the loaded flexible demands data to the designated output path
-                utils.save_data(
-                    self.flex_demands_dfs[flex_load + f"_{param_name}"],
-                    subdir_label + f"_{param_name}.csv",  # subdir_label used instead of flex_load to get a more descriptive filename
-                    output_dir=self.output_path,
-                    logger=self.logger,
-                )
+                if self.overwrite_preprocessed_data:
+                    utils.save_data(
+                        self.flex_demands_dfs[flex_load + f"_{param_name}"],
+                        subdir_label + f"_{param_name}.csv",  # subdir_label used instead of flex_load to get a more descriptive filename
+                        output_dir=self.output_path,
+                        logger=self.logger,
+                    )
 
     def _save_aux_data_to_yaml(self) -> None:
         """Save auxiliary data dictionary to a YAML file."""

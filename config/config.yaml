@@ -21,16 +21,6 @@ scenario_list:
   - scenario_2
   # - scenario_3  # Optional scenario
 
-# Simulation Duration
-# ----------------------
-# Sets temporal scope in weeks (1-52). ENLIGHT operates on weekly time steps.
-# Common: Full year (1-52), Seasonal (1-12, 13-25, 26-38, 39-52)
-# ----------------------
-
-duration:
-  start_week: 1     # Valid range: 1-52
-  end_week: 52      # Valid range: 1-52
-
 # ============================================================#
 #                 SOLVER CONFIGURATION                        #
 # ============================================================#
@@ -40,9 +30,8 @@ duration:
 # Uncomment only one solver.
 # ============================================================================
 
-solver_name: 
-  #- "gurobi"      # Main solver
-  - "highs"     # Alternative solver, runs without a solver license
+solver_name: "gurobi"
+  #- "highs", "gurobi", etc.  # Alternative solver, runs without a solver license
 
 # ============================================================#
 #                 BIDDING ZONES CONFIGURATION                 #
@@ -55,9 +44,9 @@ solver_name:
 
 bidding_zones:
   # - DELU # Germany and Luxembourg
-  - DK1  # Denmark West
-  - DK2  # Denmark East
-  # - FR   # France
+  # - DK1  # Denmark West
+  # - DK2  # Denmark East
+  - FR   # France
 
   # EU Member States (alphabetically)
   # - AT   # Austria
@@ -92,12 +81,12 @@ bidding_zones:
   # Extra-EU Bidding Zones (alphabetically)
   # - AL   # Albania
   # - BA   # Bosnia and Herzegovina
-  # - CH   # Switzerland
+  - CH   # Switzerland
   # - GB   # Great Britain
   # - ME   # Montenegro
   # - MK   # North Macedonia
-  - NO1  # Norway zone 1
-  - NO2  # Norway zone 2
+  # - NO1  # Norway zone 1
+  # - NO2  # Norway zone 2
   # - NO3  # Norway zone 3
   # - NO4  # Norway zone 4
   # - NO5  # Norway zone 5

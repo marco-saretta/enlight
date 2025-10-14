@@ -112,11 +112,11 @@ def check_vars_list(vre_list: list, dem_list: list, gen_units_list: list, stor_u
         if not (v.endswith('_SOC') or v == 'export'):
             raise Exception(f"Variable {v} is not accounted for in the calculation of social welfare.\nAll variables unaccounted for are: {vars_unaccounted_for} of which SOC's and export shouldn't be accounted for.")
 
-def save_model_results(self, week: int):
+def save_model_results(self):#, week: int):
     """
     Calculate and save results from the optimized model.
     """
-    results_path = Path(self.simulation_path) / "results" / f"week_{week}"
+    results_path = Path(self.simulation_path) / "results" #/ f"week_{week}"
     results_path.mkdir(parents=True, exist_ok=True)
     
     self.logger.info('Saving the results')
@@ -160,45 +160,78 @@ def save_model_results(self, week: int):
         )
         self.results_dict["electricity_prices"] = self.model.dual["power_balance"].to_pandas()
 
-        # # ###### NEWLY ADDED - MARGINAL GENERATOR ######
+        # # ###### ADDED a while ago but updated to be faster - MARGINAL GENERATOR ######
         # # # Read out the marginal generator by its unit name
-        el_cap_xr = xr.DataArray(self.data.conventional_units_el_cap,
-                                    dims=["T", "G"],
-                                    coords=[self.times, self.data.conventional_units_id])
+        thermal_el_cap_xr = xr.DataArray(
+            self.data.conventional_units_el_cap,
+            dims=["T", "G"],
+            coords=[self.times, self.data.conventional_units_id]
+        )
+        thermal_marginal_mask = (self.conventional_units_offer.solution > 0) & (self.conventional_units_offer.solution < thermal_el_cap_xr)
+        thermal_marginal_costs = self.data.conventional_units_marginal_cost_df.where(thermal_marginal_mask.to_pandas())
 
-        marginal_thermal_generators = np.empty(len(self.times)+1, dtype=pd.DataFrame)
-        for h, h_idx in zip(self.times, self.data.time_index):
-            marginal_thermal_generators_prod = self.conventional_units_offer.solution.sel(T=h)[
-                (self.conventional_units_offer.solution.sel(T=h) > 0)  # is the generator activated?
-                & (self.conventional_units_offer.solution.sel(T=h) < el_cap_xr.sel(T=h))  # is it at full capacity?
-                ]
-            marginal_thermal_generators[h_idx] = self.data.conventional_units_marginal_cost_df.loc[
-                h, marginal_thermal_generators_prod.G
-                ]
-        
-        el_cap_hydro_xr = xr.DataArray(self.data.hydro_res_units_el_cap,
-                                    dims=["T", "G_hydro_res"],
-                                    coords=[self.times, self.data.hydro_res_units_id])
+        hydro_res_el_cap_xr = xr.DataArray(
+            self.data.hydro_res_units_el_cap,
+            dims=["T", "G_hydro_res"],
+            coords=[self.times, self.data.hydro_res_units_id]
+        )
+        hydro_res_marginal_mask = (self.hydro_res_units_offer.solution > 0) & (self.hydro_res_units_offer.solution < hydro_res_el_cap_xr)
+        hydro_res_marginal_costs = self.data.hydro_res_units_marginal_cost_df.where(hydro_res_marginal_mask.to_pandas())
 
-        # # Read out the marginal hydro reservoir generator by its unit name
-        marginal_hydro_generators = np.empty(len(self.data.time_index)+1, dtype=pd.DataFrame)
-        for h, h_idx in zip(self.times, self.data.time_index):
-            marginal_hydro_generators_prod = self.hydro_res_units_offer.solution.sel(T=h)[
-                (self.hydro_res_units_offer.solution.sel(T=h) > 0) # is the generator activated?
-                & (self.hydro_res_units_offer.solution.sel(T=h) < el_cap_hydro_xr.sel(T=h)) # is it at full capacity?
-                ]
-            marginal_hydro_generators[h_idx] = self.data.hydro_res_units_marginal_cost_df.loc[
-                h, marginal_hydro_generators_prod.G_hydro_res
-                ]
+        hydro_ps_el_cap_xr = xr.DataArray(
+            self.data.hydro_ps_units_el_cap,
+            dims=["T", "G_hydro_ps"],
+            coords=[self.times, self.data.hydro_ps_units_id]
+        )
+        hydro_ps_marginal_mask = (self.hydro_ps_units_offer.solution > 0) & (self.hydro_ps_units_offer.solution < hydro_ps_el_cap_xr)
+        hydro_ps_marginal_costs = self.data.hydro_ps_units_marginal_cost_dfs["Offer_price"].where(hydro_ps_marginal_mask.to_pandas())
 
+        bess_el_cap_xr = xr.DataArray(
+            self.data.bess_units_el_cap,
+            dims=["T", "G_bess"],
+            coords=[self.times, self.data.bess_units_id]
+        )
+        bess_marginal_mask = (self.bess_units_offer.solution > 0) & (self.bess_units_offer.solution < bess_el_cap_xr)
+        bess_marginal_costs = self.data.bess_units_marginal_cost_dfs["Offer_price"].where(bess_marginal_mask.to_pandas())
+
+        # Build final dataframe
         marginal_generators_df = pd.DataFrame({
-            'thermal_generator_id': [tuple(marginal_thermal_generator.index) for marginal_thermal_generator in marginal_thermal_generators[1:]],
-            'thermal_generator_cost': [tuple(marginal_thermal_generator.values) for marginal_thermal_generator in marginal_thermal_generators[1:]],
-            'hydro_res_generator_id': [tuple(marginal_hydro_generator.index) for marginal_hydro_generator in marginal_hydro_generators[1:]],
-            'hydro_res_generator_cost': [tuple(marginal_hydro_generator.values) for marginal_hydro_generator in marginal_hydro_generators[1:]]})
-        marginal_generators_df.index = self.data.times
+            'thermal_generator_id': [
+                tuple(thermal_marginal_costs.columns[thermal_marginal_mask.sel(T=t).values])
+                for t in self.times
+            ],
+            'thermal_generator_cost': [
+                tuple(thermal_marginal_costs.loc[t].dropna().values)
+                for t in self.times
+            ],
+            'hydro_res_generator_id': [
+                tuple(hydro_res_marginal_costs.columns[hydro_res_marginal_mask.sel(T=t).values])
+                for t in self.times
+            ],
+            'hydro_res_generator_cost': [
+                tuple(hydro_res_marginal_costs.loc[t].dropna().values)
+                for t in self.times
+            ],
+            'hydro_ps_generator_id': [
+                tuple(hydro_ps_marginal_costs.columns[hydro_ps_marginal_mask.sel(T=t).values])
+                for t in self.times
+            ],
+            'hydro_ps_generator_cost': [
+                tuple(hydro_ps_marginal_costs.loc[t].dropna().values)
+                for t in self.times
+            ],
+            'bess_generator_id': [
+                tuple(bess_marginal_costs.columns[bess_marginal_mask.sel(T=t).values])
+                for t in self.times
+            ],
+            'bess_generator_cost': [
+                tuple(bess_marginal_costs.loc[t].dropna().values)
+                for t in self.times
+            ]
+        }, index=self.data.times)
 
         self.results_dict["marginal_generator"] = marginal_generators_df
+
         ################################################
 
         # Save all results ---
@@ -444,18 +477,18 @@ def get_unsorted_aggregated_market_curves_from_dataloader_object(example_hour, d
 
     return demand_curve_raw, supply_curve_raw
 
-def combine_simulations_result(weeks: list, result_path: Path, result: str):
-    '''
-    This function combines dataframes of a single result e.g. electricity prices
-    across multiple simulations (weeks) to arrive at a combined dataframe for all of the
-    simulations, e.g. the electricity prices for the entire year specified in configuration file.
-    '''
-    # Initialize an empty dict to store all of the dataframes after loading
-    df_dict = {}
-    for w in weeks:
-        df_dict[f"week_{w}"] = pd.read_csv(result_path / f"week_{w}/{result}.csv")
-    df_combined = pd.concat(df_dict.values())  # e.g. electricity prices in the entire year
-    return df_combined
+# def combine_simulations_result(weeks: list, result_path: Path, result: str):
+#     '''
+#     This function combines dataframes of a single result e.g. electricity prices
+#     across multiple simulations (weeks) to arrive at a combined dataframe for all of the
+#     simulations, e.g. the electricity prices for the entire year specified in configuration file.
+#     '''
+#     # Initialize an empty dict to store all of the dataframes after loading
+#     df_dict = {}
+#     for w in weeks:
+#         df_dict[f"week_{w}"] = pd.read_csv(result_path / f"week_{w}/{result}.csv")
+#     df_combined = pd.concat(df_dict.values())  # e.g. electricity prices in the entire year
+#     return df_combined
 
 def hourly_int_index_to_datetime(df: pd.DataFrame, year0: int):
     '''
