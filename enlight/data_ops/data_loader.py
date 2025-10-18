@@ -53,12 +53,15 @@ class DataLoader:
         self.load_conventional_units_data()
         self.load_conventional_units_marginal_cost()
         self.map_conventional_units_to_zones()
-        # Optionally uncomment these as needed
-        # self.load_heating()
-        # self.load_ptx()
         self.load_bess_units()
         self.load_bess_units_marginal_cost()
         self.map_bess_units_to_zones()
+        self.load_ptx_data()
+        self.load_ptx_bid_prices()
+        self.map_ptx_units_to_zones()
+        self.load_dh_data()
+        self.load_dh_bid_prices()
+        self.map_dh_units_to_zones()
 
 
     def _load_csv(self, filename: str, index_col=0) -> pd.DataFrame:
@@ -434,14 +437,6 @@ class DataLoader:
             },
             dims=["G", "Z"]            # Dimension names for alignment in dot product
         )
-        
-    def load_ptx(self):
-        """Load power-to-X unit demand data."""
-        self.ptx_demand_df = self._load_csv('ptx_units.csv')
-
-    def load_heating(self):
-        """Load district heating demand data."""
-        self.heating_demand_df = self._load_csv('district_heating_units.csv')
 
     def load_bess_units(self):
         """Load battery energy storage system (BESS) unit data."""
@@ -502,4 +497,92 @@ class DataLoader:
                 "Z": self.bidding_zones     # Zone labels
             },
             dims=["G_bess", "Z"]            # Dimension names for alignment in dot product
+        )
+
+    def load_ptx_data(self):
+        self.ptx_units_df = self._load_csv('ptx_units.csv')
+        self.ptx_units_id = list(self.ptx_units_df.index)  # shape (L_DH)
+
+        # Repeat capacities for each time steps
+        self.ptx_units_el_cap = np.outer(np.ones(self.T),
+                                        self.ptx_units_df["Electric capacity"].to_numpy())
+        
+    def load_ptx_bid_prices(self):
+        """
+        Makes a (T, L_PtX) DataFrame of the PtX unit bid prices.
+        These bid prices are simply the LCoX of each plant.
+        """
+        # Convert the bid prices pandas Series to a DataFrame with time index
+        self.ptx_units_bid_prices_series = self.ptx_units_df["Demand price"]
+        self.ptx_units_bid_prices_series.index.name = "L_PtX"
+
+        self.ptx_units_bid_prices_df = pd.DataFrame(
+            data=np.broadcast_to(self.ptx_units_bid_prices_series.to_numpy(),
+                                 (len(self.times),
+                                 len(self.ptx_units_bid_prices_series))),
+            index=self.times,
+            columns=self.ptx_units_id   
+        )
+
+    def map_ptx_units_to_zones(self):
+        """
+        Build binary PtX unit-to-zone assignment matrix (L_PtX x Z).
+        L_PtX_Z[l_PtX, z] = 1 if PtX unit l_PtX belongs to zone z, else 0.
+        """
+        # Create dummy variables (one-hot encode) from PtX unit zone assignment
+        self.L_PtX_Z_df = pd.get_dummies(self.ptx_units_df['zone_el']).astype(int)
+
+        # Ensure all zones are represented as columns, even if some have no PtX units
+        self.L_PtX_Z_df = self.L_PtX_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
+
+        # Wrap into xarray with matching dimensions
+        self.L_PtX_Z_xr = xr.DataArray(
+            self.L_PtX_Z_df.values,
+            coords={
+                "L_PtX": self.ptx_units_id,   # PtX unit labels
+                "Z": self.bidding_zones     # Zone labels
+            },
+            dims=["L_PtX", "Z"]            # Dimension names for alignment in dot product
+        )
+
+    def load_dh_data(self):
+        self.dh_units_df = self._load_csv('dh_units.csv')
+        self.dh_units_id = list(self.dh_units_df.index)  # shape (L_DH)
+
+        # Repeat capacities for each time steps
+        self.dh_units_el_cap = np.outer(np.ones(self.T),
+                                        self.dh_units_df["Thermal capacity"].to_numpy())
+        
+    def load_dh_bid_prices(self):
+        # Convert the bid prices pandas Series to a DataFrame with time index
+        self.dh_units_bid_prices_series = self.dh_units_df.demand_price
+        self.dh_units_bid_prices_series.index.name = "L_DH"
+
+        self.dh_units_bid_prices_df = pd.DataFrame(
+            data=np.broadcast_to(self.dh_units_bid_prices_series.to_numpy(),
+                                 (len(self.times),
+                                 len(self.dh_units_bid_prices_series))),
+            index=self.times,
+            columns=self.dh_units_id   
+        )
+
+    def map_dh_units_to_zones(self):
+        """
+        Build binary DH unit-to-zone assignment matrix (L_DH x Z).
+        L_DH_Z[l_DH, z] = 1 if DH unit l_DH belongs to zone z, else 0.
+        """
+        # Create dummy variables (one-hot encode) from DH unit zone assignment
+        self.L_DH_Z_df = pd.get_dummies(self.dh_units_df['zone_el']).astype(int)
+
+        # Ensure all zones are represented as columns, even if some have no DH units
+        self.L_DH_Z_df = self.L_DH_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
+
+        # Wrap into xarray with matching dimensions
+        self.L_DH_Z_xr = xr.DataArray(
+            self.L_DH_Z_df.values,
+            coords={
+                "L_DH": self.dh_units_id,   # DH unit labels
+                "Z": self.bidding_zones     # Zone labels
+            },
+            dims=["L_DH", "Z"]            # Dimension names for alignment in dot product
         )

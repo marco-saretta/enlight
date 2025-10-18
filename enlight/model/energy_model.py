@@ -18,6 +18,8 @@ class EnlightModel:
         G_hydro_res (int): Number of hydro reservoir units.
         G_hydro_ps (int): Number of pumped hydro storage units.
         G_bess (int): Number of battery energy storage system units.
+        L_DH (int): Number of DH units
+        L_PtX (int): Number of PtX units
     """
 
     def __init__(self, dataloader_obj, simulation_path, logger):
@@ -51,6 +53,8 @@ class EnlightModel:
         self.G_hydro_res = len(self.data.hydro_res_units_id)
         self.G_hydro_ps = len(self.data.hydro_ps_units_id)
         self.G_bess = len(self.data.bess_units_id)
+        self.L_DH = len(self.data.dh_units_id)
+        self.L_PtX = len(self.data.ptx_units_id)
         self.W = self.data.W  # Number of weeks included
 
     def _build_variables(self):
@@ -198,6 +202,24 @@ class EnlightModel:
             name='bess_units_SOC'
         )
 
+        # PtX bid
+        self.ptx_units_bid = self.model.add_variables(
+            lower=0,
+            upper=self.data.ptx_units_el_cap,
+            coords=[self.times, self.data.ptx_units_id],
+            dims=["T", "L_PtX"],
+            name='ptx_units_bid'
+        )
+
+        #  District heating bid for power-to-heat units
+        self.dh_units_bid = self.model.add_variables(
+            lower=0,
+            upper=self.data.dh_units_el_cap,
+            coords=[self.times, self.data.dh_units_id],
+            dims=["T", "L_DH"],
+            name='dh_units_bid'
+        )
+
         # Electricity export
         self.electricity_export = self.model.add_variables(
             coords=[self.times, self.bidding_zones],
@@ -233,6 +255,8 @@ class EnlightModel:
              + self.electricity_export
              + self.hydro_ps_units_bid.dot(self.data.G_hydro_ps_Z_xr)
              + self.bess_units_bid.dot(self.data.G_bess_Z_xr)
+             + self.ptx_units_bid.dot(self.data.L_PtX_Z_xr)
+             + self.dh_units_bid.dot(self.data.L_DH_Z_xr)
              ),
             name='power_balance'
             )
@@ -318,7 +342,6 @@ class EnlightModel:
                 - self.demand_inflexible_classic_bid * self.data.voll_classic
                 - self.demand_flexible_classic_bid * self.data.wtp_classic
                 # Generators:
-
                 + self.wind_onshore_offer * self.data.wind_onshore_bid_price
                 + self.wind_offshore_offer * self.data.wind_offshore_bid_price
                 + self.solar_pv_offer * self.data.solar_pv_bid_price
@@ -329,6 +352,8 @@ class EnlightModel:
             # Loads:
             - (self.hydro_ps_units_bid * (self.data.hydro_ps_units_marginal_cost_dfs["Bid_price"])).sum()
             - (self.bess_units_bid * (self.data.bess_units_marginal_cost_dfs["Bid_price"])).sum()
+            - (self.ptx_units_bid * (self.data.ptx_units_bid_prices_df)).sum()
+            - (self.dh_units_bid * (self.data.dh_units_bid_prices_df)).sum()
             # Generators:
             + (self.conventional_units_offer * (self.data.conventional_units_marginal_cost_df)).sum()
             + (self.hydro_res_units_offer * (self.data.hydro_res_units_marginal_cost_df)).sum()
@@ -344,7 +369,10 @@ class EnlightModel:
         Solve the model using the solver specified in yaml config file.
         """
         self.logger.info("Start solving model")
-        self.model.solve(solver_name=solver_name)
+        if self.data.solver_name == "gurobi":
+            self.model.solve(solver_name=solver_name, Method=1)  # use dual simplex instead of barrier algorithm immediately
+        else:
+            self.model.solve(solver_name=solver_name)
         self.logger.info('Model solved, good job champ!')
 
     def save_model_to_lp_file(self):
@@ -353,7 +381,7 @@ class EnlightModel:
         """
         self.logger.info('Saving the .lp model file')
         Path('results').mkdir(parents=True, exist_ok=True)
-        self.model.to_file(Path(self.simulation_path) / 'results' / 'debug_model.lp', io_api='lp', explicit_coordinate_names=True)
+        self.model.to_file(Path(self.simulation_path) / 'results' / 'debug_model_ptx_dh.lp', io_api='lp', explicit_coordinate_names=True)
         self.logger.info('Saved .lp model file')
 
 
