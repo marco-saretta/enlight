@@ -47,8 +47,12 @@ class ResultsVisualizer:
                 'bess':
                 self.enlight_model.bess_units_bid.solution,
                 'phs':
-                self.enlight_model.hydro_ps_units_bid.solution
-        }
+                self.enlight_model.hydro_ps_units_bid.solution,
+                'ptx':
+                self.enlight_model.ptx_units_bid.solution,
+                'dh':
+                self.enlight_model.dh_units_bid.solution
+        }  # Used to calculate the full volume traded. An offers_sol_dict would also do the trick
 
         # Retrieve from the model solution the zonal spot power prices
         zonal_prices = self.enlight_model.results_dict['electricity_prices']
@@ -155,7 +159,7 @@ class ResultsVisualizer:
         ax.plot(df_dispatch.index, df_dispatch[cons_dispatched].sum(axis=1)/1e3, label="Total demand in DA", c='k', lw=3)
 
         ax.tick_params(axis='x', rotation=30)
-        ax.set_ylabel("Power generated/consumed [GW]")
+        ax.set_ylabel("Power generation/consumption [GW]")
         ax.set_title(f"Dispatch schedule for {df_dispatch.index[0].strftime('%d/%b--%H:%M')} to {df_dispatch.index[-1].strftime('%d/%b--%H:%M')}")
         ax.legend(bbox_to_anchor=(1.1, 1.05))
         plt.show()

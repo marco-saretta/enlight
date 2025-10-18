@@ -99,13 +99,13 @@ def save_data(
 
     return file_path
 
-def check_vars_list(vre_list: list, dem_list: list, gen_units_list: list, stor_units_list: list, model_vars: linopy.variables.Variables):
+def check_vars_list(vre_list: list, dem_list: list, gen_units_list: list, stor_units_list: list, dem_units_list: list, model_vars: linopy.variables.Variables):
     # Verifies that all variables are indeed accounted for when post-calculating social welfare.
     #   Only 'export' and 'SOC'-variables may be overlooked.
     stor_expanded = []
     for s in stor_units_list:
         stor_expanded.extend([f"{s}_offer", f"{s}_bid"])
-    vars_accounted_for = vre_list + dem_list + gen_units_list + stor_expanded + ['lineflow']
+    vars_accounted_for = vre_list + dem_list + gen_units_list + stor_expanded + dem_units_list + ['lineflow']
     vars_accounted_for = list(map(lambda x: x.replace("_sol",""), vars_accounted_for))
     vars_unaccounted_for = set(model_vars) - set(vars_accounted_for)
     for v in vars_unaccounted_for:
@@ -135,6 +135,8 @@ def save_model_results(self):#, week: int):
             "demand_flexible_classic_bid_sol": get_solution(self.demand_flexible_classic_bid),
             "hydro_ps_units_bid_sol": get_solution(self.hydro_ps_units_bid),
             "bess_units_bid_sol": get_solution(self.bess_units_bid),
+            "ptx_units_bid_sol": get_solution(self.ptx_units_bid),
+            "dh_units_bid_sol": get_solution(self.dh_units_bid),
 
             # Offers
             "wind_onshore_offer_sol": get_solution(self.wind_onshore_offer),
@@ -276,11 +278,17 @@ def save_model_results(self):#, week: int):
         stor_units_map_to_zone = dict(zip(stor_units_list, [self.data.G_bess_Z_df, self.data.G_hydro_ps_Z_df]))
         stor_units_marginal_cost_dfs = dict(zip(stor_units_list, [self.data.bess_units_marginal_cost_dfs, self.data.hydro_ps_units_marginal_cost_dfs]))
 
+        # List demands that are given BY UNIT.
+        dem_units_list = ['ptx_units_bid_sol', 'dh_units_bid_sol']
+        dem_units_map_to_zone = dict(zip(dem_units_list, [self.data.L_PtX_Z_df, self.data.L_DH_Z_df]))
+        dem_units_bid_prices_dfs = dict(zip(dem_units_list, [self.data.ptx_units_bid_prices_df, self.data.dh_units_bid_prices_df]))
+
         # Verify that all variables are indeed accounted for. Only 'export' and 'SOC'-variables may be overlooked.
         check_vars_list(vre_list=vre_list,
                         dem_list=dem_list,
                         gen_units_list=gen_units_list,
                         stor_units_list=stor_units_list,
+                        dem_units_list=dem_units_list,
                         model_vars=self.model.variables)
 
         # Get VRE revenues and operatings costs
@@ -292,7 +300,9 @@ def save_model_results(self):#, week: int):
         # Get demands utilities and power costs
         for dem in dem_list:
             dem_ = dem.replace("_bid_sol","")
+            # Revenue for a demand is the utility
             self.results_econ["revenues"][dem_] = (self.results_dict[dem] * dem_bid_price[dem]).sum(axis=0)
+            # Costs for a demand is the power costs
             self.results_econ["costs"][dem_] = (self.results_dict[dem].mul(self.results_dict['electricity_prices'], axis='columns')).sum(axis=0)
 
         # Get conventional and hydro res units revenues and operatings costs
@@ -318,6 +328,14 @@ def save_model_results(self):#, week: int):
             
             self.results_econ['profits_sw'][stor_] = (profit_offer + profit_bid).sum()
 
+        # Get PtX and DH units utilities and power costs
+        for dem in dem_units_list:
+            dem_ = dem.replace("_bid_sol", "")
+            # Revenue for a demand is the utility
+            self.results_econ["revenues"][dem_] = (self.results_dict[dem] * dem_units_bid_prices_dfs[dem]).sum(axis=0)
+            # Costs are simply power costs as opposed to operating costs for a generator
+            self.results_econ["costs"][dem_] = (self.results_dict[dem] * (self.results_dict['electricity_prices'].dot(dem_units_map_to_zone[dem].T))).sum(axis=0)
+
         # Transmission System Operater: congestion rent
         # Align index (they are slightly different)
         self.data.L_Z_df.index = self.results_dict['lineflow_sol'].columns
@@ -329,7 +347,7 @@ def save_model_results(self):#, week: int):
             self.results_econ['profits_tot'][k] = float(np.round(self.results_econ['profits'][k].sum()/1e9,4))
 
         # Compare social welfare from this function and from the model.
-        self.results_econ["consumer surplus"] = sum(map(lambda x: self.results_econ['profits'][x.replace("_bid_sol","")].sum(), dem_list))
+        self.results_econ["consumer surplus"] = sum(map(lambda x: self.results_econ['profits'][x.replace("_bid_sol","")].sum(), dem_list+dem_units_list))
         self.results_econ["producer surplus"] = sum(map(lambda x: self.results_econ['profits'][x.replace("_offer_sol","")].sum(), vre_list+gen_units_list+stor_units_list+['lineflow']))
         self.results_econ["producer surplus perceived"] = sum(map(lambda x: self.results_econ['profits'][x.replace("_offer_sol","")].sum(), vre_list+gen_units_list+['lineflow'])) + sum(map(lambda x: self.results_econ['profits_sw'][x].sum(), stor_units_list))
         self.results_econ["social welfare"] =  self.results_econ["producer surplus"] + self.results_econ["consumer surplus"]
@@ -429,7 +447,11 @@ def get_unsorted_aggregated_market_curves_from_dataloader_object(example_hour, d
                 # BESS
             dataloader_obj.bess_units_df.capacity_el.values,
                 # PHS
-            dataloader_obj.hydro_ps_units.capacity_el.values
+            dataloader_obj.hydro_ps_units.capacity_el.values,
+            # PtX
+            dataloader_obj.ptx_units_df["Electric capacity"].values,
+            # DH
+            dataloader_obj.dh_units_df["Thermal capacity"].values
         ])
         ,
         # 2nd column is the bid price (VOLL or WTP)
@@ -437,7 +459,9 @@ def get_unsorted_aggregated_market_curves_from_dataloader_object(example_hour, d
             dataloader_obj.voll_classic,
             dataloader_obj.wtp_classic,
             dataloader_obj.bess_units_marginal_cost_dfs['Bid_price'].iloc[h].values,
-            dataloader_obj.hydro_ps_units_marginal_cost_dfs['Bid_price'].iloc[h].values
+            dataloader_obj.hydro_ps_units_marginal_cost_dfs['Bid_price'].iloc[h].values,
+            dataloader_obj.ptx_units_df["Demand price"].values,
+            dataloader_obj.dh_units_df["demand_price"].values
         ])
     ])
 

@@ -49,8 +49,8 @@ class DataProcessor:
         self._process_hydro_pumped_storage()
         self._process_conventional_thermal_units_data()
         self._process_bess()
-        self._process_ptx_plants()
-        self._process_dh_plants()
+        self._process_ptx_units()
+        self._process_dh_units()
         self._process_fuel_prices()
         self._process_transmission_lines_data()
         self._prepare_inflexible_demand_sources()
@@ -444,11 +444,11 @@ class DataProcessor:
             FileNotFoundError: If the thermal units file does not exist.
         """
 
-        # Load the configuration section for hydro reservoir
+        # Load the configuration section for conventional units
         thermal_df = self.scenario_config_df.loc["THERMAL"].copy()
         thermal_df.set_index("key", inplace=True)
 
-        # Extract thermal units configuration values
+        # Extract thermal units file name
         thermal_units_file = thermal_df.loc["thermal_units_file", self.scenario_name]
 
         # Define the path to the thermal plant units CSV file
@@ -533,11 +533,85 @@ class DataProcessor:
                 logger=self.logger,
             )
 
-    def _process_ptx_plants(self) -> None:
-        pass
+    def _process_ptx_units(self) -> None:
+        '''
+        Load and process the raw data on PtX units.
+        This method is similar to that of the conventional thermal units.
+        '''
+        
+        # Load the configuration section for ptx units
+        ptx_series = self.scenario_config_df.loc["PTX"].copy()
 
-    def _process_dh_plants(self) -> None:
-        pass
+        # Extract PtX units file name - the series is the "ptx_units_file" for each scenario
+        ptx_units_file = ptx_series.loc[self.scenario_name]
+
+        # Define the path to the ptx units CSV file
+        ptx_units_filepath = (
+            self.path_ptx / f"{ptx_units_file}.csv"
+        )
+
+        # Check if the PtX units file exists
+        if not ptx_units_filepath.exists():
+            raise FileNotFoundError(
+                f"PtX units file not found: {ptx_units_filepath}"
+            )
+        
+        # Load the PtX units data into a DataFrame
+        self.ptx_units_raw = pd.read_csv(ptx_units_filepath, index_col=0)
+
+        # Filter the PtX units to only include those in the selected bidding zones
+        self.ptx_units = self.ptx_units_raw[
+            self.ptx_units_raw["zone_el"].isin(self.bidding_zones_list)
+        ]
+
+        # Save the load ptx units data to the designated output path
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.ptx_units,
+                "ptx_units.csv",
+                output_dir=self.output_path,
+                logger=self.logger
+            )
+
+    def _process_dh_units(self) -> None:
+        '''
+        Load and process the raw data on district heating (DH) units.
+        This method is similar to that of the conventional thermal units.
+        '''
+        
+        # Load the configuration section for ptx units
+        dh_series = self.scenario_config_df.loc["DH"].copy()
+
+        # Extract DH units file name -- the series is the "dh_units_file" for each scenario
+        dh_units_file = dh_series.loc[self.scenario_name]
+
+        # Define the path to the DH units CSV file
+        dh_units_filepath = (
+            self.path_district_heating / f"{dh_units_file}.csv"
+        )
+
+        # Check if the DH units file exists
+        if not dh_units_filepath.exists():
+            raise FileNotFoundError(
+                f"DH units file not found: {dh_units_filepath}"
+            )
+        
+        # Load the DH units data into a DataFrame
+        self.dh_units_raw = pd.read_csv(dh_units_filepath, index_col=0)
+
+        # Filter the DH units to only include those in the selected bidding zones
+        self.dh_units = self.dh_units_raw[
+            self.dh_units_raw["zone_el"].isin(self.bidding_zones_list)
+        ]
+
+        # Save the load DH units data to the designated output path
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.dh_units,
+                "dh_units.csv",
+                output_dir=self.output_path,
+                logger=self.logger
+            )
 
     def _process_fuel_prices(self) -> None:
         pass
