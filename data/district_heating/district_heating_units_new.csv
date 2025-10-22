@@ -1,0 +1,382 @@
+ID,Country,Name,Type,Electric_capacity,Thermal capacity,zone_el,Latitude,Longitude,demand_price
+Electric boiler1DK,DK,Name1,Electric boiler,0,160,DK2,55.686,12.627,16.38988064
+Electric boiler2DK,DK,Name2,Electric boiler,0,30,DK1,55.4552,8.4544,14.22299496
+Electric boiler3DK,DK,Name3,Electric boiler,0,120.42,DK1,55.4287,10.4074,19.61373335
+Electric boiler4DK,DK,Name4,Electric boiler,0,50,DK1,55.51175,9.44672,15.34516265
+Electric boiler5DK,DK,Name5,Electric boiler,0,185,DK1,57.0736,10.0416,16.17077583
+Electric boiler6DK,DK,Name6,Electric boiler,0,280,DK1,56.22774,10.15789,19.77892541
+Electric boiler7DK,DK,Name7,Electric boiler,0,16,DK1,55.2562,9.9127,18.38482881
+Electric boiler8DK,DK,Name8,Electric boiler,0,8,DK1,54.9503,9.8884,14.73962163
+Electric boiler9DK,DK,Name9,Electric boiler,0,10,DK1,56.2702,8.8054,16.96554157
+Electric boiler10DK,DK,Name10,Electric boiler,0,15,DK1,55.72817661,9.113910993,23.58365247
+Electric boiler11DK,DK,Name11,Electric boiler,0,11.5,DK1,55.56685593,10.09347833,23.98107115
+Electric boiler12DK,DK,Name12,Electric boiler,0,11.2,DK1,55.46963456,8.700858786,18.65495098
+Electric boiler13DK,DK,Name13,Electric boiler,0,7,DK1,55.05568528,8.82688934,18.39376387
+Electric boiler14DK,DK,Name14,Electric boiler,0,3,DK1,55.7032,9.3806,24.09116204
+Electric boiler15DK,DK,Name15,Electric boiler,0,10,DK1,57.1015,9.5162,21.69132003
+Electric boiler16DK,DK,Name16,Electric boiler,0,10,DK1,55.9764,9.6226,18.84417091
+Electric boiler17DK,DK,Name17,Electric boiler,0,19.85,DK1,57.2595,9.9521,21.97524216
+Electric boiler18DK,DK,Name18,Electric boiler,0,10,DK1,55.4824,9.0169,23.72948075
+Electric boiler19DK,DK,Name19,Electric boiler,0,2.95,DK1,55.3641,9.4898,23.5823713
+Electric boiler20DK,DK,Name20,Electric boiler,0,4,DK1,55.6142,9.3102,14.75482923
+Electric boiler21DK,DK,Name21,Electric boiler,0,7,DK1,55.98540532,9.289562509,17.97510969
+Electric boiler22DK,DK,Name22,Electric boiler,0,12,DK1,57.0828,9.2597,17.26917051
+Electric boiler23DK,DK,Name23,Electric boiler,0,10,DK1,55.2808,9.0469,16.43755548
+Electric boiler24DK,DK,Name24,Electric boiler,0,7,DK1,55.84486879,9.236609867,21.6204555
+Electric boiler25DK,DK,Name25,Electric boiler,0,12,DK1,55.7617,8.933,17.67423654
+Electric boiler26DK,DK,Name26,Electric boiler,0,8,DK1,55.47239454,8.800432258,15.68890142
+Electric boiler27DK,DK,Name27,Electric boiler,0,2,DK1,56.72143454,10.11260717,15.03481363
+Electric boiler28DK,DK,Name28,Electric boiler,0,10,DK1,57.115,8.6352,18.39330612
+Electric boiler29DK,DK,Name29,Electric boiler,0,10,DK2,55.32563637,11.95896466,16.26465087
+Electric boiler30DK,DK,Name30,Electric boiler,0,2.4,DK1,55.69510972,8.99761446,15.11195223
+Electric boiler31DK,DK,Name31,Electric boiler,0,2.95,DK1,55.52,10.664,23.36010658
+Electric boiler32DK,DK,Name32,Electric boiler,0,6,DK1,57.1674,10.1479,17.80824321
+Electric boiler33DK,DK,Name33,Electric boiler,0,6,DK1,55.50842763,8.917909696,19.09850993
+Electric boiler34DK,DK,Name34,Electric boiler,0,0.9,DK1,56.447,8.5881,15.35263777
+Electric boiler35DK,DK,Name35,Electric boiler,0,1,DK1,56.447,8.5881,17.72574694
+Electric boiler36DK,DK,Name36,Electric boiler,0,6,DK1,56.0074,8.126,16.57996903
+Electric boiler37DK,DK,Name37,Electric boiler,0,3,DK1,57.3409,10.2385,19.95021506
+Electric boiler38DK,DK,Name38,Electric boiler,0,2.4,DK1,57.287,10.0949,21.86451098
+Electric boiler39DK,DK,Name39,Electric boiler,0,15,DK1,56.54521927,8.304851162,23.81476466
+Electric boiler40DK,DK,Name40,Electric boiler,0,37,DK1,56.65067204,9.982000526,15.1573932
+Electric boiler41DK,DK,Name41,Electric boiler,0,7,DK1,56.98209675,9.641109112,18.2524437
+Electric boiler42DK,DK,Name42,Electric boiler,0,6,DK1,56.8018,8.8632,16.80661135
+Electric boiler43DK,DK,Name43,Electric boiler,0,10,DK2,55.92684889,11.66898976,14.41992512
+Electric boiler44DK,DK,Name44,Electric boiler,0,4.5,DK1,55.9638,9.3968,20.48222528
+Electric boiler45DK,DK,Name45,Electric boiler,0,8,DK1,55.62768336,8.280623301,23.7614225
+Electric boiler46DK,DK,Name46,Electric boiler,0,10,DK1,57.2180561,9.674738396,17.67973197
+Electric boiler47DK,DK,Name47,Electric boiler,0,10,DK1,55.3422,8.7903,14.57702111
+Electric boiler48DK,DK,Name48,Electric boiler,0,12,DK1,56.0901,8.277,17.73682526
+Electric boiler49DK,DK,Name49,Electric boiler,0,0.5,DK1,55.0727934,9.332124555,20.57419424
+Electric boiler50DK,DK,Name50,Electric boiler,0,2,DK2,55.94473302,11.75344716,14.69308958
+Electric boiler51DK,DK,Name51,Electric boiler,0,30,DK1,56.2007,9.5599,19.74400763
+Electric boiler52DK,DK,Name52,Electric boiler,0,12,DK1,57.7359,10.5755,18.00727914
+Electric boiler53DK,DK,Name53,Electric boiler,0,14,DK1,56.56616991,9.03518024,18.47155077
+Electric boiler54DK,DK,Name54,Electric boiler,0,4,DK1,55.1565094,8.770567663,19.52284557
+Electric boiler55DK,DK,Name55,Electric boiler,0,1.09,DK1,55.7205,8.3441,18.17237332
+Electric boiler56DK,DK,Name56,Electric boiler,0,6,DK1,56.895,8.5266,23.1126028
+Electric boiler57DK,DK,Name57,Electric boiler,0,10,DK1,57.4874,10.4883,14.95804024
+Electric boiler58DK,DK,Name58,Electric boiler,0,3,DK1,56.48701763,8.591607237,16.43384639
+Electric boiler59DK,DK,Name59,Electric boiler,0,10,DK1,55.94203833,8.781921749,20.49674421
+Electric boiler60DK,DK,Name60,Electric boiler,0,25,DK1,55.0809,10.5782,22.61715373
+Electric boiler61DK,DK,Name61,Electric boiler,0,12,DK1,57.3189,10.5009,15.82383422
+Electric boiler62DK,DK,Name62,Electric boiler,0,2,DK1,55.90629647,8.519490168,15.23466603
+Electric boiler63DK,DK,Name63,Electric boiler,0,2.9,DK1,55.1941,9.0713,19.58059153
+Electric boiler64DK,DK,Name64,Electric boiler,0,1.6,DK1,55.66712274,8.576668956,20.25444272
+Electric boiler65DK,DK,Name65,Electric boiler,0,10,DK1,56.0954,8.628,16.07748959
+Electric boiler66DK,DK,Name66,Electric boiler,0,12,DK1,56.2034,8.7629,15.06128284
+Electric boiler67DK,DK,Name67,Electric boiler,0,10,DK1,55.2418,9.3096,14.85606265
+Electric boiler68DK,DK,Name68,Electric boiler,0,1,DK1,56.9474,8.388,18.85081144
+Electric boiler69DK,DK,Name69,Electric boiler,0,7,DK1,57.35293068,9.939953266,15.56645103
+Electric boiler70DK,DK,Name70,Electric boiler,0,6,DK1,55.80761081,8.620363968,15.25457153
+Electric boiler71DK,DK,Name71,Electric boiler,0,1,DK1,56.8403,9.4241,19.57821804
+Electric boiler72DK,DK,Name72,Electric boiler,0,9.8,DK2,55.8437,12.0606,15.06039651
+Electric boiler73DK,DK,Name73,Electric boiler,0,10,DK2,56.0125,12.1942,16.54007665
+Electric boiler74DK,DK,Name74,Electric boiler,0,93,DK2,55.6597,11.0796,19.14824438
+Electric boiler75DK,DK,Name75,Electric boiler,0,3.8,DK2,55.1141,12.0423,24.04771957
+Electric boiler76DK,DK,Name76,Electric boiler,0,10,DK2,55.7295,12.3069,21.27847576
+Electric boiler77DK,DK,Name77,Electric boiler,0,10,DK1,55.7295,12.3069,17.19678904
+Electric boiler78DK,DK,Name78,Electric boiler,0,15,DK1,55.85243,9.85763,21.5127619
+Electric boiler79DK,DK,Name79,Electric boiler,0,15,DK1,55.7741,9.70022,22.94759081
+Electric boiler80DK,DK,Name80,Electric boiler,0,30,DK1,55.65539,9.80063,19.77369931
+Electric boiler81DK,DK,Name81,Electric boiler,0,5,DK1,56.12843,8.5133,15.06623355
+Electric boiler82DK,DK,Name82,Electric boiler,0,10,DK2,55.3333,11.9683,20.54242227
+Electric boiler83DK,DK,Name83,Electric boiler,0,15,DK1,56.47748,8.79137,19.94699841
+Electric boiler84DK,DK,Name84,Electric boiler,0,30,DK2,56.0201,12.55943,23.80440787
+Electric boiler85DK,DK,Name85,Electric boiler,0,15,DK1,54.9395,8.8742,16.75407795
+Electric boiler86DK,DK,Name86,Electric boiler,0,12,DK1,55.32684,10.20212,21.87911601
+Electric boiler87DK,DK,Name87,Electric boiler,0,10,DK1,56.389,9.7921,23.28553201
+Electric boiler88DK,DK,Name88,Electric boiler,0,18,DK1,56.458,10.0474,17.56044128
+Electric boiler89DK,DK,Name89,Electric boiler,0,12,DK1,55.22425,10.12305,23.543478
+Electric boiler90DK,DK,Name90,Electric boiler,0,30,DK1,56.2082,8.8777,24.03012274
+Electric boiler91DK,DK,Name91,Electric boiler,0,30,DK2,55.9432,12.2722,15.28082374
+Electric boiler92DK,DK,Name92,Electric boiler,0,30,DK1,57.4611,9.9786,15.54258023
+Electric boiler93DK,DK,Name93,Electric boiler,0,30,DK1,56.4759,9.3602,15.689727
+Electric boiler94DK,DK,Name94,Electric boiler,0,30,DK1,54.9237,9.8673,19.27511769
+Electric boiler95DK,DK,Name95,Electric boiler,0,30,DK1,56.4168,10.8738,18.90396396
+Electric boiler96DK,DK,Name96,Electric boiler,0,30,DK2,54.7818,11.8708,15.66324295
+Electric boiler97DK,DK,Name97,Electric boiler,0,30,DK2,55.2089,11.729,17.34821823
+Electric boiler98DK,DK,Name98,Electric boiler,0,30,DK1,56.2573,9.8692,14.79513028
+Electric boiler99DK,DK,Name99,Electric boiler,0,30,DK2,55.416,11.3446,14.12399879
+Electric boiler100DK,DK,Name100,Electric boiler,0,30,DK1,57.4253,10.5253,17.65226672
+Electric boiler101DK,DK,Name101,Electric boiler,0,30,DK1,56.9669,8.7152,23.09644042
+Electric boiler102DK,DK,Name102,Electric boiler,0,30,DK1,55.3138,10.7826,15.78847579
+Electric boiler103DK,DK,Name103,Electric boiler,0,30,SE4,55.095,14.712,17.25006054
+Electric boiler104DK,DK,Name104,Electric boiler,0,30,DK1,55.252,9.4866,20.18758661
+Electric boiler105DK,DK,Name105,Electric boiler,0,30,DK2,54.8287,11.1677,23.93953105
+Electric boiler106DK,DK,Name106,Electric boiler,0,30,DK2,54.777,11.511,21.28090077
+Electric boiler107DK,DK,Name107,Electric boiler,0,30,DK2,55.4614,11.8245,17.7543038
+Electric boiler108DK,DK,Name108,Electric boiler,0,30,DK1,56.3887,10.4168,15.00925981
+Electric boiler109DK,DK,Name109,Electric boiler,0,30,DK2,55.0121,11.9103,15.57897727
+Electric boiler110DK,DK,Name110,Electric boiler,0,30,DK2,55.9694,12.0104,16.02872198
+Electric boiler111DK,DK,Name111,Electric boiler,0,30,DK1,55.4743,9.1597,17.39871656
+Electric boiler112DK,DK,Name112,Electric boiler,0,27.48517188,DK1,56.3768,9.6553,23.89816005
+Electric boiler113DK,DK,Name113,Electric boiler,0,23.836875,DK1,55.9355,8.5,14.69439778
+Electric boiler114DK,DK,Name114,Electric boiler,0,23.8165625,DK1,56.3198,10.0333,20.54729246
+Electric boiler115DK,DK,Name115,Electric boiler,0,23.4275625,DK1,56.9881,9.2885,19.15872123
+Electric boiler116DK,DK,Name116,Electric boiler,0,20.9620625,DK1,56.8877,9.819,21.84882669
+Electric boiler117DK,DK,Name117,Electric boiler,0,20.7146875,DK1,54.9393,10.7163,17.9819848
+Electric boiler118DK,DK,Name118,Electric boiler,0,20.56215,DK1,55.2377,10.4848,15.4828015
+Electric boiler119DK,DK,Name119,Electric boiler,0,18.738875,DK1,56.1961,10.6804,20.8204182
+Electric boiler120DK,DK,Name120,Electric boiler,0,18.7225,DK1,56.0911,9.7799,20.09244729
+Electric boiler121DK,DK,Name121,Electric boiler,0,17.4671875,SE4,55.062,15.12,23.75469994
+Electric boiler122DK,DK,Name122,Electric boiler,0,16.9974375,DK1,57.1553,9.7452,15.30831844
+Electric boiler123DK,DK,Name123,Electric boiler,0,16.9913091,DK2,55.435,11.5598,14.92706269
+Electric boiler124DK,DK,Name124,Electric boiler,0,16.79671875,DK2,55.3272,11.1632,16.70392935
+Electric boiler125DK,DK,Name125,Electric boiler,0,16.683125,DK1,55.0952,10.2482,14.89841322
+Electric boiler126DK,DK,Name126,Electric boiler,0,16.65225694,DK1,56.2824,9.432,22.32271217
+Electric boiler127DK,DK,Name127,Electric boiler,0,15.2996875,DK2,54.758,11.8259,20.27582883
+Electric boiler128DK,DK,Name128,Electric boiler,0,14.62743056,DK1,56.1522,9.9059,20.31772053
+Electric boiler129DK,DK,Name129,Electric boiler,0,14.46672569,DK1,56.6922,9.4941,16.64278567
+Electric boiler130DK,DK,Name130,Electric boiler,0,14.4540625,DK1,56.7479,8.4191,14.92708373
+Electric boiler131DK,DK,Name131,Electric boiler,0,14.23253125,DK1,54.9224,9.5978,14.32430812
+Electric boiler132DK,DK,Name132,Electric boiler,0,13.7896875,DK1,56.7681,9.3362,18.27562427
+Electric boiler133DK,DK,Name133,Electric boiler,0,13.65574688,DK2,55.5059,11.2845,23.99027685
+Electric boiler134DK,DK,Name134,Electric boiler,0,13.543125,DK2,56.1104,12.3264,15.20360766
+Electric boiler135DK,DK,Name135,Electric boiler,0,13.28845486,DK1,56.424,10.3776,14.87190779
+Electric boiler136DK,DK,Name136,Electric boiler,0,13.26184375,DK1,54.8196,9.3617,20.33233598
+Electric boiler137DK,DK,Name137,Electric boiler,0,13.098125,DK2,54.9904,12.2862,21.55298207
+Electric boiler138DK,DK,Name138,Electric boiler,0,12.88290625,DK1,56.023,8.3783,16.39271635
+Electric boiler139DK,DK,Name139,Electric boiler,0,12.76521875,DK1,56.8591,9.8911,22.69204287
+Electric boiler140DK,DK,Name140,Electric boiler,0,12.62708333,DK2,54.6623,11.3597,19.86810688
+Electric boiler141DK,DK,Name141,Electric boiler,0,12.07781281,DK1,55.9444,9.1223,19.545412
+Electric boiler142DK,DK,Name142,Electric boiler,0,12.0775,DK2,55.9658,11.884,20.7978193
+Electric boiler143DK,DK,Name143,Electric boiler,0,11.96875,DK2,55.8317,11.9964,23.21511116
+Electric boiler144DK,DK,Name144,Electric boiler,0,11.68116753,DK1,56.307,10.4619,16.73050191
+Electric boiler145DK,DK,Name145,Electric boiler,0,11.367575,DK1,54.8546,10.5147,19.66355265
+Electric boiler146DK,DK,Name146,Electric boiler,0,10.6633125,DK1,56.1523,9.9932,23.53032014
+Electric boiler147DK,DK,Name147,Electric boiler,0,10.5340625,DK2,54.7195,11.9282,17.44123147
+Electric boiler148DK,DK,Name148,Electric boiler,0,10.50890625,DK1,55.4308,9.2928,22.98634349
+Electric boiler149DK,DK,Name149,Electric boiler,0,10.49375,DK1,55.0527,8.9577,18.10543713
+Electric boiler150DK,DK,Name150,Electric boiler,0,10.4765625,DK1,55.7576,9.4253,18.87525745
+Electric boiler151DK,DK,Name151,Electric boiler,0,10.3,DK1,55.383,8.9564,14.4986527
+Electric boiler152DK,DK,Name152,Electric boiler,0,10.556875,SE4,55.076,14.913,22.72636466
+Electric boiler153DK,DK,Name153,Electric boiler,0,10.539375,SE4,55.156,14.724,20.75443832
+Electric boiler154DK,DK,Name154,Electric boiler,0,10.1459375,DK1,54.7984,10.7171,14.80528676
+Electric boiler155DK,DK,Name155,Electric boiler,0,10.0615625,DK1,57.154,10.2823,18.13770896
+Electric boiler156DK,DK,Name156,Electric boiler,0,10.038375,DK1,56.208,10.0457,20.98020098
+Electric boiler157DK,DK,Name157,Electric boiler,0,9.83521875,DK1,57.3713,9.7276,16.39208799
+Electric boiler158DK,DK,Name158,Electric boiler,0,9.808125,DK1,56.0314,8.8548,22.65729486
+Electric boiler159DK,DK,Name159,Electric boiler,0,9.79434375,DK1,56.0422,10.088,21.74298853
+Electric boiler160DK,DK,Name160,Electric boiler,0,9.58684375,DK2,55.494,11.9758,16.92035664
+Electric boiler161DK,DK,Name161,Electric boiler,0,9.574375,DK1,57.4799,10.1958,18.86078307
+Electric boiler162DK,DK,Name162,Electric boiler,0,9.479753125,DK2,55.5968,11.8578,18.93714324
+Electric boiler163DK,DK,Name163,Electric boiler,0,9.2284375,DK1,55.0557,9.751,22.7125529
+Electric boiler164DK,DK,Name164,Electric boiler,0,8.825,DK1,57.0045,10.3161,16.61033867
+Electric boiler165DK,DK,Name165,Electric boiler,0,8.7434375,DK2,55.66,11.4052,16.49386781
+Electric boiler166DK,DK,Name166,Electric boiler,0,8.518125,DK1,56.6916,8.2201,16.62601747
+Electric boiler167DK,DK,Name167,Electric boiler,0,8.495,DK2,54.6964,11.3988,24.01469507
+Electric boiler168DK,DK,Name168,Electric boiler,0,8.4103,DK1,54.8889,9.6765,15.66759992
+Electric boiler169DK,DK,Name169,Electric boiler,0,8.27625,DK2,55.3002,11.5403,17.88375196
+Electric boiler170DK,DK,Name170,Electric boiler,0,8.101265625,DK2,55.2446,12.1341,22.37644411
+Electric boiler171DK,DK,Name171,Electric boiler,0,7.9046875,DK1,55.8589,9.4849,16.38979698
+Electric boiler172DK,DK,Name172,Electric boiler,0,7.785625,DK1,55.7996,9.6712,15.18147131
+Electric boiler173DK,DK,Name173,Electric boiler,0,7.761225694,DK1,55.8519,9.5888,23.11687209
+Electric boiler174DK,DK,Name174,Electric boiler,0,7.6428125,DK1,56.2754,8.3218,18.18599043
+Electric boiler175DK,DK,Name175,Electric boiler,0,7.54875,DK2,55.6148,11.2078,18.16980027
+Electric boiler176DK,DK,Name176,Electric boiler,0,7.410625,DK1,56.3918,9.8961,14.78692769
+Electric boiler177DK,DK,Name177,Electric boiler,0,7.36300625,DK1,56.1446,9.2785,20.40611989
+Electric boiler178DK,DK,Name178,Electric boiler,0,7.3325,DK2,54.8983,11.8835,21.84332886
+Electric boiler179DK,DK,Name179,Electric boiler,0,7.2509375,DK2,54.6984,11.7121,19.64648545
+Electric boiler180DK,DK,Name180,Electric boiler,0,7.208871528,DK2,54.8857,12.0296,21.78796596
+Electric boiler181DK,DK,Name181,Electric boiler,0,7.163877604,DK2,56.0573,12.297,19.05356677
+Electric boiler182DK,DK,Name182,Electric boiler,0,6.944828125,DK1,56.7165,9.8414,17.14630159
+Electric boiler183DK,DK,Name183,Electric boiler,0,6.896125,DK2,55.2865,11.8168,17.27574226
+Electric boiler184DK,DK,Name184,Electric boiler,0,6.63611875,DK1,55.7799,8.3128,23.12870074
+Electric boiler185DK,DK,Name185,Electric boiler,0,6.53875,DK1,56.6805,10.0673,18.76168614
+Electric boiler186DK,DK,Name186,Electric boiler,0,6.518125,DK2,56.068,12.1488,19.60665557
+Electric boiler187DK,DK,Name187,Electric boiler,0,6.4371875,DK1,56.3088,9.1678,23.79127585
+Electric boiler188DK,DK,Name188,Electric boiler,0,6.3309375,DK2,55.2948,11.4235,20.76517958
+Electric boiler189DK,DK,Name189,Electric boiler,0,6.24159375,DK1,57.3891,10.1181,15.95991307
+Electric boiler190DK,DK,Name190,Electric boiler,0,6.21625,DK1,55.085,9.4656,19.10518966
+Electric boiler191DK,DK,Name191,Electric boiler,0,6.0253125,DK1,56.391,10.5086,19.99352616
+Electric boiler192DK,DK,Name192,Electric boiler,0,5.7946875,DK1,55.8458,8.8863,21.35671697
+Electric boiler193DK,DK,Name193,Electric boiler,0,5.7846875,DK1,56.6098,8.1822,16.90491994
+Electric boiler194DK,DK,Name194,Electric boiler,0,5.775,DK1,57.5902,9.9728,16.08617135
+Electric boiler195DK,DK,Name195,Electric boiler,0,5.7246875,DK2,54.7082,11.4733,14.47559525
+Electric boiler196DK,DK,Name196,Electric boiler,0,5.628921875,DK1,55.4294,9.9309,18.41889192
+Electric boiler197DK,DK,Name197,Electric boiler,0,5.6028125,DK1,56.5576,9.4013,14.17661157
+Electric boiler198DK,DK,Name198,Electric boiler,0,5.6028125,DK1,56.8051,10.0617,23.67699667
+Electric boiler199DK,DK,Name199,Electric boiler,0,5.560625,DK1,56.3994,8.7957,19.19042925
+Electric boiler200DK,DK,Name200,Electric boiler,0,5.49625,DK1,56.463,10.3339,22.96502703
+Electric boiler201DK,DK,Name201,Electric boiler,0,5.4438125,DK1,56.1697,9.3515,16.15251677
+Electric boiler202DK,DK,Name202,Electric boiler,0,5.391944444,DK1,56.4847,9.1492,21.4659823
+Electric boiler203DK,DK,Name203,Electric boiler,0,5.358239583,DK1,56.4995,10.3315,19.9188155
+Electric boiler204DK,DK,Name204,Electric boiler,0,5.27709375,DK1,55.9254,10.2453,23.07395548
+Electric boiler205DK,DK,Name205,Electric boiler,0,5.2309375,DK1,56.5152,9.3417,15.13720753
+Electric boiler206DK,DK,Name206,Electric boiler,0,5.19759375,DK1,56.3401,9.2506,19.8008566
+Electric boiler207DK,DK,Name207,Electric boiler,0,5.1040625,DK1,56.5916,8.7916,14.94351662
+Electric heat pump379DK,DK,Name208,Electric heat pump,0,157,DK2,55.686,12.627,20.03157157
+Electric heat pump380DK,DK,Name209,Electric heat pump,0,90,DK1,55.4552,8.4544,26.99248386
+Electric heat pump381DK,DK,Name210,Electric heat pump,0,139,DK1,55.4287,10.4074,19.60454999
+Electric heat pump382DK,DK,Name211,Electric heat pump,0,20,DK1,55.51175,9.44672,26.19238234
+Electric heat pump383DK,DK,Name212,Electric heat pump,0,100,DK1,57.0736,10.0416,22.0314231
+Electric heat pump384DK,DK,Name213,Electric heat pump,0,127.2,DK1,56.22774,10.15789,20.54421397
+Electric heat pump385DK,DK,Name214,Electric heat pump,0,3.7,DK2,55.1141,12.0423,22.57963818
+Electric heat pump386DK,DK,Name215,Electric heat pump,0,1.2,DK1,57.0736,10.0416,20.31532905
+Electric heat pump387DK,DK,Name216,Electric heat pump,0,5.7,DK1,55.0527,8.9577,22.63178932
+Electric heat pump388DK,DK,Name217,Electric heat pump,0,16,DK1,55.9007,9.8348,22.34764536
+Electric heat pump389DK,DK,Name218,Electric heat pump,0,4,DK1,54.8851,9.677,25.4999678
+Electric heat pump390DK,DK,Name219,Electric heat pump,0,1.4,DK1,56.3087,9.5928,26.689955
+Electric heat pump391DK,DK,Name220,Electric heat pump,0,7.1,DK1,55.26994908,9.898649016,19.68255553
+Electric heat pump392DK,DK,Name221,Electric heat pump,0,4,DK1,56.26631099,8.789263104,26.29505629
+Electric heat pump393DK,DK,Name222,Electric heat pump,0,0.6,DK1,55.70280663,9.384705739,23.97127974
+Electric heat pump394DK,DK,Name223,Electric heat pump,0,4,DK1,55.35522657,9.483248601,27.22156955
+Electric heat pump395DK,DK,Name224,Electric heat pump,0,10.5,DK1,55.10345049,10.22255659,25.67709904
+Electric heat pump396DK,DK,Name225,Electric heat pump,0,1,DK1,56.3387946,8.941983458,17.31896648
+Electric heat pump397DK,DK,Name226,Electric heat pump,0,0.1,DK1,55.21524931,8.832174221,20.32614189
+Electric heat pump398DK,DK,Name227,Electric heat pump,0,1.1,DK1,56.75572844,8.876607533,18.98705435
+Electric heat pump399DK,DK,Name228,Electric heat pump,0,1,DK1,56.38873127,8.990190966,24.78434656
+Electric heat pump400DK,DK,Name229,Electric heat pump,0,0.3,DK1,56.4105387,9.36200286,18.37050919
+Electric heat pump401DK,DK,Name230,Electric heat pump,0,1.6,DK1,57.16773648,10.14873595,26.19774517
+Electric heat pump402DK,DK,Name231,Electric heat pump,0,0.5,DK1,54.94270524,8.869034003,22.87266366
+Electric heat pump403DK,DK,Name232,Electric heat pump,0,0.3,DK1,55.71002857,10.01397426,18.78084117
+Electric heat pump404DK,DK,Name233,Electric heat pump,0,2.9,DK1,56.51176606,9.336545498,22.6845392
+Electric heat pump405DK,DK,Name234,Electric heat pump,0,0.2,DK1,56.79533638,8.855946772,23.51691544
+Electric heat pump406DK,DK,Name235,Electric heat pump,0,0.3,DK1,54.93241564,8.868020474,20.90047174
+Electric heat pump407DK,DK,Name236,Electric heat pump,0,1.2,DK1,57.34197039,10.23820463,17.45175969
+Electric heat pump408DK,DK,Name237,Electric heat pump,0,1.2,DK1,54.83330189,9.354286927,21.57483826
+Electric heat pump409DK,DK,Name238,Electric heat pump,0,0.9,DK1,56.75750716,9.756700622,17.45107497
+Electric heat pump410DK,DK,Name239,Electric heat pump,0,5.6,DK1,57.33176984,10.51344621,20.40374784
+Electric heat pump411DK,DK,Name240,Electric heat pump,0,3.3,DK1,55.94155765,8.782608392,22.10234855
+Electric heat pump412DK,DK,Name241,Electric heat pump,0,0.9,DK2,55.40420318,11.35695708,25.79382666
+Electric heat pump413DK,DK,Name242,Electric heat pump,0,1.8,DK1,55.15734161,8.767702507,19.31830449
+Electric heat pump414DK,DK,Name243,Electric heat pump,0,1,DK1,56.09099986,8.909966921,21.73443271
+Electric heat pump415DK,DK,Name244,Electric heat pump,0,0.8,DK1,56.37405901,8.117731192,17.45092404
+Electric heat pump416DK,DK,Name245,Electric heat pump,0,1,DK1,55.78037933,8.293393429,23.31581631
+Electric heat pump417DK,DK,Name246,Electric heat pump,0,1.2,DK1,56.76276568,8.317893834,23.86844578
+Electric heat pump418DK,DK,Name247,Electric heat pump,0,0.8,DK2,55.8437,12.0606,21.39286684
+Electric heat pump419DK,DK,Name248,Electric heat pump,0,2,DK1,56.0719,9.6939,23.17115967
+Electric heat pump420DK,DK,Name249,Electric heat pump,0,3.3,DK1,55.0915,10.693,21.53779085
+Electric heat pump421DK,DK,Name250,Electric heat pump,0,1.7,DK1,55.469,9.173,22.32788791
+Electric heat pump422DK,DK,Name251,Electric heat pump,0,7.4,DK1,55.9355,8.5,25.52816125
+Electric heat pump423DK,DK,Name252,Electric heat pump,0,1.5,DK1,54.8534,10.5054,24.97211974
+Electric heat pump424DK,DK,Name253,Electric heat pump,0,0.8,DK2,55.9658,11.884,23.69428889
+Electric heat pump425DK,DK,Name254,Electric heat pump,0,6.7,DK1,55.9764,9.6226,24.76862829
+Electric heat pump426DK,DK,Name255,Electric heat pump,0,34.4,DK1,56.3768,9.6553,26.90519019
+Electric heat pump427DK,DK,Name256,Electric heat pump,0,0.67,DK1,56.4773,8.7928,21.07121368
+Electric heat pump428DK,DK,Name257,Electric heat pump,0,0.3,DK1,57.1243,8.6224,22.34798181
+Electric heat pump429DK,DK,Name258,Electric heat pump,0,9.3,DK1,55.9494,9.1246,22.84850129
+Electric heat pump430DK,DK,Name259,Electric heat pump,0,11,DK1,57.4467,10.5181,20.01271964
+Electric heat pump431DK,DK,Name260,Electric heat pump,0,0.95,DK1,55.2808,9.0469,21.71093801
+Electric heat pump432DK,DK,Name261,Electric heat pump,0,0.84,DK1,55.6642,8.5738,25.45222037
+Electric heat pump433DK,DK,Name262,Electric heat pump,0,0.5,DK1,56.1302,8.5145,25.72277437
+Electric heat pump434DK,DK,Name263,Electric heat pump,0,1.65,DK1,57.1487,10.4027,24.99191373
+Electric heat pump435DK,DK,Name264,Electric heat pump,0,2,DK1,54.9478,9.8779,21.64439711
+Electric heat pump436DK,DK,Name265,Electric heat pump,0,2.4,DK1,57.1015,9.5162,26.02940551
+Electric heat pump437DK,DK,Name266,Electric heat pump,0,5,DK1,57.154,10.2823,20.18821256
+Electric heat pump438DK,DK,Name267,Electric heat pump,0,2.1,DK1,55.6192,9.3176,20.53456511
+Electric heat pump439DK,DK,Name268,Electric heat pump,0,2.2,DK1,55.983,9.2908,26.45330705
+Electric heat pump440DK,DK,Name269,Electric heat pump,0,16.1,DK2,55.84484,12.32589,22.85736249
+Electric heat pump441DK,DK,Name270,Electric heat pump,0,2.5,DK2,55.2865,11.8168,27.13412372
+Electric heat pump442DK,DK,Name271,Electric heat pump,0,7.1,DK1,55.25057,9.47107,19.34918035
+Electric heat pump443DK,DK,Name272,Electric heat pump,0,3.3,DK1,56.1522,9.9059,19.23739021
+Electric heat pump444DK,DK,Name273,Electric heat pump,0,0.3,DK1,55.0793,9.215,19.67634717
+Electric heat pump445DK,DK,Name274,Electric heat pump,0,1,DK1,55.76163,8.93292,24.8713025
+Electric heat pump446DK,DK,Name275,Electric heat pump,0,4,DK1,56.423,10.9069,26.54512794
+Electric heat pump447DK,DK,Name276,Electric heat pump,0,2.5,DK1,55.9149,10.1454,20.54626424
+Electric heat pump448DK,DK,Name277,Electric heat pump,0,1,DK1,57.1144,9.5933,24.55767661
+Electric heat pump449DK,DK,Name278,Electric heat pump,0,1,DK1,56.5008,9.7491,26.17453783
+Electric heat pump450DK,DK,Name279,Electric heat pump,0,2,DK2,55.2948,11.4235,23.5350408
+Electric heat pump451DK,DK,Name280,Electric heat pump,0,8,DK1,55.7603,9.6882,18.97463746
+Electric heat pump452DK,DK,Name281,Electric heat pump,0,4.65,DK1,56.0006,8.1331,25.4513145
+Electric heat pump453DK,DK,Name282,Electric heat pump,0,4,DK1,56.1218,9.0075,20.05773245
+Electric heat pump454DK,DK,Name283,Electric heat pump,0,1,DK2,55.8317,11.9964,20.78203484
+Electric heat pump455DK,DK,Name284,Electric heat pump,0,10,DK2,55.6597,11.0796,19.27659818
+Electric heat pump456DK,DK,Name285,Electric heat pump,0,4.8,DK1,56.3088,9.1678,22.59031165
+Electric heat pump457DK,DK,Name286,Electric heat pump,0,2,DK1,56.1311,8.183,20.21740242
+Electric heat pump458DK,DK,Name287,Electric heat pump,0,1.5,DK1,56.8866,10.116,17.76969521
+Electric heat pump459DK,DK,Name288,Electric heat pump,0,2.9,DK1,56.4055,9.9035,21.42959061
+Electric heat pump460DK,DK,Name289,Electric heat pump,0,4.4,DK1,56.023,8.3783,18.23441904
+Electric heat pump461DK,DK,Name290,Electric heat pump,0,0.3,DK1,57.4089,10.293,23.53242602
+Electric heat pump462DK,DK,Name291,Electric heat pump,0,1.95,DK1,56.3361,10.3768,23.20584383
+Electric heat pump463DK,DK,Name292,Electric heat pump,0,1,DK2,55.6521,11.5041,24.12779945
+Electric heat pump464DK,DK,Name293,Electric heat pump,0,2,DK1,56.9766,9.6545,26.69695093
+Electric heat pump465DK,DK,Name294,Electric heat pump,0,2.5,DK1,55.9644,9.3878,27.38081307
+Electric heat pump466DK,DK,Name295,Electric heat pump,0,1.5,DK1,55.7205,8.3441,21.30029339
+Electric heat pump467DK,DK,Name296,Electric heat pump,0,3,DK1,55.3281,8.7561,18.29411536
+Electric heat pump468DK,DK,Name297,Electric heat pump,0,4.5,DK1,56.0901,8.277,27.25184835
+Electric heat pump469DK,DK,Name298,Electric heat pump,0,6.2,DK2,55.4614,11.8245,20.55061676
+Electric heat pump470DK,DK,Name299,Electric heat pump,0,2,DK1,56.0719,9.6939,25.58138059
+Electric heat pump471DK,DK,Name300,Electric heat pump,0,1.2,DK1,57.2755,9.7011,17.98752875
+Electric heat pump472DK,DK,Name301,Electric heat pump,0,1.3,DK1,56.6974,8.6932,20.43957729
+Electric heat pump473DK,DK,Name302,Electric heat pump,0,12,DK1,57.7212,10.5965,19.60942142
+Electric heat pump474DK,DK,Name303,Electric heat pump,0,0.5,DK1,56.5576,9.4013,22.99028669
+Electric heat pump475DK,DK,Name304,Electric heat pump,0,1,DK2,55.7986,12.2174,20.72991405
+Electric heat pump476DK,DK,Name305,Electric heat pump,0,2.5,DK1,56.4792,9.1543,27.00038001
+Electric heat pump477DK,DK,Name306,Electric heat pump,0,3,DK1,57.4874,10.4883,21.28789343
+Electric heat pump478DK,DK,Name307,Electric heat pump,0,8,DK1,56.8877,9.819,26.72529857
+Electric heat pump479DK,DK,Name308,Electric heat pump,0,10,DK1,55.0618,10.6068,18.27538453
+Electric heat pump480DK,DK,Name309,Electric heat pump,0,5,DK1,55.8742,8.5886,26.99524736
+Electric heat pump481DK,DK,Name310,Electric heat pump,0,0.3,DK1,57.3409,10.2385,18.38809479
+Electric heat pump482DK,DK,Name311,Electric heat pump,0,1.22,DK1,56.1901,8.3144,24.73804145
+Electric heat pump483DK,DK,Name312,Electric heat pump,0,1.7,DK1,55.3244,10.2048,21.46447672
+Electric heat pump484DK,DK,Name313,Electric heat pump,0,0.5,DK1,57.1329,9.4635,21.38688502
+Electric heat pump485DK,DK,Name314,Electric heat pump,0,0.8,DK1,55.9945,8.7434,25.52226319
+Electric heat pump486DK,DK,Name315,Electric heat pump,0,4.5,DK1,54.9395,8.8742,21.92510664
+Electric heat pump487DK,DK,Name316,Electric heat pump,0,2.6,DK1,55.8589,9.4849,24.21510117
+Electric heat pump488DK,DK,Name317,Electric heat pump,0,1,DK1,56.4292,10.0485,22.58008668
+Electric heat pump489DK,DK,Name318,Electric heat pump,0,2.5,DK1,56.3948,9.9563,27.25944688
+Geothermal490DK,DK,Name319,Geothermal,0,10,DK1,54.9279,9.8377,21.80102781
+Geothermal491DK,DK,Name320,Geothermal,0,8.3,DK1,56.9669,8.7152,22.45973045
+Electric heat pump492DK,DK,Name321,Electric heat pump,0,5,DK2,55.66,11.4052,24.99795523
+Electric heat pump493DK,DK,Name322,Electric heat pump,0,16,DK1,56.0901,8.277,25.42711329
+Electric heat pump494DK,DK,Name323,Electric heat pump,0,1.6,DK1,57.287,10.0949,25.05819344
+Electric heat pump495DK,DK,Name324,Electric heat pump,0,0.44,DK1,56.7306,9.9304,17.9602716
+Electric heat pump496DK,DK,Name325,Electric heat pump,0,1,DK1,56.5176,10.0806,27.20700633
+Electric heat pump497DK,DK,Name326,Electric heat pump,0,1.5,DK1,56.8338,10.1167,24.62300047
+Electric heat pump498DK,DK,Name327,Electric heat pump,0,5.06,DK1,56.4626,9.3961,26.65958773
+Electric heat pump499DK,DK,Name328,Electric heat pump,0,2.71,DK1,57.2479,10.2864,18.88468594
+Electric heat pump500DK,DK,Name329,Electric heat pump,0,22,DK1,56.2073,9.5545,18.86249253
+Electric heat pump501DK,DK,Name330,Electric heat pump,0,2,DK1,57.3891,10.1181,22.43426478
+Electric heat pump502DK,DK,Name331,Electric heat pump,0,3,DK1,56.3401,9.2506,25.52698793
+Electric heat pump503DK,DK,Name332,Electric heat pump,0,2,DK1,56.3948,9.9563,21.91387368
+Electric heat pump504DK,DK,Name333,Electric heat pump,0,1,DK1,57.2089,10.4826,19.09802807
+Electric heat pump505DK,DK,Name334,Electric heat pump,0,6,DK2,55.9171,11.6514,27.13183554
+Electric heat pump506DK,DK,Name335,Electric heat pump,0,6,DK1,56.2034,8.7629,26.42558516
+Electric heat pump507DK,DK,Name336,Electric heat pump,0,2.5,DK1,55.9149,10.1454,19.50612597
+Electric heat pump508DK,DK,Name337,Electric heat pump,0,5.06,DK1,56.4626,9.3961,24.7405661
+Electric heat pump509DK,DK,Name338,Electric heat pump,0,1,DK1,56.19621528,10.67671875,18.11717158
+Electric heat pump510DK,DK,Name339,Electric heat pump,0,4.5,DK1,56.41171667,10.89499341,20.80610701
+Electric heat pump511DK,DK,Name340,Electric heat pump,0,12.7,DK1,56.38932062,9.79300187,21.08361336
+Electric heat pump512DK,DK,Name341,Electric heat pump,0,1,DK1,56.25631393,9.864563885,21.55011335
+Electric heat pump513DK,DK,Name342,Electric heat pump,0,1.3,DK1,56.35917774,9.918315093,19.93305595
+Electric heat pump514DK,DK,Name343,Electric heat pump,0,1.5,DK1,56.3531,9.5048,26.51772205
+Electric heat pump515DK,DK,Name344,Electric heat pump,0,1.2,DK1,56.3009,9.7893,25.06222307
+Electric heat pump516DK,DK,Name345,Electric heat pump,0,1,DK1,56.3003,10.4768,21.86690678
+Electric heat pump517DK,DK,Name346,Electric heat pump,0,9,DK1,55.4767,8.6992,17.56581676
+Electric boiler1FI,FI,Name347,Electric boiler,0,40,FI,0,0,15.48012288
+Electric boiler2FI,FI,Name348,Electric boiler,0,100,FI,0,0,16.23836965
+Electric boiler3FI,FI,Name349,Electric boiler,0,30,FI,0,0,16.58547744
+Electric boiler4FI,FI,Name350,Electric boiler,0,45,FI,0,0,12.4766065
+Electric boiler5FI,FI,Name351,Electric boiler,0,60,FI,0,0,11.0552571
+Electric boiler6FI,FI,Name352,Electric boiler,0,50,FI,0,0,9.534769747
+Electric boiler7FI,FI,Name353,Electric boiler,0,50,FI,0,0,13.24084995
+Electric boiler8FI,FI,Name354,Electric boiler,0,50,FI,0,0,18.41421785
+Electric boiler9FI,FI,Name355,Electric boiler,0,120,FI,0,0,9.122606077
+Electric boiler10FI,FI,Name356,Electric boiler,0,13,FI,0,0,15.18572983
+Electric boiler11FI,FI,Name357,Electric boiler,0,40,FI,0,0,14.09259469
+Electric boiler12FI,FI,Name358,Electric boiler,0,20,FI,0,0,14.52998491
+Electric boiler13FI,FI,Name359,Electric boiler,0,280,FI,0,0,11.10934073
+Electric boiler14FI,FI,Name360,Electric boiler,0,50,FI,0,0,11.02391082
+Electric boiler15FI,FI,Name361,Electric boiler,0,40,FI,0,0,13.69174901
+Electric boiler16FI,FI,Name362,Electric boiler,0,20,FI,0,0,11.88814271
+Electric boiler17FI,FI,Name363,Electric boiler,0,40,FI,0,0,14.10803445
+Electric boiler18FI,FI,Name364,Electric boiler,0,25,FI,0,0,15.72117557
+Electric boiler19FI,FI,Name365,Electric boiler,0,100,FI,0,0,17.01195032
+Electric boiler20FI,FI,Name366,Electric boiler,0,3,FI,0,0,16.79435724
+Electric boiler21FI,FI,Name367,Electric boiler,0,30,FI,0,0,9.485140824
+Electric boiler22FI,FI,Name368,Electric boiler,0,50,FI,0,0,13.64255356
+Electric boiler23FI,FI,Name369,Electric boiler,0,20,FI,0,0,19.01499456
+Electric boiler24FI,FI,Name370,Electric boiler,0,60,FI,0,0,13.66849094
+Electric boiler25FI,FI,Name371,Electric boiler,0,50,FI,0,0,9.23716624
+Electric boiler26FI,FI,Name372,Electric boiler,0,10,FI,0,0,10.70982315
+Electric boiler27FI,FI,Name373,Electric boiler,0,60,FI,0,0,13.5571872
+Electric boiler28FI,FI,Name374,Electric boiler,0,70,FI,0,0,12.92183451
+Electric boiler29FI,FI,Name375,Electric boiler,0,70,FI,0,0,16.93068108
+Electric boiler30FI,FI,Name376,Electric boiler,0,2,FI,0,0,11.28538296
+Electric boiler31FI,FI,Name377,Electric boiler,0,20,FI,0,0,17.78302027
+Electric boiler32FI,FI,Name378,Electric boiler,0,7,FI,0,0,10.97741738
+Electric boiler33FI,FI,Name379,Electric boiler,0,20,FI,0,0,15.85908754
+Electric boiler34FI,FI,Name380,Electric boiler,0,50,FI,0,0,14.0987148
+Electric boiler35FI,FI,Name381,Electric boiler,0,40,FI,0,0,15.64102166
