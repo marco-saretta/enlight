@@ -1,121 +1,124 @@
-# ------------------------------------------------------------#
-#                ENLIGHT MODEL CONFIGURATION                  #
-# ------------------------------------------------------------#
-
-# This file contains the configuration for ENLIGHT model simulations.
-# It includes scenarios, weeks to simulate, solver configuration, and bidding zones.
-# Note: This file is used by main.py to run simulations.
+# =============================================================================
+#                         ENLIGHT Model Configuration
+# =============================================================================
+# Configuration for ENLIGHT energy market simulations
+# =============================================================================
 
 
-# ============================================================#
-#                 SIMULATION PATAMETERS                       #
-# ============================================================#
-
-# Scenario selection
-# ----------------------
-# Comment the scenarios to run. Note that a scenario name must match the directory name.
-# ----------------------
+# -----------------------------------------------------------------------------
+# Simulation Parameters
+# -----------------------------------------------------------------------------
+# Define scenarios to simulate. Each scenario must have a corresponding 
+# directory with required input data files.
+# -----------------------------------------------------------------------------
 
 scenario_list:
-  - scenario_1
-  - scenario_2
-  # - scenario_3  # Optional scenario
+  - name: scenario_1
+    solving_granularity: yearly     # Options: "weekly", "yearly"
+    aggregate_power_plants: false   # Options: true, false
+  
+  - name: scenario_2
+    solving_granularity: yearly
+    aggregate_power_plants: false
 
+
+# -----------------------------------------------------------------------------
 # Simulation Duration
-# ----------------------
+# -----------------------------------------------------------------------------
 # Sets temporal scope in weeks (1-52). ENLIGHT operates on weekly time steps.
 # Common: Full year (1-52), Seasonal (1-12, 13-25, 26-38, 39-52)
-# ----------------------
+# -----------------------------------------------------------------------------
 
 duration:
   start_week: 1     # Valid range: 1-52
   end_week: 52      # Valid range: 1-52
 
-# ============================================================#
-#                 SOLVER CONFIGURATION                        #
-# ============================================================#
+
+# -----------------------------------------------------------------------------
+# Solver Configuration
+# -----------------------------------------------------------------------------
 # Selects optimization solver for energy market problems.
-# "gurobi": Very fast, requires license.
-# "highs": Ok fast, but no license required.
-# Uncomment only one solver.
-# ============================================================================
+# "gurobi": High performance commercial solver, requires license
+# "highs": Open-source alternative, no license required
+# -----------------------------------------------------------------------------
 
-solver_name: 
-  #- "gurobi"      # Main solver
-  - "highs"     # Alternative solver, runs without a solver license
+solver_name: "gurobi"  # Options: "gurobi", "highs"
 
-# ============================================================#
-#                 BIDDING ZONES CONFIGURATION                 #
-# ============================================================#
+
+# -----------------------------------------------------------------------------
+# Bidding Zones
+# -----------------------------------------------------------------------------
 # Defines European electricity market zones to include in simulation.
 # Comment out unwanted zones. Each zone needs corresponding input data.
-# ============================================================================
-
-# Comment the zones you do not want to use in the simulations.
+# -----------------------------------------------------------------------------
 
 bidding_zones:
-  # - DELU # Germany and Luxembourg
-  - DK1  # Denmark West
-  - DK2  # Denmark East
-  # - FR   # France
-
   # EU Member States (alphabetically)
-  # - AT   # Austria
-  # - BE   # Belgium
-  # - BG   # Bulgaria
-  # - CZ   # Czech Republic
-  # - DELU # Germany and Luxembourg
-  # - DK1  # Denmark West
-  # - DK2  # Denmark East
-  # - EE   # Estonia
-  # - EL   # Greece
-  # - ES   # Spain
-  # - FI   # Finland
-  # - FR   # France
-  # - HR   # Croatia
-  # - HU   # Hungary
-  # - IT   # Italy
-  # - LT   # Lithuania
-  # - LV   # Latvia
-  # - NL   # Netherlands
-  # - PL   # Poland
-  # - PT   # Portugal
-  # - RO   # Romania
-  # - SE1  # Sweden zone 1
-  # - SE2  # Sweden zone 2
-  # - SE3  # Sweden zone 3
-  # - SE4  # Sweden zone 4
-  # - SEM  # Single Electricity Market (Ireland and Northern Ireland)
-  # - SI   # Slovenia
-  # - SK   # Slovakia
+  - AT     # Austria
+  - BE     # Belgium
+  - BG     # Bulgaria
+  - CZ     # Czech Republic
+  - DELU   # Germany and Luxembourg
+  - DK1    # Denmark West
+  - DK2    # Denmark East
+  - EE     # Estonia
+  - EL     # Greece
+  - ES     # Spain
+  - FI     # Finland
+  - FR     # France
+  - HR     # Croatia
+  - HU     # Hungary
+  - IT     # Italy
+  - LT     # Lithuania
+  - LV     # Latvia
+  - NL     # Netherlands
+  - PL     # Poland
+  - PT     # Portugal
+  - RO     # Romania
+  - SE1    # Sweden Zone 1
+  - SE2    # Sweden Zone 2
+  - SE3    # Sweden Zone 3
+  - SE4    # Sweden Zone 4
+  - SEM    # Single Electricity Market (Ireland & Northern Ireland)
+  - SI     # Slovenia
+  - SK     # Slovakia
 
   # Extra-EU Bidding Zones (alphabetically)
-  # - AL   # Albania
-  # - BA   # Bosnia and Herzegovina
-  # - CH   # Switzerland
-  # - GB   # Great Britain
-  # - ME   # Montenegro
-  # - MK   # North Macedonia
-  - NO1  # Norway zone 1
-  - NO2  # Norway zone 2
-  # - NO3  # Norway zone 3
-  # - NO4  # Norway zone 4
-  # - NO5  # Norway zone 5
-  # - RS   # Serbia
-  # - XK   # Kosovo
+  # - AL     # Albania
+  # - BA     # Bosnia and Herzegovina
+  - CH     # Switzerland
+  # - GB     # Great Britain
+  # - ME     # Montenegro
+  # - MK     # North Macedonia
+  # - NO1    # Norway Zone 1
+  # - NO2    # Norway Zone 2
+  # - NO3    # Norway Zone 3
+  # - NO4    # Norway Zone 4
+  # - NO5    # Norway Zone 5
+  # - RS     # Serbia
+  # - XK     # Kosovo
 
-  # Conventional generation technologies to include in the model.
+
+# -----------------------------------------------------------------------------
+# Generation Technologies
+# -----------------------------------------------------------------------------
+# Conventional and renewable generation technologies to include in the model.
+# Maps display labels to technology identifiers used in data files.
+# -----------------------------------------------------------------------------
+
 conventional_generators:
   - label: thermal_plants
     tech: thermal_plants
 
-  # Renewable generation technologies to include in the model.
-VRE_generators:
-  - label: WIND_ON # "label" name in excel-file.
-    tech: wind_onshore # "key" name in excel-file.
+vre_generators:
+  - label: WIND_ON
+    tech: wind_onshore
+  
   - label: WIND_OFF
     tech: wind_offshore
+  
   - label: SOLAR
     tech: solar_pv
+  
   - label: HYDRO_ROR
     tech: hydro_ror
