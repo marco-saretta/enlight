@@ -2,24 +2,52 @@ name: enlight-env
 channels:
   - conda-forge
   - defaults
+
 dependencies:
-  - python=3.12
-  - pandas
+  # Core
+  - python>=3.10
+  - pip
+
+  # Data + utilities
+  - pandas>=2.1
   - numpy
-  - matplotlib
-  - seaborn
+  - xarray>=2024.03.0,<2025.07.0
+  - dask
   - tqdm
+  - pytz
+  - scipy
   - ipykernel
-  - openpyxl
-  - highs
   - jupyterlab
   - notebook
-  - pip
+  - openpyxl
+  - xlrd
+  - pytables
+  - yaml
+  - geopandas>=1
+  - shapely>=2.0
+  - geopy
+  - geojson
+
+  # Visualization
+  - matplotlib
+  - seaborn
+  - graphviz
+
+  # Modeling + optimization
+  - powerplantmatching>=0.5.15
+  - linopy>=0.4.4
+  - highs
+  - glpk
+  - networkx
+  - pyscipopt
+
+  # Pip-only dependencies
   - pip:
-      - yfinance
-      - atlite
-      - linopy
+      - gurobipy
       - highspy
+      - yfinance
+      - entsoe-py
+      
 # To create the environment please run:
 # conda env create -f environment.yaml
 

@@ -8,6 +8,7 @@ from enlight.model import EnlightModel
 import enlight.utils as utils
 from enlight.data_ops import DataVisualizer
 from enlight.data_ops import ResultsVisualizer
+import matplotlib.pyplot as plt
 
 
 class EnlightRunner:
@@ -16,58 +17,114 @@ class EnlightRunner:
     for Enlight energy modeling scenarios.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, root_path : Path) -> None:
         """Initialize the EnlightRunner."""
-        self.config_path: Path = Path("config") / "config.yaml"
-        self.config: Dict = {}
-
+        
+        self.root_path: Path = root_path
         self.logger = utils.setup_logging()
 
         self._load_config()
-        self._create_directories()
-        self._load_plot_config()
+        utils.load_plot_config()
 
     def _load_config(self) -> None:
-        """Load configuration from YAML file."""
-        if not self.config_path.exists():
-            raise FileNotFoundError(f"Configuration file not found: {self.config_path}")
+        self.config_path = self.root_path / 'config'
+        self.config_yaml_path = self.config_path / "config.yaml"
 
-        # Load the configuration from the YAML file
-        with open(self.config_path, "r", encoding="utf-8") as file:
+        if not self.config_yaml_path.exists():
+            raise FileNotFoundError(f"Configuration file not found: {self.config_yaml_path}")
+
+        with open(self.config_yaml_path, "r", encoding="utf-8") as file:
             self.config_yaml = yaml.safe_load(file)
 
-        # Extract configuration values
-        self.scenario_list: List[str] = self.config_yaml.get("scenario_list", [])
+        # Parse scenario_list properly
+        self.scenarios = {}   # dict: scenario_name → config_dict
 
-        # Extract duration settings
-        duration = self.config_yaml.get("duration", {})
-        self.start_week: int = duration.get("start_week")
-        self.end_week: int = duration.get("end_week")
+        for entry in self.config_yaml.get("scenario_list", []):
+            if not isinstance(entry, dict):
+                raise ValueError("Each scenario entry must be a dictionary")
 
-        # Extract solver name
-        self.solver_name: str = self.config_yaml.get("solver_name", [])
+            scenario_name = list(entry.keys())[0]
+            scenario_cfg = list(entry.values())[0]
 
-        # Extract bidding zones
-        self.bidding_zones: List[str] = self.config_yaml.get("bidding_zones", [])
+            self.scenarios[scenario_name] = scenario_cfg
 
-        # Register into the logger
-        self.logger.info("Loaded config for %d scenarios.", len(self.scenario_list))
-
-    def _create_directories(self) -> None:
-        """Create required directories for each scenario."""
-        for scenario in self.scenario_list:
+            # Create simulation folder structure
             for subfolder in ("data", "results"):
-                # Create directories for data and results for each scenario
-                path = Path(f"simulations/{scenario}/{subfolder}")
+                path = Path(f"simulations/{scenario_name}/{subfolder}")
                 path.mkdir(parents=True, exist_ok=True)
 
-        self.logger.info("Directories for simulations created.")
+        # Global settings
+        self.solver_name = str(self.config_yaml.get("solver_name"))
+        self.bidding_zones = list(self.config_yaml.get("bidding_zones", []))
 
-    def _load_plot_config(self) -> None:
-        # Ensure consistent color palette across plots
-        dtu_colors = ['#990000', '#2F3EEA', '#1FD082', '#030F4F', '#F6D04D', '#FC7634', '#F7BBB1', '#E83F48', '#008835', '#79238E']
-        self.palette = dtu_colors
-        utils.load_plot_config(palette=self.palette)
+        # Log minimal information (no undefined week info)
+        self.logger.info(
+            "Loaded %d scenarios and %d bidding zones.",
+            len(self.scenarios),
+            len(self.bidding_zones)
+        )
+
+    def run_scenario(self, scenario_name):
+        if scenario_name not in self.scenarios:
+            raise ValueError(f"Scenario '{scenario_name}' not found in scenario_list")
+
+        config = self.scenarios[scenario_name]
+        mode = config["run_mode"]
+
+        if mode == "yearly":
+            self._run_yearly(scenario_name, config)
+
+        elif mode == "weekly":
+            self._run_weekly(scenario_name, config)
+
+        else:
+            raise ValueError("Unknown run_mode")
+
+
+        
+    def _run_yearly(self,scenario_name, config):
+        """Prepare input data for each scenario."""
+        print('ciaooo yearly')
+        # DATA PREOPROCESSING
+        # Prepare data using DataProcessor for each scenario
+        # self.data_processor = DataProcessor(
+        #     scenario_name=scenario_name,  # Name of the scenario
+        #     config_yaml=self.config_yaml,  # Configuration for the scenario
+        #     logger=self.logger,  # Logger for logging messages
+        # )
+        
+        # # DATA LOADING
+        # self.data = DataLoader(
+        #     week=week,
+        #     input_path=Path(simulation_path) / 'data',
+        #     logger=self.logger)
+
+        # # RUN MODEL
+        # # Initialize EnlightModel with the given data #for the given week and path
+        # self.enlight_model = EnlightModel(
+        #     dataloader_obj=self.data,
+        #     simulation_path=simulation_path,
+        #     logger=self.logger
+        # )
+        # # Run the model
+        # self.enlight_model.run_model()
+        
+        
+    def _run_weekly(self, scenario_name, config):
+        print('ciaooo weekly')
+        # w1 = config["weeks"]["start_week"]
+        # w2 = config["weeks"]["end_week"]
+
+        # outputs = []
+
+        # for week in range(w1, w2 + 1):
+        #     dp = DataProcessor(scenario_name, config, week=week)
+        #     weekly_result = Model(dp).run()
+        #     outputs.append(weekly_result)
+
+        # final = concat(outputs)
+        # save(final)
+
 
     def prepare_data_single_scenario(self, scenario_name) -> None:
         """Prepare input data for each scenario."""

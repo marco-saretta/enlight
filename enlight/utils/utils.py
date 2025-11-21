@@ -470,11 +470,46 @@ def hourly_int_index_to_datetime(df: pd.DataFrame, year0: int):
     df_dt = df_dt.set_index(dates[df_dt.index])  # Set datetime corresponding to the hours as new index
     return df_dt
 
-def load_plot_config(palette):
-    # Set palette for easier and consistent plotting
-    sns.set_palette(palette)  # seaborn
-    plt.rcParams['axes.prop_cycle'] = plt.cycler(color=palette)  # matplotlib.pyplot
+def load_plot_config():
+    """Configure global plotting styles and palettes."""
 
+    # ---------------------------------------------------------
+    # Define a unified color registry (expandable)
+    # ---------------------------------------------------------
+    colors = {
+        "dtu": [
+            "#990000", "#2F3EEA", "#1FD082", "#030F4F", "#F6D04D",
+            "#FC7634", "#F7BBB1", "#E83F48", "#008835", "#79238E"
+        ],
+        "nature": {
+            "orange": "#e69f00",
+            "sky_blue": "#56b4e9",
+            "bluish_green": "#009e73",
+            "yellow": "#f0e442",
+            "blue": "#0072b2",
+            "vermillion": "#d55e00",
+            "reddish_purple": "#cc79a7"
+        }
+    }
+
+    # Flat nature palette list (useful for seaborn / sns.set_palette)
+    nature_palette = list(colors["nature"].values())
+
+    # ---------------------------------------------------------
+    # Apply style + palette globally
+    # ---------------------------------------------------------
+    plt.style.use("seaborn-v0_8-whitegrid")
+    plt.rcParams.update({
+        "font.family": "Arial",
+        "axes.titleweight": "bold",
+        "axes.labelsize": 12,
+        "xtick.labelsize": 10,
+        "ytick.labelsize": 10,
+        "figure.figsize": (10, 6),
+        "axes.prop_cycle": plt.cycler(color=nature_palette)
+    })
+
+    
 #### OBSOLETE FUNCTIONS - DO NOT CONSIDER ####
 
 # Function to extract results
