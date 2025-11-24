@@ -877,3 +877,42 @@ def capture_prices(model, el_price_df, windon_prod_df, windof_prod_df,
     captureprices_df.loc[:,'Nuclear'] = (el_price_df * nuclear_prod_df).sum() / nuclear_prod_df.sum()
     
     return(captureprices_df)
+
+
+def agg_by_zone_tech(df, prodcost="prodcost", power="capacity_el", tech="fuel", output="prodcost_weighted"):
+    '''
+    Aggregates power capacity and production costs for a participant type by fuel/technology/product type and zone.
+    '''
+    df_agg = df.groupby(["zone_el", tech]).agg(
+        capacity_el=(power, "sum"),
+        pcw=(prodcost, lambda x: (x * df[power]).sum())
+    )
+    df_agg[output] = df_agg.pcw / df_agg.capacity_el
+
+    return df_agg
+
+def agg_storage_by_zone(df, bid_price="Pumped_cons", offer_price="Pumped_prod", power="capacity_el", storage_cap="Storage_Capacity"):
+    '''
+    Aggregated power capacity and production costs for a storage type by fuel/technology/product type and zone.
+    '''
+    df_agg = df.groupby("zone_el").agg(
+        capacity_el=(power, "sum"),
+        capacity_stor=(storage_cap, "sum"),
+        bpw=(bid_price, lambda x: (x * df[power]).sum()),
+        opw=(offer_price, lambda x: (x * df[power]).sum())
+    )
+    df_agg["bid_price_weighted"] = df_agg.bpw / df_agg.capacity_el
+    df_agg["offer_price_weighted"] = df_agg.opw / df_agg.capacity_el
+
+    return df_agg
+
+def set_agg_idx(df):
+    '''
+    Combine the zone and fuel type to a single index
+    '''
+    df_agg = df.copy()
+    idx_col = df_agg.index.map(" ".join)  # e.g. to "FR Nuclear"
+    df_agg = df_agg.reset_index()  # keep bidding zone and fuel type and columns
+    df_agg.index = idx_col  # set the new index
+
+    return df_agg

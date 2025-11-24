@@ -181,10 +181,10 @@ class DataLoader:
         self.hydro_ror_production = self._load_csv('hydro_ror_production.csv')
         
         if self.scenario_config.get('run_mode') == 'weekly':
-            self.wind_onshore_production = self._filter_by_week(self.wind_onshore_production, week=self.week)
-            self.wind_offshore_production = self._filter_by_week(self.wind_offshore_production, week=self.week)
-            self.solar_pv_production = self._filter_by_week(self.solar_pv_production, week=self.week)
-            self.hydro_ror_production = self._filter_by_week(self.hydro_ror_production, week=self.week)
+            self.wind_onshore_production = self._filter_by_week(self.wind_onshore_production, week=self.week) # type: ignore
+            self.wind_offshore_production = self._filter_by_week(self.wind_offshore_production, week=self.week) # type: ignore
+            self.solar_pv_production = self._filter_by_week(self.solar_pv_production, week=self.week) # type: ignore
+            self.hydro_ror_production = self._filter_by_week(self.hydro_ror_production, week=self.week) # type: ignore
                 
         #utils.validate_df_positive_numeric(self.wind_onshore_production, "wind_onshore_production")
         utils.validate_df_positive_numeric(self.wind_offshore_production, "wind_offshore_production")
@@ -201,8 +201,8 @@ class DataLoader:
         self.time_index = np.arange(self.T)
         
         if self.scenario_config.get('run_mode') == 'weekly':
-            self.demand_inflexible_classic = self._filter_by_week(self.demand_inflexible_classic, week=self.week)
-            self.demand_inflexible_ev = self._filter_by_week(self.demand_inflexible_ev, week=self.week)
+            self.demand_inflexible_classic = self._filter_by_week(self.demand_inflexible_classic, week=self.week) # type: ignore
+            self.demand_inflexible_ev = self._filter_by_week(self.demand_inflexible_ev, week=self.week) # type: ignore
             
         utils.validate_df_positive_numeric(self.demand_inflexible_classic, "demand_inflexible_classic")
         utils.validate_df_positive_numeric(self.demand_inflexible_ev, "demand_inflexible_ev")
@@ -226,7 +226,7 @@ class DataLoader:
                 if param == "capacity":
                     arr1 = np.repeat(flex_dem_df.to_numpy(), 168, axis=0) # shape: (8736, Z)
                     arr2 = np.outer(np.ones(self.T % flex_dem_df.shape[0]), flex_dem_df.iloc[-1, :].to_numpy())  # shape: (24, Z)
-                    self.flexible_demands_dfs[flex_load][param] = np.concatenate((arr1, arr2), axis=0)  # shape: (8760, Z)
+                    self.flexible_demands_dfs[flex_load][param] = np.concatenate((arr1, arr2), axis=0)  # shape: (8760, Z) # type: ignore
                     # self.flexible_demands_dfs[flex_load][param] = np.outer(np.ones(self.T),
                     #                                                        flex_dem_df.loc[self.week].to_numpy())
                 else:  # param == "amount" in which case we only need the values for the specific week w/o repetition
@@ -446,8 +446,26 @@ class DataLoader:
         self.conventional_units_df = self._load_csv('conventional_thermal_units.csv')
         self.conventional_units_id = list(self.conventional_units_df.index)       # Shape: (G,)
 
-        # We need to repeat the capacities for each generator for all time steps:
-        self.conventional_units_el_cap = np.outer(np.ones(self.T), self.conventional_units_df.capacity_el.to_numpy())
+        if self.scenario_config.get('plant_aggregation'):
+            
+            # Aggregate thermal plants by fuel type (and zone)
+            self.agg_g = utils.agg_by_zone_tech(self.conventional_units_df)
+
+            # self.conventional_units_id = list(self.conventional_units_df.index)       # Shape: (G,)
+            # Set a new index with combined zone and fuel type for the aggregated generators
+            self.agg_g = utils.set_agg_idx(self.agg_g)
+            self.conventional_units_id = list(self.agg_g.index)
+
+            # # We need to repeat the capacities for each generator for all time steps:
+            #self.conventional_units_el_cap = np.outer(np.ones(self.T), self.conventional_units_df.capacity_el.to_numpy())
+
+            # We repeat the capacities for each FUEL (by zone and fuel) of generator
+            self.conventional_units_el_cap = np.outer(np.ones(self.T), self.agg_g.capacity_el.to_numpy())
+            
+        else:
+            # We need to repeat the capacities for each generator for all time steps:
+            self.conventional_units_el_cap = np.outer(np.ones(self.T), self.conventional_units_df.capacity_el.to_numpy())
+
 
     def load_conventional_units_marginal_cost(self):
         # Convert the production cost pandas Series to a DataFrame with time index

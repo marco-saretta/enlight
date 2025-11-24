@@ -20,17 +20,28 @@ class EnlightModel:
         G_bess (int): Number of battery energy storage system units.
     """
 
-    def __init__(self, dataloader_obj, simulation_path, logger):
-        # Initialize logger
+    def __init__(self, data, scenario_name, scenario_config,
+                config_yaml, root_path, logger):
+
+        self.data = data
+        self.scenario_name = scenario_name
+        self.scenario_config = scenario_config
+        self.config_yaml = config_yaml
+        self.root_path = root_path
         self.logger = logger
-        self.data = dataloader_obj
-        self.logger.info(
-            f"INITIALIZING ENLIGHT MODEL FOR WEEK {self.data.week}"
-        )
 
-        self.simulation_path = simulation_path
+        if scenario_config['run_mode'] == 'weekly':
+            self.logger.info(
+                f"-------------- ENERGY MODEL : {self.scenario_name} - WEEK {self.data.week} --------------"
+            )
+        else:
+            self.logger.info(
+                f"-------------- ENERGY MODEL : {self.scenario_name} --------------"
+            )
 
-        self.model = linopy.Model()
+        self.simulation_path = root_path / "simulations" / scenario_name
+
+        self.model = linopy.Model() # Create empty Linopy model
 
         self._aux_data()
         self._build_variables()

@@ -104,7 +104,6 @@ class EnlightRunner:
             scenario_timer.stop()
             self.logger.info(f"Scenario '{scenario_name}' completed successfully\n")
 
-
     def _run_yearly(self, scenario_name, scenario_config: Dict) -> None:
         """
         Execute a yearly simulation scenario.
@@ -145,9 +144,12 @@ class EnlightRunner:
         # timer_model = Timer(self.logger, "Model execution")
         
         # self.enlight_model = EnlightModel(
-        #     dataloader_obj=self.data,
-        #     simulation_path=str(simulation_path),
-        #     logger=self.logger
+        #     data=self.data_y,
+        #     scenario_name=scenario_name,
+        #     scenario_config=scenario_config,
+        #     config_yaml=self.config_yaml,
+        #     root_path=self.root_path,
+        #     logger=self.logger,
         # )
         # self.enlight_model.run_model()
         
@@ -208,52 +210,26 @@ class EnlightRunner:
                 week=week
                 )
             
-            # STEP 3: RUN MODEL
-            # # Initialize EnlightModel with the given data #for the given week and path
+            # STEP 3: MODEL EXECUTION
+            # timer_model = Timer(self.logger, "Model execution")
+            
             # self.enlight_model = EnlightModel(
-            #     dataloader_obj=self.data,
-            #     simulation_path=simulation_path,
-            #     logger=self.logger
+            #     data=self.data_w,
+            #     scenario_name=scenario_name,
+            #     scenario_config=scenario_config,
+            #     config_yaml=self.config_yaml,
+            #     root_path=self.root_path,
+            #     logger=self.logger,
             # )
-            # # Run the model
             # self.enlight_model.run_model()
+            
+            # timer_model.stop()
             
             # Extract results
             # extractor  =DataExtractor(
             #     enlightmodel_obj=self.enlight_model,
         
 
-
-
-    def prepare_data_single_scenario(self, scenario_name) -> None:
-        """Prepare input data for each scenario."""
-        # Prepare data using DataProcessor for each scenario
-        self.data_processor = DataProcessor(
-            scenario_name=scenario_name,  # Name of the scenario
-            config_yaml=self.config_yaml,  # Configuration for the scenario
-            logger=self.logger,  # Logger for logging messages
-        )
-
-        self.logger.info(f"{scenario_name} : Data preparation completed.")
-
-    def prepare_data_all_scenarios(self) -> None:
-        """Prepare input data for each scenario."""
-        # Prepare data using DataProcessor for each scenario
-        for scenario_name in tqdm(self.scenario_list, desc="Preparing the input data"):
-            DataProcessor(
-                scenario_name=scenario_name,  # Name of the scenario
-                config_yaml=self.config_yaml,  # Configuration for the scenario
-                logger=self.logger,  # Logger for logging messages
-            )
-
-            self.logger.info(f"{scenario_name} : Data preparation completed.")
-
-    def load_data_single_simulation(self, week: int, simulation_path: Path) -> None:
-        # Initialize DataLoader object to be used in EnlightModel:
-        self.data = DataLoader(
-            week=week,
-            input_path=Path(simulation_path) / 'data',
-            logger=self.logger)
         
     def load_data_all_simulations(self, simulation_path: Path) -> None:
         '''
@@ -286,60 +262,7 @@ class EnlightRunner:
                 )
             )
 
-    def run_single_simulation(self, simulation_path) -> None:
-        """
-        Run a single simulation for a given week and simulation path.
 
-        Args:
-            week: The week number for the simulation
-            simulation_path: The path to the simulation data
-        """
-        
-        # Initialize EnlightModel with the given data #for the given week and path
-        self.enlight_model = EnlightModel(
-            dataloader_obj=self.data,
-            simulation_path=simulation_path,
-            logger=self.logger
-        )
-        # Run the model
-        self.enlight_model.run_model()
-
-    def run_all_simulations(self, simulation_path: Path) -> None:
-        """
-        Run all simulations (i.e. weeks) for the configured scenarios.
-        """
-        # Initialize empty dict to store all of the DataLoader instances.
-        self.enlight_models_dict = {}
-
-        # Load all of the data into separate DataLoader instances:
-        for w in self.sim_weeks:
-            # Create EnlightModel instance for the given week w
-            self.enlight_models_dict[f"week_{w}"] = (
-                EnlightModel(
-                    dataloader_obj=self.data_loader_dict[f"week_{w}"],
-                    simulation_path=simulation_path,
-                    logger=self.logger
-                )
-            )
-            # Run the DA market model for the given week w and save the results
-            self.enlight_models_dict[f"week_{w}"].run_model()
-
-        # Combine the weekly electricity prices to get a single dataframe with
-        #   all of the electricity prices in the year specified in the config file.
-        result = 'electricity_prices'
-        df_result = utils.combine_simulations_result(
-            weeks=self.sim_weeks,
-            result_path=simulation_path / 'results',
-            result=result)
-        self.df_result = df_result.set_index("T")
-
-        utils.save_data(
-            data=self.df_result,
-            filename=f"test_yearly_{result}.csv",
-            output_dir=simulation_path / 'results',
-            logger=self.logger
-        )
-        # save df prics..
 
     def visualize_data(self, week: int, example_hour: int) -> None:
         """Visualize the data using DataVisualizer (placeholder method)."""
