@@ -3,7 +3,7 @@ from typing import Dict
 import yaml
 from enlight.data_ops import DataProcessor
 from enlight.data_ops import DataLoader
-from enlight.data_ops import DataExtractor
+from enlight.data_ops import DataExporter
 from enlight.data_ops import DataVisualizer
 from enlight.data_ops import ResultsVisualizer
 from enlight.model import EnlightModel
@@ -20,10 +20,10 @@ class EnlightRunner:
         """Initialize the EnlightRunner."""
         
         self.logger = utils.setup_logging()
-        self.logger.info(f'========== ENLIGHT object  initialization ==========')
+        self.logger.info('========== ENLIGHT object  initialization ==========')
         
         # Start timing to load the configuration
-        config_timer = Timer(self.logger, f"Loading general configuration")
+        config_timer = Timer(self.logger, "Loading general configuration")
         self.root_path: Path = root_path
 
         self._load_config()
@@ -31,7 +31,7 @@ class EnlightRunner:
         
         # Stop timing the entire scenario
         config_timer.stop()
-        self.logger.info(f"Loading general configuration completed successfully\n")
+        self.logger.info("Loading general configuration completed successfully\n")
 
     def _load_config(self) -> None:
         """Load configuration from YAML file and setup scenarios."""
@@ -94,7 +94,7 @@ class EnlightRunner:
                 self._run_yearly(scenario_name, scenario_config)
 
             elif mode == "weekly":
-                self._run_weekly(scenario_config)
+                self._run_weekly(scenario_name, scenario_config)
 
             else:
                 raise ValueError(f"Unknown run_mode: '{mode}'. Expected 'yearly' or 'weekly'")
@@ -165,7 +165,7 @@ class EnlightRunner:
         
         # self.logger.info(f"Yearly scenario '{scenario_name}' completed")
         
-    def _run_yearly_test(self, scenario_config: Dict) -> None:
+    def _run_weekly(self, scenario_name, scenario_config: Dict) -> None:
         """
         Execute a weekly simulation scenario.
         
@@ -173,14 +173,21 @@ class EnlightRunner:
             scenario_name: Name of the scenario
             config: Configuration dictionary for this scenario
         """
-        self.logger.info(f"Starting weekly run for scenario: {scenario_config['name']}")
-        # DATA PREOPROCESSING
-        # Prepare data using DataProcessor for each scenario
-        # self.data_processor = DataProcessor(
-        #     scenario_name=scenario_name,  # Name of the scenario
-        #     config_yaml=self.config_yaml,  # Configuration for the scenario
-        #     logger=self.logger,  # Logger for logging messages
-        # )
+
+        self.logger.info(f"========== STARTING YEARLY RUN: {scenario_name} ==========")
+        
+        # STEP 1: DATA PREPROCESSING
+        timer_preprocess = Timer(self.logger, "Data preprocessing")
+        
+        self.data_processor = DataProcessor(
+            scenario_name=scenario_name,
+            scenario_config=scenario_config,
+            config_yaml=self.config_yaml,
+            root_path=self.root_path,
+            logger=self.logger,
+        )
+        
+        timer_preprocess.stop()
         
         # # DATA LOADING
         # self.data = DataLoader(
@@ -202,20 +209,7 @@ class EnlightRunner:
         # extractor  =DataExtractor(
         #     enlightmodel_obj=self.enlight_model,
         
-    def _run_weekly(self, scenario_config: Dict) -> None:
-        print('ciaooo weekly')
-        # w1 = config["weeks"]["start_week"]
-        # w2 = config["weeks"]["end_week"]
 
-        # outputs = []
-
-        # for week in range(w1, w2 + 1):
-        #     dp = DataProcessor(scenario_name, config, week=week)
-        #     weekly_result = Model(dp).run()
-        #     outputs.append(weekly_result)
-
-        # final = concat(outputs)
-        # save(final)
 
 
     def prepare_data_single_scenario(self, scenario_name) -> None:

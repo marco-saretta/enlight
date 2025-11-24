@@ -105,7 +105,7 @@ conventional_generators:
   - label: thermal_plants
     tech: thermal_plants
 
-vre_generators:
+VRE_generators:
   - label: WIND_ON
     tech: wind_onshore
   

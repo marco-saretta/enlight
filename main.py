@@ -17,4 +17,4 @@ if __name__ == "__main__":
     # Creates instance of the DataProcessor:
     r.run_scenario('scenario_1')
     
-    #r.run_scenario('scenario_2')
+    r.run_scenario('scenario_2')
