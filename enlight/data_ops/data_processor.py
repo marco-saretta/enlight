@@ -16,7 +16,7 @@ class DataProcessor:
     config_yaml: dict
     logger: Logger
     root_path: Path
-    overwrite_preprocessed_data: bool = True
+    overwrite_preprocessed_data: bool = False
         
     def __post_init__(self) -> None:
         

@@ -24,9 +24,9 @@ scenario_list:
       run_mode: "weekly"
       year: 2040
       plant_aggregation: true
-      weeks:
-        start_week: 10
-        end_week: 20
+      week_range:
+        start_week: 1
+        end_week: 2
 
 
 # -----------------------------------------------------------------------------

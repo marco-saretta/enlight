@@ -19,29 +19,31 @@ class DataLoader:
     run the script data_loader.py in the interactive window,
     >>> data = DataLoader(week=1, input_path='simulations/scenario_1/data')
     """
-    week: int
-    input_path: Path
+    scenario_name: str
+    scenario_config: dict
+    config_yaml: dict
     logger: Logger
-
+    root_path: Path
+    week: int | None = None   
+    
     def __post_init__(self):
         """
         Post-initialization to load and validate all required datasets.
         """
         # Initialize logger
-        self.logger.info(
-            f"INITIALIZING DATA LOADER FOR WEEK {self.week} FROM {self.input_path}"
-        )
+        self.logger.info(f"-------------- DATA LOADER: {self.scenario_name} --------------")
         
-        self.input_path = Path(self.input_path).resolve()
         
         # Load YAML metadata (auxiliary scenario data)
-        self.load_yaml_aux_data('scenario_1_aux_data.yaml')
+        self._init_data_paths()
+        self.load_yaml_aux_data()
         
         # Load CSV datasets
         self.load_generation_data()
         self.load_inflexible_demand_data()
+        self.load_flexible_demand_data()
+        self.map_hours_to_weeks()
         self.load_lines_data()
-        self.load_flexible_demand_data()  # -> uses self.T from load_lines_data()
         self.map_transmission_lines()
         self.load_hydro_reservoir_data()
         self.load_hydro_res_units_marginal_cost()
@@ -52,33 +54,78 @@ class DataLoader:
         self.load_conventional_units_data()
         self.load_conventional_units_marginal_cost()
         self.map_conventional_units_to_zones()
-        # Optionally uncomment these as needed
-        # self.load_heating()
-        # self.load_ptx()
         self.load_bess_units()
         self.load_bess_units_marginal_cost()
         self.map_bess_units_to_zones()
+        self.load_ptx_data()
+        self.load_ptx_bid_prices()
+        self.map_ptx_units_to_zones()
+        self.load_dh_data()
+        self.load_dh_bid_prices()
+        self.map_dh_units_to_zones()
 
+    def _init_data_paths(self) -> None:
+        """Initialize all data directory paths according to the updated folder structure."""
+        # Demand paths
+        
+        self.base_path = self.root_path / 'simulations' / f'{self.scenario_name}'
+        self.data_path = self.base_path / 'data'
 
     def _load_csv(self, filename: str, index_col=0) -> pd.DataFrame:
         """Helper function to load a CSV file. Raises FileNotFoundError if missing."""
-        file_path = self.input_path / filename
+        file_path = self.data_path / filename
         if not file_path.exists():
             raise FileNotFoundError(f"Required file not found: {file_path}")
         return pd.read_csv(file_path, index_col=index_col)
 
+    def _filter_by_week(self, df: pd.DataFrame, week: int, hours_per_week: int = 168, week_col: str = 'Week') -> pd.DataFrame:
+        """
+        Slice a continuous hourly dataframe into week-sized blocks.
+        The final week absorbs any leftover hours.
 
-    def _filter_by_week(self, df: pd.DataFrame, week_col: str = 'Week') -> pd.DataFrame:
-        """Filter a DataFrame by the specified week and drop the 'Week' column."""
-        return df[df[week_col] == self.week].drop(columns=week_col)
-    
-    def load_yaml_aux_data(self, filename: str):
+        Example for length 8760:
+            Weeks 1–51: 168 rows each
+            Week 52:    168 + 24 = 192 rows (final remainder)
+        """
+        
+        # TODO: Delete these two following lines, as the rest of the funciton already creats the week index and then slides based on that. In the input data of the preprocessing, it should be removed the week column as well.
+        if week_col in df.columns:
+            return df[df[week_col] == self.week].drop(columns=week_col)
+
+        if week < 1:
+            raise ValueError("week must be >= 1")
+
+        n = len(df)
+        n_full_weeks = n // hours_per_week       # e.g. 8760 // 168 = 52
+        remainder = n % hours_per_week           # e.g. 24
+
+        # Last week number (includes the remainder)
+        last_week = n_full_weeks if remainder == 0 else n_full_weeks
+
+        if week > last_week:
+            raise IndexError(
+                f"Week {week} is out of range. Maximum allowable week is {last_week}."
+            )
+
+        # Standard start index
+        start = (week - 1) * hours_per_week
+
+        # For the last week: extend to the end of df
+        if week == last_week:
+            end = n
+        else:
+            end = start + hours_per_week
+
+        return df.iloc[start:end].copy()
+
+    def load_yaml_aux_data(self):
         """
         Load auxiliary metadata for the scenario from a YAML file.
         Exposes the content as a dictionary: self.yaml_data
         and attaches key values as class attributes (flattened).
         """
-        yaml_path = self.input_path / filename
+        yaml_path = self.data_path / f'{self.scenario_name}_aux_data.yaml'
+        
         with open(yaml_path, 'r') as f:
             self.yaml_data = yaml.safe_load(f)
 
@@ -86,6 +133,7 @@ class DataLoader:
         self.scenario_name = self.yaml_data.get('scenario_name')
         self.prediction_year = self.yaml_data.get('prediction_year')
         self.bidding_zones = self.yaml_data.get('bidding_zones', [])
+        self.solver_name = self.yaml_data.get('solver_name')
 
         # Nested values
         wind_on = self.yaml_data.get('wind_on', {})
@@ -124,30 +172,39 @@ class DataLoader:
         self.hydro_ps_discharging_efficiency = float(np.sqrt(self.yaml_data.get('hydro_ps_roundtrip')))
         self.hydro_ps_initial_SOC = self.yaml_data.get('hydro_ps_initial_soc')
         
-
     def load_generation_data(self):
         """Load all renewable generation time-series data filtered by week and validate them."""
-        self.wind_onshore_production_year = self._load_csv('wind_onshore_production.csv')
-        self.wind_onshore_production = self._filter_by_week(self.wind_onshore_production_year)
-        utils.validate_df_positive_numeric(self.wind_onshore_production, "wind_onshore_production")
-
-        self.wind_offshore_production = self._filter_by_week(self._load_csv('wind_offshore_production.csv'))
+        
+        self.wind_onshore_production = self._load_csv('wind_onshore_production.csv')
+        self.wind_offshore_production = self._load_csv('wind_offshore_production.csv')
+        self.solar_pv_production = self._load_csv('solar_pv_production.csv')
+        self.hydro_ror_production = self._load_csv('hydro_ror_production.csv')
+        
+        if self.scenario_config.get('run_mode') == 'weekly':
+            self.wind_onshore_production = self._filter_by_week(self.wind_onshore_production, week=self.week)
+            self.wind_offshore_production = self._filter_by_week(self.wind_offshore_production, week=self.week)
+            self.solar_pv_production = self._filter_by_week(self.solar_pv_production, week=self.week)
+            self.hydro_ror_production = self._filter_by_week(self.hydro_ror_production, week=self.week)
+                
+        #utils.validate_df_positive_numeric(self.wind_onshore_production, "wind_onshore_production")
         utils.validate_df_positive_numeric(self.wind_offshore_production, "wind_offshore_production")
-
-        self.solar_pv_production = self._filter_by_week(self._load_csv('solar_pv_production.csv'))
         utils.validate_df_positive_numeric(self.solar_pv_production, "solar_pv_production")
-
-        self.hydro_ror_production = self._filter_by_week(self._load_csv('hydro_ror_production.csv'))
         utils.validate_df_positive_numeric(self.hydro_ror_production, "hydro_ror_production")
 
     def load_inflexible_demand_data(self):
         """Load inflexible demand data (classic and EV) filtered by week and validate."""
-        self.demand_inflexible_classic = self._filter_by_week(self._load_csv('demand_inflexible_classic.csv'))
-        utils.validate_df_positive_numeric(self.demand_inflexible_classic, "demand_inflexible_classic")
+        self.demand_inflexible_classic = self._load_csv('demand_inflexible_classic.csv')
+        self.demand_inflexible_ev = self._load_csv('demand_inflexible_ev.csv')
 
         self.times = list(self.demand_inflexible_classic.index)  # this is important: if the time index of the cost dataframes don't match the model variables' then it assumes 0-cost
-
-        self.demand_inflexible_ev = self._filter_by_week(self._load_csv('demand_inflexible_ev.csv'))
+        self.T = len(self.times)
+        self.time_index = np.arange(self.T)
+        
+        if self.scenario_config.get('run_mode') == 'weekly':
+            self.demand_inflexible_classic = self._filter_by_week(self.demand_inflexible_classic, week=self.week)
+            self.demand_inflexible_ev = self._filter_by_week(self.demand_inflexible_ev, week=self.week)
+            
+        utils.validate_df_positive_numeric(self.demand_inflexible_classic, "demand_inflexible_classic")
         utils.validate_df_positive_numeric(self.demand_inflexible_ev, "demand_inflexible_ev")
 
     def load_flexible_demand_data(self):
@@ -167,50 +224,94 @@ class DataLoader:
                 
                 # Repeat the maximum capacity for all time steps
                 if param == "capacity":
-                    self.flexible_demands_dfs[flex_load][param] = np.outer(np.ones(self.T),
-                                                                           flex_dem_df.loc[self.week].to_numpy())
+                    arr1 = np.repeat(flex_dem_df.to_numpy(), 168, axis=0) # shape: (8736, Z)
+                    arr2 = np.outer(np.ones(self.T % flex_dem_df.shape[0]), flex_dem_df.iloc[-1, :].to_numpy())  # shape: (24, Z)
+                    self.flexible_demands_dfs[flex_load][param] = np.concatenate((arr1, arr2), axis=0)  # shape: (8760, Z)
+                    # self.flexible_demands_dfs[flex_load][param] = np.outer(np.ones(self.T),
+                    #                                                        flex_dem_df.loc[self.week].to_numpy())
                 else:  # param == "amount" in which case we only need the values for the specific week w/o repetition
-                    self.flexible_demands_dfs[flex_load][param] = flex_dem_df.loc[self.week]
+                    flex_dem_df.index.name = "W"  # change index name from "Week" to "W" to correspond to the mapping from hours to weeks.
+                    self.flexible_demands_dfs[flex_load][param] = flex_dem_df  #.loc[self.week]
 
         # call in energy_model.py as e.g.:
         #   self.data.flexible_demands_dfs['demand_flexible_classic']['capacity']
+        
+    def map_hours_to_weeks(self):
+        '''
+        Make a one-hot-encoded dataframe that maps an hour to its week.
+        This is important when enforcing the weekly amount constraint
+        for the flexible demands as well as for the weekly energy
+        availability of hydro reservoir energy.
+        '''
+        self.W = int(np.floor(self.T / 168))  # 52 weeks for a whole year
+        num_extra_hours = self.T % (self.W * 168)  # 24 for a whole year
+        
+        weeks1 = np.repeat(np.arange(1,self.W+1), 168, axis=0)  # shape: (8736,)
+        weeks2 = num_extra_hours * [int(weeks1[-1])]  # shape: (24,)
+        weeks3 = np.concatenate((weeks1, weeks2))  # shape: (8760,)
+        self.T_W_df = pd.get_dummies(weeks3).astype(int)  # shape: (8760, 52)
+        
+        # Convert to xarray DataArray for easier indexing in the model
+        self.T_W_xr = xr.DataArray(
+            self.T_W_df.values,
+            coords={
+                "T": self.times,   # match with e.g. hydro_res_units_offer
+                "W": np.arange(1, self.W+1)
+            },
+            dims=["T", "W"]
+        )
 
     def load_lines_data(self):
         """Load transmission line capacity or flow data for both directions."""
-        self.lines_a_b_df = self._load_csv("lines_a_b.csv", index_col=None)  # type: ignore
-        self.lines_b_a_df = self._load_csv("lines_b_a.csv", index_col=None)  # type: ignore
+        # the index_col is set to the transmission line number
+        self.lines_a_b_df = self._load_csv("lines_a_b.csv", index_col=0)  # type: ignore
+        self.lines_b_a_df = self._load_csv("lines_b_a.csv", index_col=0)  # type: ignore
 
         # Create a new dataframe with zone information and weekly capacity data
-        week_col = str(self.week)
-        self.lines_week_df = self.lines_a_b_df[["from_zone", "to_zone"]].copy()
-        self.lines_week_df["capacity_a_to_b"] = self.lines_a_b_df[week_col]
-        self.lines_week_df["capacity_b_to_a"] = self.lines_b_a_df[week_col]
+        # week_col = str(self.week)
+        # self.lines_week_df = self.lines_a_b_df[["from_zone", "to_zone"]].copy()
+        # self.lines_week_df["capacity_a_to_b"] = self.lines_a_b_df[week_col]
+        # self.lines_week_df["capacity_b_to_a"] = self.lines_b_a_df[week_col]
+        
+        # Get the names of the weeks
+        week_cols = self.lines_a_b_df.columns[~self.lines_a_b_df.columns.isin(['from_zone', 'to_zone'])]
+        
+        # Repeat the weekly capacity for all hours in that week for lines a to b
+        arr_a_to_b_1 = np.repeat(self.lines_a_b_df[week_cols].to_numpy(), 168, axis=1) # shape: (L, 8736)
+        arr_a_to_b_2 = np.outer(np.ones(self.T%len(week_cols)), self.lines_a_b_df[week_cols[-1]].to_numpy()).T  # shape: (L, 24)
+        lines_a_to_b_cap = np.concatenate((arr_a_to_b_1, arr_a_to_b_2), axis=1)  # shape: (L, 8760)
+        self.lines_a_to_b_cap = lines_a_to_b_cap.T  #shape: (8760, L)
 
+        # Repeat the weekly capacity for all hours in that week for lines b to a
+        arr_b_to_a_1 = np.repeat(self.lines_b_a_df[week_cols].to_numpy(), 168, axis=1) # shape: (L, 8736)
+        arr_b_to_a_2 = np.outer(np.ones(self.T%len(week_cols)), self.lines_b_a_df[week_cols[-1]].to_numpy()).T  # shape: (L, 24)
+        lines_b_to_a_cap = np.concatenate((arr_b_to_a_1, arr_b_to_a_2), axis=1)  # shape: (L, 8760)
+        self.lines_b_to_a_cap = lines_b_to_a_cap.T  #shape: (8760, L)
         # Repeat static line capacities over all time steps
         # Shape: (T, L)
 
         # self.time_index = pd.Index(np.arange(168), name="T")
         # The series for the conventional generator costs have to be 1-indexed to match the other time series (RES, demand, etc.)
-        self.time_index = pd.Index(np.arange(1,len(self.times)+1), name="T")
-        self.T = len(self.time_index)
+        # self.time_index = pd.Index(np.arange(1,len(self.times)+1), name="T")
+        # self.T = len(self.time_index)
 
-        self.lines_a_to_b_cap = np.outer(
-            np.ones(self.T),  # Shape: (T,)
-            self.lines_week_df["capacity_a_to_b"].to_numpy(),  # Shape: (L,)
-        )
+        # self.lines_a_to_b_cap = np.outer(
+        #     np.ones(self.T),  # Shape: (T,)
+        #     self.lines_week_df["capacity_a_to_b"].to_numpy(),  # Shape: (L,)
+        # )
 
-        self.lines_b_to_a_cap = np.outer(
-            np.ones(self.T), 
-            self.lines_week_df["capacity_b_to_a"].to_numpy(),
-        )
+        # self.lines_b_to_a_cap = np.outer(
+        #     np.ones(self.T), 
+        #     self.lines_week_df["capacity_b_to_a"].to_numpy(),
+        # )
         
     def map_transmission_lines(self):   
         
         # More efficient way to create lines and labels
-        line_zones = self.lines_week_df[['from_zone', 'to_zone']].values
+        line_zones = self.lines_a_b_df[["from_zone", "to_zone"]].values
         self.lines = [tuple(row) for row in line_zones]  
         self.line_labels = [f"{a}-{b}" for a, b in line_zones]  # Create labels for each line
-        self.lines = [tuple(x) for x in self.lines_week_df[['from_zone', 'to_zone']].to_numpy()]  # Shape: (L,)
+        self.lines = [tuple(x) for x in self.lines_a_b_df[['from_zone', 'to_zone']].to_numpy()]  # Shape: (L,)
         
         # Build L_Z_df: incidence matrix for power balance
         # L_Z_df[l, z] = +1 if zone z is fromZone of line l
@@ -239,7 +340,7 @@ class DataLoader:
         """Load unit-specific data for various dispatchable generators."""
         self.hydro_res_units = self._load_csv('hydro_reservoir_units.csv')
         hydro_res_energy = self._load_csv('hydro_reservoir_energy.csv')
-        self.hydro_res_energy = hydro_res_energy.loc[self.week]
+        self.hydro_res_energy = hydro_res_energy  #.loc[self.week]
         self.hydro_res_units_id = list(self.hydro_res_units.index)  # Shape: (G_hydro_res,)
 
         # We need to repeat the capacities for each hydro unit for all time steps:
@@ -381,14 +482,6 @@ class DataLoader:
             },
             dims=["G", "Z"]            # Dimension names for alignment in dot product
         )
-        
-    def load_ptx(self):
-        """Load power-to-X unit demand data."""
-        self.ptx_demand_df = self._load_csv('ptx_units.csv')
-
-    def load_heating(self):
-        """Load district heating demand data."""
-        self.heating_demand_df = self._load_csv('district_heating_units.csv')
 
     def load_bess_units(self):
         """Load battery energy storage system (BESS) unit data."""
@@ -449,4 +542,92 @@ class DataLoader:
                 "Z": self.bidding_zones     # Zone labels
             },
             dims=["G_bess", "Z"]            # Dimension names for alignment in dot product
+        )
+
+    def load_ptx_data(self):
+        self.ptx_units_df = self._load_csv('ptx_units.csv')
+        self.ptx_units_id = list(self.ptx_units_df.index)  # shape (L_DH)
+
+        # Repeat capacities for each time steps
+        self.ptx_units_el_cap = np.outer(np.ones(self.T),
+                                        self.ptx_units_df["Electric capacity"].to_numpy())
+        
+    def load_ptx_bid_prices(self):
+        """
+        Makes a (T, L_PtX) DataFrame of the PtX unit bid prices.
+        These bid prices are simply the LCoX of each plant.
+        """
+        # Convert the bid prices pandas Series to a DataFrame with time index
+        self.ptx_units_bid_prices_series = self.ptx_units_df["Demand price"]
+        self.ptx_units_bid_prices_series.index.name = "L_PtX"
+
+        self.ptx_units_bid_prices_df = pd.DataFrame(
+            data=np.broadcast_to(self.ptx_units_bid_prices_series.to_numpy(),
+                                 (len(self.times),
+                                 len(self.ptx_units_bid_prices_series))),
+            index=self.times,
+            columns=self.ptx_units_id   
+        )
+
+    def map_ptx_units_to_zones(self):
+        """
+        Build binary PtX unit-to-zone assignment matrix (L_PtX x Z).
+        L_PtX_Z[l_PtX, z] = 1 if PtX unit l_PtX belongs to zone z, else 0.
+        """
+        # Create dummy variables (one-hot encode) from PtX unit zone assignment
+        self.L_PtX_Z_df = pd.get_dummies(self.ptx_units_df['zone_el']).astype(int)
+
+        # Ensure all zones are represented as columns, even if some have no PtX units
+        self.L_PtX_Z_df = self.L_PtX_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
+
+        # Wrap into xarray with matching dimensions
+        self.L_PtX_Z_xr = xr.DataArray(
+            self.L_PtX_Z_df.values,
+            coords={
+                "L_PtX": self.ptx_units_id,   # PtX unit labels
+                "Z": self.bidding_zones     # Zone labels
+            },
+            dims=["L_PtX", "Z"]            # Dimension names for alignment in dot product
+        )
+
+    def load_dh_data(self):
+        self.dh_units_df = self._load_csv('dh_units.csv')
+        self.dh_units_id = list(self.dh_units_df.index)  # shape (L_DH)
+
+        # Repeat capacities for each time steps
+        self.dh_units_el_cap = np.outer(np.ones(self.T),
+                                        self.dh_units_df["Thermal capacity"].to_numpy())
+        
+    def load_dh_bid_prices(self):
+        # Convert the bid prices pandas Series to a DataFrame with time index
+        self.dh_units_bid_prices_series = self.dh_units_df.demand_price
+        self.dh_units_bid_prices_series.index.name = "L_DH"
+
+        self.dh_units_bid_prices_df = pd.DataFrame(
+            data=np.broadcast_to(self.dh_units_bid_prices_series.to_numpy(),
+                                 (len(self.times),
+                                 len(self.dh_units_bid_prices_series))),
+            index=self.times,
+            columns=self.dh_units_id   
+        )
+
+    def map_dh_units_to_zones(self):
+        """
+        Build binary DH unit-to-zone assignment matrix (L_DH x Z).
+        L_DH_Z[l_DH, z] = 1 if DH unit l_DH belongs to zone z, else 0.
+        """
+        # Create dummy variables (one-hot encode) from DH unit zone assignment
+        self.L_DH_Z_df = pd.get_dummies(self.dh_units_df['zone_el']).astype(int)
+
+        # Ensure all zones are represented as columns, even if some have no DH units
+        self.L_DH_Z_df = self.L_DH_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
+
+        # Wrap into xarray with matching dimensions
+        self.L_DH_Z_xr = xr.DataArray(
+            self.L_DH_Z_df.values,
+            coords={
+                "L_DH": self.dh_units_id,   # DH unit labels
+                "Z": self.bidding_zones     # Zone labels
+            },
+            dims=["L_DH", "Z"]            # Dimension names for alignment in dot product
         )

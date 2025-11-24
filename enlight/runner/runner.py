@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Dict
 import yaml
+from tqdm import tqdm
 from enlight.data_ops import DataProcessor
 from enlight.data_ops import DataLoader
 from enlight.data_ops import DataExporter
@@ -125,19 +126,20 @@ class EnlightRunner:
             root_path=self.root_path,
             logger=self.logger,
         )
-        
         timer_preprocess.stop()
         
-        # # STEP 2: DATA LOADING
-        # timer_loading = Timer(self.logger, "Data loading")
+        # STEP 2: DATA LOADING
+        timer_loading = Timer(self.logger, "Data loading")
         
-        # self.data = DataLoader(
-        #     week=None,  # None for yearly runs (loads entire year)
-        #     input_path=simulation_path / 'data',
-        #     logger=self.logger
-        # )
+        self.data_y = DataLoader(
+            scenario_name=scenario_name,
+            scenario_config=scenario_config,
+            config_yaml=self.config_yaml,
+            root_path=self.root_path,
+            logger=self.logger,
+            )
         
-        # timer_loading.stop()
+        timer_loading.stop()
         
         # # STEP 3: MODEL EXECUTION
         # timer_model = Timer(self.logger, "Model execution")
@@ -188,26 +190,37 @@ class EnlightRunner:
         )
         
         timer_preprocess.stop()
+        week_dict = scenario_config['week_range']
+        start_week = week_dict['start_week']
+        end_week = week_dict['end_week']
         
-        # # DATA LOADING
-        # self.data = DataLoader(
-        #     week=week,
-        #     input_path=Path(simulation_path) / 'data',
-        #     logger=self.logger)
-
-        # # RUN MODEL
-        # # Initialize EnlightModel with the given data #for the given week and path
-        # self.enlight_model = EnlightModel(
-        #     dataloader_obj=self.data,
-        #     simulation_path=simulation_path,
-        #     logger=self.logger
-        # )
-        # # Run the model
-        # self.enlight_model.run_model()
+        week_range = range(start_week, end_week + 1)
         
-        # Extract results
-        # extractor  =DataExtractor(
-        #     enlightmodel_obj=self.enlight_model,
+        for week in tqdm(week_range, desc="Running weekly simulations"):
+            
+            # STEP 2: DATA LOADING
+            self.data_w = DataLoader(
+                scenario_name=scenario_name,
+                scenario_config=scenario_config,
+                config_yaml=self.config_yaml,
+                root_path=self.root_path,
+                logger=self.logger,
+                week=week
+                )
+            
+            # STEP 3: RUN MODEL
+            # # Initialize EnlightModel with the given data #for the given week and path
+            # self.enlight_model = EnlightModel(
+            #     dataloader_obj=self.data,
+            #     simulation_path=simulation_path,
+            #     logger=self.logger
+            # )
+            # # Run the model
+            # self.enlight_model.run_model()
+            
+            # Extract results
+            # extractor  =DataExtractor(
+            #     enlightmodel_obj=self.enlight_model,
         
 
 
