@@ -14,11 +14,13 @@
 
 scenario_list:
   - scenario_1:
+      label: "scenario_1"
       run_mode: "yearly"
       year: 2030
       plant_aggregation: false
 
   - scenario_2:
+      label: "scenario_2"
       run_mode: "weekly"
       year: 2040
       plant_aggregation: true

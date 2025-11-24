@@ -1,12 +1,15 @@
 import logging
-import pandas as pd
-import numpy as np
+import time
 from pathlib import Path
 from typing import Optional
+import pandas as pd
+import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
 import seaborn as sns
 import linopy
+from contextlib import contextmanager
+
 
 def validate_df_positive_numeric(df: pd.DataFrame, name: str, check_numeric: bool = True, check_positive: bool = True) -> None:
     """
@@ -39,36 +42,151 @@ def load_csv_if_exists(path: Path) -> pd.DataFrame:
         raise ValueError(f"File {path} is empty.")
     return df
 
-def setup_logging(log_dir: str = "logs", log_file: str = "enlight.log") -> logging.Logger:
+def setup_logging(
+    log_dir: str = "logs",
+    log_file: str = "enlight.log",
+    level: int = logging.INFO,
+    logger_name: str = "enlight"
+) -> logging.Logger:
     """
-    Configure logging, create log folder if it doesn't exist, and return a logger.
-
+    Configure a centralized logger for the entire Enlight project.
+    
     Args:
         log_dir (str): Folder to store log files (default "logs").
-        log_file (str): Log file name (default "app.log").
-
+        log_file (str): Log file name (default "enlight.log").
+        level (int): Logging level (default logging.INFO).
+        logger_name (str): Name of the logger (default "enlight").
+    
     Returns:
-        logging.Logger: Configured logger.
+        logging.Logger: Configured logger instance.
     """
     # Ensure the logs folder exists
     log_path = Path(log_dir)
     log_path.mkdir(parents=True, exist_ok=True)
-
+    
     # Full path for the log file
     file_path = log_path / log_file
-
-    # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.StreamHandler(),        # Console output
-            logging.FileHandler(file_path)  # File output
-        ]
-    )
-
-    return logging.getLogger(__name__)
     
+    # Get or create the logger (using a specific name ensures we reuse the same logger)
+    logger = logging.getLogger(logger_name)
+    
+    # Only configure if handlers haven't been added yet (prevents duplicate handlers)
+    if not logger.handlers:
+        logger.setLevel(level)
+        
+        # Create formatters
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        
+        # Console handler
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
+        console_handler.setFormatter(formatter)
+        
+        # File handler
+        file_handler = logging.FileHandler(file_path, mode='a', encoding='utf-8')
+        file_handler.setLevel(level)
+        file_handler.setFormatter(formatter)
+        
+        # Add handlers to logger
+        logger.addHandler(console_handler)
+        logger.addHandler(file_handler)
+    
+    return logger
+    
+@contextmanager
+def log_time(logger: logging.Logger, operation_name: str):
+    """
+    Context manager to log execution time of a code block.
+    
+    Usage:
+        with log_time(logger, "Data loading"):
+            # your code here
+            load_data()
+    
+    Args:
+        logger: Logger instance to use for logging.
+        operation_name: Descriptive name of the operation being timed.
+    """
+    start_time = time.time()
+    logger.info(f"Starting: {operation_name}")
+    
+    try:
+        yield
+    finally:
+        elapsed_time = time.time() - start_time
+        logger.info(f"Completed: {operation_name} in {elapsed_time:.2f} seconds")    
+
+def get_logger(name: str = "enlight") -> logging.Logger:
+    """
+    Get the centralized logger instance.
+    
+    Args:
+        name: Logger name (default "enlight").
+    
+    Returns:
+        logging.Logger: The logger instance.
+    """
+    logger = logging.getLogger(name)
+    if not logger.handlers:
+        # If logger hasn't been set up yet, initialize it
+        return setup_logging(logger_name=name)
+    return logger
+
+class Timer:
+    """
+    Simple timer class to measure execution time without indentation.
+    
+    Usage:
+        timer = Timer(logger, "Data loading")
+        # your code here
+        load_data()
+        timer.stop()  # Logs elapsed time
+    """
+    
+    def __init__(self, logger: logging.Logger, operation_name: str, auto_start: bool = True):
+        """
+        Initialize timer.
+        
+        Args:
+            logger: Logger instance to use.
+            operation_name: Name of the operation being timed.
+            auto_start: If True, starts timing immediately.
+        """
+        self.logger = logger
+        self.operation_name = operation_name
+        self.start_time = None
+        self.end_time = None
+        
+        if auto_start:
+            self.start()
+    
+    def start(self):
+        """Start the timer."""
+        self.start_time = time.time()
+        self.logger.info(f"Starting: {self.operation_name}")
+        return self
+    
+    def stop(self):
+        """Stop the timer and log elapsed time."""
+        if self.start_time is None:
+            self.logger.warning(f"Timer '{self.operation_name}' was never started")
+            return None
+        
+        self.end_time = time.time()
+        elapsed = self.end_time - self.start_time
+        self.logger.info(f"Completed: {self.operation_name} in {elapsed:.2f} seconds")
+        return elapsed
+    
+    def elapsed(self) -> float:
+        """Get elapsed time without stopping the timer."""
+        if self.start_time is None:
+            return 0.0
+        return time.time() - self.start_time
+
+
 def save_data(
     data: pd.DataFrame,
     filename: str,

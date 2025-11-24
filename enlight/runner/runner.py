@@ -1,15 +1,14 @@
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 import yaml
-from tqdm import tqdm
 from enlight.data_ops import DataProcessor
 from enlight.data_ops import DataLoader
-from enlight.model import EnlightModel
-import enlight.utils as utils
+from enlight.data_ops import DataExtractor
 from enlight.data_ops import DataVisualizer
 from enlight.data_ops import ResultsVisualizer
-import matplotlib.pyplot as plt
-
+from enlight.model import EnlightModel
+import enlight.utils as utils
+from enlight.utils import Timer, log_time
 
 class EnlightRunner:
     """
@@ -17,16 +16,25 @@ class EnlightRunner:
     for Enlight energy modeling scenarios.
     """
 
-    def __init__(self, root_path : Path) -> None:
+    def __init__(self, root_path: Path) -> None:
         """Initialize the EnlightRunner."""
         
-        self.root_path: Path = root_path
         self.logger = utils.setup_logging()
+        self.logger.info(f'========== ENLIGHT object  initialization ==========')
+        
+        # Start timing to load the configuration
+        config_timer = Timer(self.logger, f"Loading general configuration")
+        self.root_path: Path = root_path
 
         self._load_config()
         utils.load_plot_config()
+        
+        # Stop timing the entire scenario
+        config_timer.stop()
+        self.logger.info(f"Loading general configuration completed successfully\n")
 
     def _load_config(self) -> None:
+        """Load configuration from YAML file and setup scenarios."""
         self.config_path = self.root_path / 'config'
         self.config_yaml_path = self.config_path / "config.yaml"
 
@@ -37,7 +45,7 @@ class EnlightRunner:
             self.config_yaml = yaml.safe_load(file)
 
         # Parse scenario_list properly
-        self.scenarios = {}   # dict: scenario_name → config_dict
+        self.scenarios_dict = {}   # dict: scenario_name → config_dict
 
         for entry in self.config_yaml.get("scenario_list", []):
             if not isinstance(entry, dict):
@@ -46,7 +54,7 @@ class EnlightRunner:
             scenario_name = list(entry.keys())[0]
             scenario_cfg = list(entry.values())[0]
 
-            self.scenarios[scenario_name] = scenario_cfg
+            self.scenarios_dict[scenario_name] = scenario_cfg
 
             # Create simulation folder structure
             for subfolder in ("data", "results"):
@@ -57,34 +65,115 @@ class EnlightRunner:
         self.solver_name = str(self.config_yaml.get("solver_name"))
         self.bidding_zones = list(self.config_yaml.get("bidding_zones", []))
 
-        # Log minimal information (no undefined week info)
+        # Log minimal information
         self.logger.info(
             "Loaded %d scenarios and %d bidding zones.",
-            len(self.scenarios),
+            len(self.scenarios_dict),
             len(self.bidding_zones)
         )
 
-    def run_scenario(self, scenario_name):
-        if scenario_name not in self.scenarios:
-            raise ValueError(f"Scenario '{scenario_name}' not found in scenario_list")
+    def run_scenario(self, scenario_name: str) -> None:
+            """
+            Run a specific scenario based on its configuration.
+            """
+            # Start timing the entire scenario
+            scenario_timer = Timer(self.logger, f"Scenario '{scenario_name}'")
+            
+            if scenario_name not in self.scenarios_dict:
+                raise ValueError(f"Scenario '{scenario_name}' not found in scenario_list")
 
-        config = self.scenarios[scenario_name]
-        mode = config["run_mode"]
+            # Get configuration for this specific scenario
+            scenario_config = self.scenarios_dict[scenario_name]
+            
+            # Extract run mode
+            mode = scenario_config.get("run_mode")
+            
+            self.logger.info(f"Running scenario '{scenario_name}' in mode: {mode}")
 
-        if mode == "yearly":
-            self._run_yearly(scenario_name, config)
+            if mode == "yearly":
+                self._run_yearly(scenario_name, scenario_config)
 
-        elif mode == "weekly":
-            self._run_weekly(scenario_name, config)
+            elif mode == "weekly":
+                self._run_weekly(scenario_config)
 
-        else:
-            raise ValueError("Unknown run_mode")
+            else:
+                raise ValueError(f"Unknown run_mode: '{mode}'. Expected 'yearly' or 'weekly'")
+
+            # Stop timing the entire scenario
+            scenario_timer.stop()
+            self.logger.info(f"Scenario '{scenario_name}' completed successfully\n")
 
 
+    def _run_yearly(self, scenario_name, scenario_config: Dict) -> None:
+        """
+        Execute a yearly simulation scenario.
         
-    def _run_yearly(self,scenario_name, config):
-        """Prepare input data for each scenario."""
-        print('ciaooo yearly')
+        Args:
+            scenario_name: Name of the scenario
+            config: Configuration dictionary for this scenario
+        """
+        
+        self.logger.info(f"========== STARTING YEARLY RUN: {scenario_name} ==========")
+        
+        # STEP 1: DATA PREPROCESSING
+        timer_preprocess = Timer(self.logger, "Data preprocessing")
+        
+        self.data_processor = DataProcessor(
+            scenario_name=scenario_name,
+            scenario_config=scenario_config,
+            config_yaml=self.config_yaml,
+            root_path=self.root_path,
+            logger=self.logger,
+        )
+        
+        timer_preprocess.stop()
+        
+        # # STEP 2: DATA LOADING
+        # timer_loading = Timer(self.logger, "Data loading")
+        
+        # self.data = DataLoader(
+        #     week=None,  # None for yearly runs (loads entire year)
+        #     input_path=simulation_path / 'data',
+        #     logger=self.logger
+        # )
+        
+        # timer_loading.stop()
+        
+        # # STEP 3: MODEL EXECUTION
+        # timer_model = Timer(self.logger, "Model execution")
+        
+        # self.enlight_model = EnlightModel(
+        #     dataloader_obj=self.data,
+        #     simulation_path=str(simulation_path),
+        #     logger=self.logger
+        # )
+        # self.enlight_model.run_model()
+        
+        # timer_model.stop()
+        
+        # # STEP 4: RESULTS EXTRACTION
+        # timer_results = Timer(self.logger, "Results extraction")
+        
+        # # Assuming EnlightModel has a method to save results
+        # # Adjust based on your actual implementation
+        # if hasattr(self.enlight_model, 'save_results'):
+        #     self.enlight_model.save_results(week=None)  # or year=year
+        # else:
+        #     self.logger.warning("No save_results method found in EnlightModel")
+        
+        # timer_results.stop()
+        
+        # self.logger.info(f"Yearly scenario '{scenario_name}' completed")
+        
+    def _run_yearly_test(self, scenario_config: Dict) -> None:
+        """
+        Execute a weekly simulation scenario.
+        
+        Args:
+            scenario_name: Name of the scenario
+            config: Configuration dictionary for this scenario
+        """
+        self.logger.info(f"Starting weekly run for scenario: {scenario_config['name']}")
         # DATA PREOPROCESSING
         # Prepare data using DataProcessor for each scenario
         # self.data_processor = DataProcessor(
@@ -109,8 +198,11 @@ class EnlightRunner:
         # # Run the model
         # self.enlight_model.run_model()
         
+        # Extract results
+        # extractor  =DataExtractor(
+        #     enlightmodel_obj=self.enlight_model,
         
-    def _run_weekly(self, scenario_name, config):
+    def _run_weekly(self, scenario_config: Dict) -> None:
         print('ciaooo weekly')
         # w1 = config["weeks"]["start_week"]
         # w2 = config["weeks"]["end_week"]

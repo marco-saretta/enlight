@@ -9,8 +9,7 @@ from pathlib import Path
 
 if __name__ == "__main__":
     # Get path of project root
-    file_path: Path = Path(__file__).resolve()
-    root_path: Path = file_path.parent    
+    root_path: Path = Path(__file__).parent.resolve()    
     
     # Create an instance of the EnlightRunner
     r = EnlightRunner(root_path=root_path)
@@ -18,4 +17,4 @@ if __name__ == "__main__":
     # Creates instance of the DataProcessor:
     r.run_scenario('scenario_1')
     
-    r.run_scenario('scenario_2')
+    #r.run_scenario('scenario_2')
