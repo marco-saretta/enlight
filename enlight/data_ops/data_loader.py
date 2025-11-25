@@ -37,6 +37,7 @@ class DataLoader:
         # Load YAML metadata (auxiliary scenario data)
         self._init_data_paths()
         self.load_yaml_aux_data()
+        self._init_time_index()
         
         # Load CSV datasets
         self.load_generation_data()
@@ -70,6 +71,19 @@ class DataLoader:
         
         self.base_path = self.root_path / 'simulations' / f'{self.scenario_name}'
         self.data_path = self.base_path / 'data'
+        
+    def _init_time_index(self):
+        """Initialize the time index for the scenario based on the loaded demand data."""
+        
+        if self.scenario_config.get('run_mode') == 'yearly':
+            self.T = 8760
+            
+        elif self.scenario_config.get('run_mode') == 'weekly':
+            self.T = 168
+        
+        self.time_index = np.arange(self.T)
+        self.times = list(self.time_index)  
+        # this is important: if the time index of the cost dataframes don't match the model variables' then it assumes 0-cost
 
     def _load_csv(self, filename: str, index_col=0) -> pd.DataFrame:
         """Helper function to load a CSV file. Raises FileNotFoundError if missing."""
@@ -195,10 +209,6 @@ class DataLoader:
         """Load inflexible demand data (classic and EV) filtered by week and validate."""
         self.demand_inflexible_classic = self._load_csv('demand_inflexible_classic.csv')
         self.demand_inflexible_ev = self._load_csv('demand_inflexible_ev.csv')
-
-        self.times = list(self.demand_inflexible_classic.index)  # this is important: if the time index of the cost dataframes don't match the model variables' then it assumes 0-cost
-        self.T = len(self.times)
-        self.time_index = np.arange(self.T)
         
         if self.scenario_config.get('run_mode') == 'weekly':
             self.demand_inflexible_classic = self._filter_by_week(self.demand_inflexible_classic, week=self.week) # type: ignore
@@ -466,7 +476,6 @@ class DataLoader:
             # We need to repeat the capacities for each generator for all time steps:
             self.conventional_units_el_cap = np.outer(np.ones(self.T), self.conventional_units_df.capacity_el.to_numpy())
 
-
     def load_conventional_units_marginal_cost(self):
         # Convert the production cost pandas Series to a DataFrame with time index
         if self.scenario_config.get('plant_aggregation'):
@@ -490,11 +499,15 @@ class DataLoader:
         G_Z[g, z] = 1 if generator g belongs to zone z, else 0.
         """
         # Create dummy variables (one-hot encode) from generator zone assignment
-        self.G_Z_df = pd.get_dummies(self.conventional_units_df['zone_el']).astype(int)
-
+        #self.G_Z_df = pd.get_dummies(self.conventional_units_df['zone_el']).astype(int)
+        if self.scenario_config.get('plant_aggregation'):
+            self.G_Z_df = pd.get_dummies(self.agg_g['zone_el']).astype(int)
+        else:
+            self.G_Z_df = pd.get_dummies(self.conventional_units_df['zone_el']).astype(int)
+ 
         # Ensure all zones are represented as columns, even if some have no conventional_units
         self.G_Z_df = self.G_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
-
+ 
         # Wrap into xarray with matching dimensions
         self.G_Z_xr = xr.DataArray(
             self.G_Z_df.values,
