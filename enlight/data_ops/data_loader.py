@@ -469,13 +469,17 @@ class DataLoader:
 
     def load_conventional_units_marginal_cost(self):
         # Convert the production cost pandas Series to a DataFrame with time index
-        self.conventional_units_marginal_cost_series = self.conventional_units_df.prodcost
+        if self.scenario_config.get('plant_aggregation'):
+            self.conventional_units_marginal_cost_series = self.agg_g.prodcost_weighted
+        else:
+            self.conventional_units_marginal_cost_series = self.conventional_units_df.prodcost
+        
         self.conventional_units_marginal_cost_series.index.name = "G"
 
         self.conventional_units_marginal_cost_df = pd.DataFrame(
             data=np.broadcast_to(self.conventional_units_marginal_cost_series.to_numpy(),
                             (len(self.times),
-                             len(self.conventional_units_marginal_cost_series))),
+                            len(self.conventional_units_marginal_cost_series))),
             index=self.times,
             columns=self.conventional_units_id
             )

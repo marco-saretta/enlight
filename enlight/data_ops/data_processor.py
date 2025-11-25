@@ -16,7 +16,7 @@ class DataProcessor:
     config_yaml: dict
     logger: Logger
     root_path: Path
-    overwrite_preprocessed_data: bool = False
+    overwrite_preprocessed_data: bool = True
         
     def __post_init__(self) -> None:
         
@@ -742,8 +742,13 @@ class DataProcessor:
         # --- Validation ---
         utils.validate_df_positive_numeric(demand_profile, profile_file)
 
+        demand_profile = demand_profile[self.bidding_zones_list]
+        
+        if self.run_mode == "weekly":
+            # Filter the bidding zones chosen in config.yaml
+            demand_profile['Week'] = profile_df["Week"]
+        
         # Filter the bidding zones chosen in config.yaml
-        demand_profile = demand_profile[self.bidding_zones_list]# + ["Week"]]
 
         return demand_profile, profile_df, projection_row
 

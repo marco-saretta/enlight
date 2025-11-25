@@ -17,7 +17,7 @@ scenario_list:
       label: "scenario_1"
       run_mode: "yearly"
       year: 2030
-      plant_aggregation: false
+      plant_aggregation: true
 
   - scenario_2:
       label: "scenario_2"
@@ -26,7 +26,7 @@ scenario_list:
       plant_aggregation: true
       week_range:
         start_week: 1
-        end_week: 2
+        end_week: 2         # 52 for full year
 
 
 # -----------------------------------------------------------------------------
