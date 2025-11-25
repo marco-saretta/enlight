@@ -71,7 +71,7 @@ class EnlightModel:
         Note: Unused variables will be excluded from the model unless referenced
                 in the objective or constraints.
         """
-
+        self.logger.info("Start building variables")
         # Onshore wind production [MW]
         # Shape: (T, Z)
         self.wind_onshore_offer = self.model.add_variables(
@@ -159,54 +159,122 @@ class EnlightModel:
             # State of charge (SOC) - [MWh]
         # Hydro pumped CONSUMPTION variable (shape: T x G_hydro_ps)
         # upper bound = pumped hydro capacity repeated for all time steps
-        self.hydro_ps_units_bid = self.model.add_variables(
+        if self.scenario_config.get('plant_aggregation'):
+            
+            self.hydro_ps_units_bid = self.model.add_variables(
+                lower=0,
+                upper=self.data.hydro_ps_units_el_cap,  # np.array
+                coords=[self.times, self.data.bidding_zones],
+                dims=["T", "Z"],
+                name='hydro_ps_units_bid'
+            )
+            
+            self.hydro_ps_units_offer = self.model.add_variables(
+                lower=0,
+                upper=self.data.hydro_ps_units_el_cap,  # np.array
+                coords=[self.times, self.data.bidding_zones],
+                dims=["T", "Z"],
+                name='hydro_ps_units_offer'
+            )
+            
+            self.hydro_ps_units_SOC = self.model.add_variables(
+                lower=0,
+                upper=self.data.hydro_ps_units_storage_cap,  # np.array
+                coords=[self.times, self.data.bidding_zones],
+                dims=["T", "Z"],
+                name='hydro_ps_units_SOC'
+            )
+            
+            self.bess_units_bid = self.model.add_variables(
+                lower=0,
+                upper=self.data.bess_units_el_cap,  # np.array
+                coords=[self.times, self.data.bidding_zones],
+                dims=["T", "Z"],
+                name='bess_units_bid'
+            )
+            self.bess_units_offer = self.model.add_variables(
+                lower=0,
+                upper=self.data.bess_units_el_cap,  # np.array
+                coords=[self.times, self.data.bidding_zones],
+                dims=["T", "Z"],
+                name='bess_units_offer'
+            )
+            self.bess_units_SOC = self.model.add_variables(
+                lower=0,
+                upper=self.data.bess_units_storage_cap,  # np.array
+                coords=[self.times, self.data.bidding_zones],
+                dims=["T", "Z"],
+                name='bess_units_SOC'
+            )
+        
+        else:
+            self.hydro_ps_units_bid = self.model.add_variables(
+                lower=0,
+                upper=self.data.hydro_ps_units_el_cap,  # np.array
+                coords=[self.times, self.data.hydro_ps_units_id],
+                dims=["T", "G_hydro_ps"],
+                name='hydro_ps_units_bid'
+            )
+            
+            self.hydro_ps_units_offer = self.model.add_variables(
+                lower=0,
+                upper=self.data.hydro_ps_units_el_cap,  # np.array
+                coords=[self.times, self.data.hydro_ps_units_id],
+                dims=["T", "G_hydro_ps"],
+                name='hydro_ps_units_offer'
+            )
+            self.hydro_ps_units_SOC = self.model.add_variables(
+                lower=0,
+                upper=self.data.hydro_ps_units_storage_cap,  # np.array
+                coords=[self.times, self.data.hydro_ps_units_id],
+                dims=["T", "G_hydro_ps"],
+                name='hydro_ps_units_SOC'
+            )
+
+            # The following three variables are for BESS:
+                # Bid / charge - [MW]
+                # Offer / discharge - [MW]
+                # State of charge (SOC) - [MWh]
+            # BESS charge variable (shape: T x G_hydro_ps)
+            # upper bound = BESS power capacity repeated for all time steps
+            self.bess_units_bid = self.model.add_variables(
+                lower=0,
+                upper=self.data.bess_units_el_cap,  # np.array
+                coords=[self.times, self.data.bess_units_id],
+                dims=["T", "G_bess"],
+                name='bess_units_bid'
+            )
+            self.bess_units_offer = self.model.add_variables(
+                lower=0,
+                upper=self.data.bess_units_el_cap,  # np.array
+                coords=[self.times, self.data.bess_units_id],
+                dims=["T", "G_bess"],
+                name='bess_units_offer'
+            )
+            self.bess_units_SOC = self.model.add_variables(
+                lower=0,
+                upper=self.data.bess_units_storage_cap,  # np.array
+                coords=[self.times, self.data.bess_units_id],
+                dims=["T", "G_bess"],
+                name='bess_units_SOC'
+            )
+        
+        # PtX bid
+        self.ptx_units_bid = self.model.add_variables(
             lower=0,
-            upper=self.data.hydro_ps_units_el_cap,  # np.array
-            coords=[self.times, self.data.hydro_ps_units_id],
-            dims=["T", "G_hydro_ps"],
-            name='hydro_ps_units_bid'
-        )
-        self.hydro_ps_units_offer = self.model.add_variables(
-            lower=0,
-            upper=self.data.hydro_ps_units_el_cap,  # np.array
-            coords=[self.times, self.data.hydro_ps_units_id],
-            dims=["T", "G_hydro_ps"],
-            name='hydro_ps_units_offer'
-        )
-        self.hydro_ps_units_SOC = self.model.add_variables(
-            lower=0,
-            upper=self.data.hydro_ps_units_storage_cap,  # np.array
-            coords=[self.times, self.data.hydro_ps_units_id],
-            dims=["T", "G_hydro_ps"],
-            name='hydro_ps_units_SOC'
+            upper=self.data.ptx_units_el_cap,
+            coords=[self.times, self.data.ptx_units_id],
+            dims=["T", "L_PtX"],
+            name='ptx_units_bid'
         )
 
-        # The following three variables are for BESS:
-            # Bid / charge - [MW]
-            # Offer / discharge - [MW]
-            # State of charge (SOC) - [MWh]
-        # BESS charge variable (shape: T x G_hydro_ps)
-        # upper bound = BESS power capacity repeated for all time steps
-        self.bess_units_bid = self.model.add_variables(
+        #  District heating bid for power-to-heat units
+        self.dh_units_bid = self.model.add_variables(
             lower=0,
-            upper=self.data.bess_units_el_cap,  # np.array
-            coords=[self.times, self.data.bess_units_id],
-            dims=["T", "G_bess"],
-            name='bess_units_bid'
-        )
-        self.bess_units_offer = self.model.add_variables(
-            lower=0,
-            upper=self.data.bess_units_el_cap,  # np.array
-            coords=[self.times, self.data.bess_units_id],
-            dims=["T", "G_bess"],
-            name='bess_units_offer'
-        )
-        self.bess_units_SOC = self.model.add_variables(
-            lower=0,
-            upper=self.data.bess_units_storage_cap,  # np.array
-            coords=[self.times, self.data.bess_units_id],
-            dims=["T", "G_bess"],
-            name='bess_units_SOC'
+            upper=self.data.dh_units_el_cap,
+            coords=[self.times, self.data.dh_units_id],
+            dims=["T", "L_DH"],
+            name='dh_units_bid'
         )
 
         # Electricity export
@@ -224,47 +292,104 @@ class EnlightModel:
             name='lineflow'
         )
 
+        self.logger.info("Finished building variables")
+        
     def _build_constraints(self):
         """
         Placeholder for adding model constraints.
         """
+        self.logger.info("Start building constraints")
         
-        self.power_balance = self.model.add_constraints(
+        if self.scenario_config.get('plant_aggregation'):
+            self.power_balance = self.model.add_constraints(
             (self.wind_onshore_offer
              + self.wind_offshore_offer
              + self.solar_pv_offer
              + self.hydro_ror_offer
              + self.conventional_units_offer.dot(self.data.G_Z_xr)  # type: ignore
              + self.hydro_res_units_offer.dot(self.data.G_hydro_res_Z_xr)
-             + self.hydro_ps_units_offer.dot(self.data.G_hydro_ps_Z_xr)
-             + self.bess_units_offer.dot(self.data.G_bess_Z_xr)
+             + self.hydro_ps_units_offer#.dot(self.data.G_hydro_ps_Z_xr)
+             + self.bess_units_offer#.dot(self.data.G_bess_Z_xr)
              ==
              self.demand_inflexible_classic_bid
              + self.demand_flexible_classic_bid
              + self.electricity_export
-             + self.hydro_ps_units_bid.dot(self.data.G_hydro_ps_Z_xr)
-             + self.bess_units_bid.dot(self.data.G_bess_Z_xr)
+             + self.hydro_ps_units_bid#.dot(self.data.G_hydro_ps_Z_xr)
+             + self.bess_units_bid#.dot(self.data.G_bess_Z_xr)
+            # + self.ptx_units_bid.dot(self.data.L_PtX_Z_xr)
+            # + self.dh_units_bid.dot(self.data.L_DH_Z_xr)
              ),
             name='power_balance'
             )
+            
+            self.logger.info("Added power balance constraint aggregated power plants")
+            
+        else:
+            self.power_balance = self.model.add_constraints(
+                (self.wind_onshore_offer
+                + self.wind_offshore_offer
+                + self.solar_pv_offer
+                + self.hydro_ror_offer
+                + self.conventional_units_offer.dot(self.data.G_Z_xr)  # type: ignore
+                + self.hydro_res_units_offer.dot(self.data.G_hydro_res_Z_xr)
+                + self.hydro_ps_units_offer.dot(self.data.G_hydro_ps_Z_xr)
+                + self.bess_units_offer.dot(self.data.G_bess_Z_xr)
+                ==
+                self.demand_inflexible_classic_bid
+                + self.demand_flexible_classic_bid
+                + self.electricity_export
+                + self.hydro_ps_units_bid.dot(self.data.G_hydro_ps_Z_xr)
+                + self.bess_units_bid.dot(self.data.G_bess_Z_xr)
+                ),
+                name='power_balance'
+                )
+            self.logger.info("Added power balance constraint disaggregated power plants")
+
 
         self.electricity_exports = self.model.add_constraints(
             (self.lineflow.dot(self.data.L_Z_xr) == self.electricity_export),  # type: ignore
             name='electricity_exports'
             )
+        self.logger.info("Added lineflow constraint ")
 
-        # For specifically the following constraint we need to check if any
-        #   hydro reservoir units are even in the model. Because if not, the
-        #   model will break.
-        if np.max(self.data.hydro_res_energy) > 0:
-            # self.bess_units_bid is empty if there are no hydro_res_units but
-            #   self.data.hydro_res_energy is not empty. It contains 0's in the
-            #   chosen bidding zones if they don't have any hydro reservoir energy.
-            self.hydro_res_energy_availability = self.model.add_constraints(
-                (self.hydro_res_units_offer.sum(dim='T').dot(self.data.G_hydro_res_Z_xr)
-                <= self.data.hydro_res_energy),  # Shape: (Z,)
-                name='hydro_res_energy_availability'
-            )
+
+        # Weekly res hydro availability constraint
+        if self.scenario_config.get('run_mode') == 'yearly':
+            
+            if np.max(self.data.hydro_res_energy) > 0:
+                self.hydro_res_energy_availability = {}
+                
+            for w in range(1, self.data.W+1):
+                # If this is not done as a loop we instead create W x Z constraints with TxG variables in each constraint (easily more than 2 million in each constraint where most are multiplied by 0)
+                hours_in_week = self.data.T_W_xr.coords["T"][
+                    self.data.T_W_xr.sel(W=w) == 1
+                ]  # e.g. [1, 2, 3, ..., 167, 168] in week 1 or [8569, 8570, ..., 8759, 8760] in week 52
+                self.hydro_res_energy_availability[w] = self.model.add_constraints(
+                    (self.hydro_res_units_offer.sel(T=hours_in_week).dot(  # shape: (168, G_hydro_res). Last week has 24 extra hours...
+                        self.data.G_hydro_res_Z_xr)  # shape: (168, Z)
+                    ).sum("T")  # shape: (Z,)
+                    <=
+                    self.data.hydro_res_energy.loc[w]  # shape: (Z,)
+                    ,
+                    name=f"hydro_res_energy_availability_{w}"
+                )
+            
+            
+        elif self.scenario_config.get('run_mode') == 'weekly':
+            # For specifically the following constraint we need to check if any
+            #   hydro reservoir units are even in the model. Because if not, the
+            #   model will break.
+            if np.max(self.data.hydro_res_energy) > 0:
+                # self.bess_units_bid is empty if there are no hydro_res_units but
+                #   self.data.hydro_res_energy is not empty. It contains 0's in the
+                #   chosen bidding zones if they don't have any hydro reservoir energy.
+                self.hydro_res_energy_availability = self.model.add_constraints(
+                    (self.hydro_res_units_offer.sum(dim='T').dot(self.data.G_hydro_res_Z_xr)
+                    <= self.data.hydro_res_energy),  # Shape: (Z,)
+                    name='hydro_res_energy_availability'
+                )
+                
+                
 
         self.demand_flexible_classic_limit = self.model.add_constraints(  # "amount" is the maximum weekly consumption of the flexible load in zone z
             self.demand_flexible_classic_bid.sum(dim='T')
@@ -295,11 +420,15 @@ class EnlightModel:
             ,
             name='bess_SOC_balance'
         )
+        
+        self.logger.info("Finished building constraints")
 
     def _build_objective(self):
         """
         Define the objective function for minimization of negative social welfare.
         """
+        
+        self.logger.info("Start building objective function")
         self.model.add_objective(
             expr = (
                 # Loads:
@@ -325,13 +454,13 @@ class EnlightModel:
             sense="min"
         )
 
-        print('obj added')
+        self.logger.info("Finished building objective function")
 
     def solve_model(self, solver_name='gurobi'):
         """
         Solve the model using the specified solver.
         """
-        self.logger.info("Start solving model")
+        self.logger.info(f"Start solving model with solver: {solver_name}")
         self.model.solve(solver_name=solver_name)
         self.logger.info('Model solved, good job champ!')
 

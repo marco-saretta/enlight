@@ -348,17 +348,51 @@ class DataLoader:
 
     def load_hydro_reservoir_data(self):
         """Load unit-specific data for various dispatchable generators."""
+        # Reservoir hydro units
         self.hydro_res_units = self._load_csv('hydro_reservoir_units.csv')
-        hydro_res_energy = self._load_csv('hydro_reservoir_energy.csv')
-        self.hydro_res_energy = hydro_res_energy  #.loc[self.week]
         self.hydro_res_units_id = list(self.hydro_res_units.index)  # Shape: (G_hydro_res,)
+        
+        if self.scenario_config.get('plant_aggregation'):
 
-        # We need to repeat the capacities for each hydro unit for all time steps:
-        self.hydro_res_units_el_cap = np.outer(np.ones(self.T), self.hydro_res_units.capacity_el.to_numpy())
+            # Aggregate hydro reservoir units by size (and zone)
+            self.agg_hres = utils.agg_by_zone_tech(
+                df=self.hydro_res_units,
+                tech="Technology"
+                )
+
+            # Set a new index with combined size and zone for the aggregated hydro reservoirs
+            self.agg_hres = utils.set_agg_idx(self.agg_hres)
+            self.hydro_res_units_id = list(self.agg_hres.index)
+            
+            # We repeat the capacities for each SIZE (by zone as well)
+            self.hydro_res_units_el_cap = np.outer(
+                np.ones(self.T),
+                self.agg_hres.capacity_el.to_numpy()
+            )
+        else:
+            # Fill the capacities for each hydro unit for all time steps
+            self.hydro_res_units_el_cap = np.outer(np.ones(self.T), self.hydro_res_units.capacity_el.to_numpy())
+                    
+
+        # Reservoir hydro energy 
+        hydro_res_energy = self._load_csv('hydro_reservoir_energy.csv')
+        
+        if self.scenario_config.get('run_mode') == 'weekly':
+            self.hydro_res_energy = hydro_res_energy.loc[self.week]
+        else:
+            self.hydro_res_energy = hydro_res_energy  #.loc[self.week]
 
     def load_hydro_res_units_marginal_cost(self):
+
+        if self.scenario_config.get('plant_aggregation'):
         # Convert the production cost pandas Series to a DataFrame with time index
-        self.hydro_res_units_marginal_cost_series = self.hydro_res_units.prodcost
+        # self.hydro_res_units_marginal_cost_series = self.hydro_res_units.prodcost
+        # Use the capacity-weighted average production cost per fuel type (and zone)
+            self.hydro_res_units_marginal_cost_series = self.agg_hres.prodcost_weighted
+            
+        else:
+            self.hydro_res_units_marginal_cost_series = self.hydro_res_units.prodcost
+
         self.hydro_res_units_marginal_cost_series.index.name = "G_hydro_res"
 
         self.hydro_res_units_marginal_cost_df = pd.DataFrame(
@@ -366,7 +400,8 @@ class DataLoader:
                                 (len(self.times),
                                 len(self.hydro_res_units_marginal_cost_series))),
             index=self.times,
-            columns=self.hydro_res_units_marginal_cost_series.index)
+            columns=self.hydro_res_units_marginal_cost_series.index
+            )
 
     def map_hydro_res_units_to_zones(self):
         """
@@ -374,7 +409,10 @@ class DataLoader:
         G_hydro_res_Z[g_hydro_res, z] = 1 if generator g_hydro_res belongs to zone z, else 0.
         """
         # Create dummy variables (one-hot encode) from generator zone assignment
-        self.G_hydro_res_Z_df = pd.get_dummies(self.hydro_res_units['zone_el']).astype(int)
+        if self.scenario_config.get('plant_aggregation'):
+            self.G_hydro_res_Z_df = pd.get_dummies(self.agg_hres['zone_el']).astype(int)
+        else:
+            self.G_hydro_res_Z_df = pd.get_dummies(self.hydro_res_units['zone_el']).astype(int)
 
         # Ensure all zones are represented as columns, even if some have no hydro reservoirs
         self.G_hydro_res_Z_df = self.G_hydro_res_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
@@ -392,21 +430,53 @@ class DataLoader:
     def load_hydro_pumped_data(self):
         """Load unit-specific data for various pumped hydro units."""
         self.hydro_ps_units = self._load_csv('hydro_pumped_units.csv')
-        self.hydro_ps_units_id = list(self.hydro_ps_units.index)  # Shape: (G_hydro_ps,)
 
-        # We need to repeat the charge/discharge and storage capacities for each hydro unit for all time steps:
-        self.hydro_ps_units_el_cap = np.outer(np.ones(self.T), self.hydro_ps_units.capacity_el.to_numpy())
-        self.hydro_ps_units_storage_cap = np.outer(np.ones(self.T), self.hydro_ps_units.Storage_Capacity.to_numpy())
 
-        # Create an xarray DataArray with the same dimensions and coordinates
-        #   as the model variables will have to avoid "UserWarning". Set the values
-        #   in all other time steps than T=0 to zero.
-        hydro_ps_initial_SOC_x_storage_cap = self.hydro_ps_initial_SOC * self.hydro_ps_units_storage_cap
-        hydro_ps_initial_SOC_x_storage_cap[1:, :] = 0  # Initial SOC only applies in the first hour (T=0)
-        self.hydro_ps_initial_SOC_x_storage_cap_xr = xr.DataArray(
-            data=hydro_ps_initial_SOC_x_storage_cap,
-            dims=["T", "G_hydro_ps"],
-            coords=(self.times, self.hydro_ps_units_id))
+        if self.scenario_config.get('plant_aggregation'):
+            # Aggregate pumped hydro storage units by zone (only one type of tech/size)
+            self.agg_phs = utils.agg_storage_by_zone(df=self.hydro_ps_units)
+
+            # Fill in 0s for any zones that do not has PHS
+            self.agg_phs = self.agg_phs.reindex(self.bidding_zones, fill_value=0)
+            
+            # We need to repeat the charge/discharge and storage capacities for each hydro unit for all time steps:
+            self.hydro_ps_units_el_cap = np.outer(
+                np.ones(self.T),
+                self.agg_phs.capacity_el.to_numpy()
+            )
+            self.hydro_ps_units_storage_cap = np.outer(
+                np.ones(self.T),
+                self.agg_phs.capacity_stor.to_numpy()
+            )
+        
+            # Create an xarray DataArray with the same dimensions and coordinates
+            # as the model variables will have to avoid "UserWarning". Set the values
+            # in all other time steps than T=0 to zero.
+            hydro_ps_initial_SOC_x_storage_cap = self.hydro_ps_initial_SOC * self.hydro_ps_units_storage_cap
+            hydro_ps_initial_SOC_x_storage_cap[1:, :] = 0  # Initial SOC only applies in the first hour (T=0)
+            self.hydro_ps_initial_SOC_x_storage_cap_xr = xr.DataArray(
+                data=hydro_ps_initial_SOC_x_storage_cap,
+                #dims=["T", "G_hydro_ps"],
+                #coords=(self.times, self.hydro_ps_units_id))
+                dims=["T", "Z"],
+                coords=(self.times, self.bidding_zones)
+            )
+        
+        else:
+            self.hydro_ps_units_id = list(self.hydro_ps_units.index)  # Shape: (G_hydro_ps,)
+            # We need to repeat the charge/discharge and storage capacities for each hydro unit for all time steps:
+            self.hydro_ps_units_el_cap = np.outer(np.ones(self.T), self.hydro_ps_units.capacity_el.to_numpy())
+            self.hydro_ps_units_storage_cap = np.outer(np.ones(self.T), self.hydro_ps_units.Storage_Capacity.to_numpy())
+
+            # Create an xarray DataArray with the same dimensions and coordinates
+            #   as the model variables will have to avoid "UserWarning". Set the values
+            #   in all other time steps than T=0 to zero.
+            hydro_ps_initial_SOC_x_storage_cap = self.hydro_ps_initial_SOC * self.hydro_ps_units_storage_cap
+            hydro_ps_initial_SOC_x_storage_cap[1:, :] = 0  # Initial SOC only applies in the first hour (T=0)
+            self.hydro_ps_initial_SOC_x_storage_cap_xr = xr.DataArray(
+                data=hydro_ps_initial_SOC_x_storage_cap,
+                dims=["T", "G_hydro_ps"],
+                coords=(self.times, self.hydro_ps_units_id))
 
     def load_hydro_ps_units_marginal_cost(self):
         # Convert the production cost pandas Series to a DataFrame with time index
@@ -414,47 +484,66 @@ class DataLoader:
             # both bid and offer prices, so two dataframes for "marginal costs" are
             # provided in a single dictionary
         # Initialize lists and dicts for dynamic handling
-        bid_and_offer_col_names = ["Pumped_cons", "Pumped_prod"]
-        bid_and_offer_new_col_names = ["Bid_price", "Offer_price"]
-        self.hydro_ps_units_marginal_cost_seriess = {}
-        self.hydro_ps_units_marginal_cost_dfs = {}
-
-        # Create series and dataframes for the bid and offer prices
-            # e.g. hydro_ps_units_marginal_cost_dfs["Bid_price"] = Pumped_cons from the csv
-        for k1, k2 in zip(bid_and_offer_col_names, bid_and_offer_new_col_names):
-            self.hydro_ps_units_marginal_cost_seriess[k2] = self.hydro_ps_units.loc[:,k1]
-            self.hydro_ps_units_marginal_cost_seriess[k2].index.name = "G_hydro_ps"
-            self.hydro_ps_units_marginal_cost_dfs[k2] = pd.DataFrame(
-                data=np.broadcast_to(self.hydro_ps_units_marginal_cost_seriess[k2].to_numpy(),
-                                     (len(self.times),
-                                      len(self.hydro_ps_units_marginal_cost_seriess[k2]))),
+        
+        if self.scenario_config.get('plant_aggregation'):
+            bid_and_offer_new_col_names = ["Bid_price", "Offer_price"]
+            self.hydro_ps_units_marginal_cost_dfs = {}
+            
+            for k in bid_and_offer_new_col_names:
+                self.hydro_ps_units_marginal_cost_dfs[k] = pd.DataFrame(
+                    data=np.broadcast_to(
+                        self.agg_phs[k.lower()+"_weighted"].to_numpy(),
+                        (len(self.times),
+                        len(self.bidding_zones))
+                    ),
                     index=self.times,
-                    columns=self.hydro_ps_units_id)
+                    columns=self.bidding_zones
+                )
+        else:                
+            
+            bid_and_offer_col_names = ["Pumped_cons", "Pumped_prod"]
+            bid_and_offer_new_col_names = ["Bid_price", "Offer_price"]
+            self.hydro_ps_units_marginal_cost_seriess = {}
+            self.hydro_ps_units_marginal_cost_dfs = {}
+
+            # Create series and dataframes for the bid and offer prices
+                # e.g. hydro_ps_units_marginal_cost_dfs["Bid_price"] = Pumped_cons from the csv
+            for k1, k2 in zip(bid_and_offer_col_names, bid_and_offer_new_col_names):
+                self.hydro_ps_units_marginal_cost_seriess[k2] = self.hydro_ps_units.loc[:,k1]
+                self.hydro_ps_units_marginal_cost_seriess[k2].index.name = "G_hydro_ps"
+                self.hydro_ps_units_marginal_cost_dfs[k2] = pd.DataFrame(
+                    data=np.broadcast_to(self.hydro_ps_units_marginal_cost_seriess[k2].to_numpy(),
+                                        (len(self.times),
+                                        len(self.hydro_ps_units_marginal_cost_seriess[k2]))),
+                        index=self.times,
+                        columns=self.hydro_ps_units_id)
 
     def map_hydro_ps_units_to_zones(self):
         """
         Build binary hydro_ps-to-zone assignment matrix (G x Z).
         G_hydro_ps_Z[g_hydro_ps, z] = 1 if hydro ps unit G_hydro_ps belongs to zone z, else 0.
         """
-        # Create dummy variables (one-hot encode) from generator zone assignment
-        self.G_hydro_ps_Z_df = pd.get_dummies(self.hydro_ps_units['zone_el']).astype(int)
+        if self.scenario_config.get('plant_aggregation'):
+            pass
+        else:        
+            # Create dummy variables (one-hot encode) from generator zone assignment
+            self.G_hydro_ps_Z_df = pd.get_dummies(self.hydro_ps_units['zone_el']).astype(int)
 
-        # Ensure all zones are represented as columns, even if some have no conventional_units
-        self.G_hydro_ps_Z_df = self.G_hydro_ps_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
+            # Ensure all zones are represented as columns, even if some have no conventional_units
+            self.G_hydro_ps_Z_df = self.G_hydro_ps_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
 
-        # Wrap into xarray with matching dimensions
-        self.G_hydro_ps_Z_xr = xr.DataArray(
-            self.G_hydro_ps_Z_df.values,
-            coords={
-                "G_hydro_ps": self.hydro_ps_units_id,   # Generator labels (must match dims in thermal_gen_bid_vol)
-                "Z": self.bidding_zones     # Zone labels
-            },
-            dims=["G_hydro_ps", "Z"]            # Dimension names for alignment in dot product
-        )
+            # Wrap into xarray with matching dimensions
+            self.G_hydro_ps_Z_xr = xr.DataArray(
+                self.G_hydro_ps_Z_df.values,
+                coords={
+                    "G_hydro_ps": self.hydro_ps_units_id,   # Generator labels (must match dims in thermal_gen_bid_vol)
+                    "Z": self.bidding_zones     # Zone labels
+                },
+                dims=["G_hydro_ps", "Z"]            # Dimension names for alignment in dot product
+            )
 
     def load_conventional_units_data(self):
         self.conventional_units_df = self._load_csv('conventional_thermal_units.csv')
-        self.conventional_units_id = list(self.conventional_units_df.index)       # Shape: (G,)
 
         if self.scenario_config.get('plant_aggregation'):
             
@@ -474,6 +563,7 @@ class DataLoader:
             
         else:
             # We need to repeat the capacities for each generator for all time steps:
+            self.conventional_units_id = list(self.conventional_units_df.index)       # Shape: (G,)
             self.conventional_units_el_cap = np.outer(np.ones(self.T), self.conventional_units_df.capacity_el.to_numpy())
 
     def load_conventional_units_marginal_cost(self):
@@ -521,63 +611,128 @@ class DataLoader:
     def load_bess_units(self):
         """Load battery energy storage system (BESS) unit data."""
         self.bess_units_df = self._load_csv('bess_units.csv')
-        self.bess_units_id = list(self.bess_units_df.index)  # Shape: (G_bess,)
+        
+        if self.scenario_config.get('plant_aggregation'):
+            # Aggregate BESS units by zone (only one type of tech/size)
+            self.agg_bess = utils.agg_storage_by_zone(
+                df=self.bess_units_df,
+                bid_price="charge_bid_price",
+                offer_price="discharge_bid_price",
+                storage_cap="storage_capacity")
 
-        # We need to repeat the charge/discharge and storage capacities for each bess unit for all time steps:
-        self.bess_units_el_cap = np.outer(np.ones(self.T), self.bess_units_df.capacity_el.to_numpy())
-        self.bess_units_storage_cap = np.outer(np.ones(self.T), self.bess_units_df.storage_capacity.to_numpy())
+            # Fill in 0s for any zones that do not has PHS
+            self.agg_bess = self.agg_bess.reindex(self.bidding_zones, fill_value=0)
 
-        # Create an xarray DataArray of the initial SOC in MWh to avoid "UserWarning".
-        #   This is identical to the hydro_ps initial SOC handling above.
-        bess_initial_SOC_x_storage_cap = self.bess_initial_SOC * self.bess_units_storage_cap
-        bess_initial_SOC_x_storage_cap[1:, :] = 0  # Initial SOC only applies in the first hour (T=0)
-        self.bess_initial_SOC_x_storage_cap_xr = xr.DataArray(
-            data=bess_initial_SOC_x_storage_cap,
-            dims=["T", "G_bess"],
-            coords=(self.times, self.bess_units_id))
+            # self.bess_units_id = list(self.bess_units_df.index)  # Shape: (G_bess,)
+            # No longer any unit id's when aggregating by zone
+
+
+            # We need to repeat the charge/discharge and storage capacities for each bess unit for all time steps:
+            self.bess_units_el_cap = np.outer(
+                np.ones(self.T),
+                self.agg_bess.capacity_el.to_numpy()
+            )
+            self.bess_units_storage_cap = np.outer(
+                np.ones(self.T),
+                self.agg_bess.capacity_stor.to_numpy()
+            )
+
+            # Create an xarray DataArray of the initial SOC in MWh to avoid "UserWarning".
+            #   This is identical to the hydro_ps initial SOC handling above.
+            bess_initial_SOC_x_storage_cap = self.bess_initial_SOC * self.bess_units_storage_cap
+            bess_initial_SOC_x_storage_cap[1:, :] = 0  # Initial SOC only applies in the first hour (T=0)
+            self.bess_initial_SOC_x_storage_cap_xr = xr.DataArray(
+                data=bess_initial_SOC_x_storage_cap,
+                # dims=["T", "G_bess"],
+                # coords=(self.times, self.bess_units_id))
+                dims=["T", "Z"],
+                coords=(self.times, self.bidding_zones)
+            )
+            
+        else:
+            
+            self.bess_units_id = list(self.bess_units_df.index)  # Shape: (G_bess,)
+
+            # We need to repeat the charge/discharge and storage capacities for each bess unit for all time steps:
+            self.bess_units_el_cap = np.outer(np.ones(self.T), self.bess_units_df.capacity_el.to_numpy())
+            self.bess_units_storage_cap = np.outer(np.ones(self.T), self.bess_units_df.storage_capacity.to_numpy())
+
+            # Create an xarray DataArray of the initial SOC in MWh to avoid "UserWarning".
+            #   This is identical to the hydro_ps initial SOC handling above.
+            bess_initial_SOC_x_storage_cap = self.bess_initial_SOC * self.bess_units_storage_cap
+            bess_initial_SOC_x_storage_cap[1:, :] = 0  # Initial SOC only applies in the first hour (T=0)
+            self.bess_initial_SOC_x_storage_cap_xr = xr.DataArray(
+                data=bess_initial_SOC_x_storage_cap,
+                dims=["T", "G_bess"],
+                coords=(self.times, self.bess_units_id))
 
     def load_bess_units_marginal_cost(self):
         # Convert the production cost pandas Series to a DataFrame with time index
-            # Like pumped hydro storage, bess requires both bid and offer prices,
-            # so two dataframes for "marginal costs" are provided in a single dictionary
+        # Like pumped hydro storage, bess requires both bid and offer prices,
+        # so two dataframes for "marginal costs" are provided in a single dictionary
         # Initialize lists and dicts for dynamic handling
-        bid_and_offer_col_names = ["charge_bid_price", "discharge_bid_price"]
-        bid_and_offer_new_col_names = ["Bid_price", "Offer_price"]
-        self.bess_units_marginal_cost_seriess = {}
-        self.bess_units_marginal_cost_dfs = {}
 
-        # Create series and dataframes for the bid and offer prices
-            # e.g. bess_units_marginal_cost_dfs["Bid_price"] = charge_bid_price from the csv
-        for k1, k2 in zip(bid_and_offer_col_names, bid_and_offer_new_col_names):
-            self.bess_units_marginal_cost_seriess[k2] = self.bess_units_df.loc[:,k1]
-            self.bess_units_marginal_cost_seriess[k2].index.name = "G_bess"
-            self.bess_units_marginal_cost_dfs[k2] = pd.DataFrame(
-                data=np.broadcast_to(self.bess_units_marginal_cost_seriess[k2].to_numpy(),
-                                     (len(self.times),
-                                      len(self.bess_units_marginal_cost_seriess[k2]))),
+        if self.scenario_config.get('plant_aggregation'):
+            
+            bid_and_offer_new_col_names = ["Bid_price", "Offer_price"]
+            
+            self.bess_units_marginal_cost_dfs = {}
+            
+            for k in bid_and_offer_new_col_names:
+                self.bess_units_marginal_cost_dfs[k] = pd.DataFrame(
+                    data=np.broadcast_to(
+                        self.agg_bess[k.lower()+"_weighted"].to_numpy(),
+                        (len(self.times),
+                        len(self.bidding_zones))
+                    ),
                     index=self.times,
-                    columns=self.bess_units_id)
+                    columns=self.bidding_zones
+            )
+                
+        else:
+            
+            bid_and_offer_col_names = ["charge_bid_price", "discharge_bid_price"]
+            bid_and_offer_new_col_names = ["Bid_price", "Offer_price"]
+            self.bess_units_marginal_cost_seriess = {}
+            self.bess_units_marginal_cost_dfs = {}
+
+            # Create series and dataframes for the bid and offer prices
+                # e.g. bess_units_marginal_cost_dfs["Bid_price"] = charge_bid_price from the csv
+            for k1, k2 in zip(bid_and_offer_col_names, bid_and_offer_new_col_names):
+                self.bess_units_marginal_cost_seriess[k2] = self.bess_units_df.loc[:,k1]
+                self.bess_units_marginal_cost_seriess[k2].index.name = "G_bess"
+                self.bess_units_marginal_cost_dfs[k2] = pd.DataFrame(
+                    data=np.broadcast_to(self.bess_units_marginal_cost_seriess[k2].to_numpy(),
+                                        (len(self.times),
+                                        len(self.bess_units_marginal_cost_seriess[k2]))),
+                        index=self.times,
+                        columns=self.bess_units_id)
 
     def map_bess_units_to_zones(self):
         """
         Build binary BESS-to-zone assignment matrix (G_bess x Z).
         G_bess_Z[g_bess, z] = 1 if BESS unit g_bess belongs to zone z, else 0.
         """
-        # Create dummy variables (one-hot encode) from generator zone assignment
-        self.G_bess_Z_df = pd.get_dummies(self.bess_units_df['zone_el']).astype(int)
+        
+        
+        if self.scenario_config.get('plant_aggregation'):
+            pass
+        else:
+            # Create dummy variables (one-hot encode) from generator zone assignment
+            self.G_bess_Z_df = pd.get_dummies(self.bess_units_df['zone_el']).astype(int)
 
-        # Ensure all zones are represented as columns, even if some have no conventional_units
-        self.G_bess_Z_df = self.G_bess_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
+            # Ensure all zones are represented as columns, even if some have no conventional_units
+            self.G_bess_Z_df = self.G_bess_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
 
-        # Wrap into xarray with matching dimensions
-        self.G_bess_Z_xr = xr.DataArray(
-            self.G_bess_Z_df.values,
-            coords={
-                "G_bess": self.bess_units_id,   # Generator labels (must match dims in thermal_gen_bid_vol)
-                "Z": self.bidding_zones     # Zone labels
-            },
-            dims=["G_bess", "Z"]            # Dimension names for alignment in dot product
-        )
+            # Wrap into xarray with matching dimensions
+            self.G_bess_Z_xr = xr.DataArray(
+                self.G_bess_Z_df.values,
+                coords={
+                    "G_bess": self.bess_units_id,   # Generator labels (must match dims in thermal_gen_bid_vol)
+                    "Z": self.bidding_zones     # Zone labels
+                },
+                dims=["G_bess", "Z"]            # Dimension names for alignment in dot product
+            )
 
     def load_ptx_data(self):
         self.ptx_units_df = self._load_csv('ptx_units.csv')

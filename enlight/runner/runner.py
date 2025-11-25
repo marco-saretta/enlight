@@ -130,7 +130,7 @@ class EnlightRunner:
         # STEP 2: DATA LOADING
         timer_loading = Timer(self.logger, "Data loading")
         
-        self.data_y = DataLoader(
+        self.data = DataLoader(
             scenario_name=scenario_name,
             scenario_config=scenario_config,
             config_yaml=self.config_yaml,
@@ -140,22 +140,22 @@ class EnlightRunner:
         
         timer_loading.stop()
         
-        # # STEP 3: MODEL EXECUTION
-        # timer_model = Timer(self.logger, "Model execution")
+        # STEP 3: MODEL EXECUTION
+        timer_model = Timer(self.logger, "Model execution")
         
-        # self.enlight_model = EnlightModel(
-        #     data=self.data_y,
-        #     scenario_name=scenario_name,
-        #     scenario_config=scenario_config,
-        #     config_yaml=self.config_yaml,
-        #     root_path=self.root_path,
-        #     logger=self.logger,
-        # )
-        # self.enlight_model.run_model()
+        self.enlight_model = EnlightModel(
+            data=self.data,
+            scenario_name=scenario_name,
+            scenario_config=scenario_config,
+            config_yaml=self.config_yaml,
+            root_path=self.root_path,
+            logger=self.logger,
+        )
+        self.enlight_model.run_model()
         
-        # timer_model.stop()
+        timer_model.stop()
         
-        # # STEP 4: RESULTS EXTRACTION
+        # # STEP 4: EXPORT RESULTS
         # timer_results = Timer(self.logger, "Results extraction")
         
         # # Assuming EnlightModel has a method to save results
@@ -211,24 +211,26 @@ class EnlightRunner:
                 )
             
             # STEP 3: MODEL EXECUTION
-            # timer_model = Timer(self.logger, "Model execution")
+            timer_model = Timer(self.logger, "Model execution")
             
-            # self.enlight_model = EnlightModel(
-            #     data=self.data_w,
-            #     scenario_name=scenario_name,
-            #     scenario_config=scenario_config,
-            #     config_yaml=self.config_yaml,
-            #     root_path=self.root_path,
-            #     logger=self.logger,
-            # )
-            # self.enlight_model.run_model()
+            self.enlight_model = EnlightModel(
+                data=self.data_w,
+                scenario_name=scenario_name,
+                scenario_config=scenario_config,
+                config_yaml=self.config_yaml,
+                root_path=self.root_path,
+                logger=self.logger,
+            )
+            self.enlight_model.run_model()
             
-            # timer_model.stop()
+            timer_model.stop()
             
-            # Extract results
-            # extractor  =DataExtractor(
+            # STEP 4: STORE RESULTS
+            # self.exporter = DataExporter(
             #     enlightmodel_obj=self.enlight_model,
         
+        # Step 5: CONCATENATE RESULTS
+        # self.exporter.concatenate()
 
         
     def load_data_all_simulations(self, simulation_path: Path) -> None:
