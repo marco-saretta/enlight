@@ -17,7 +17,7 @@ scenario_list:
       label: "scenario_1"
       run_mode: "yearly"
       year: 2030
-      plant_aggregation: true
+      plant_aggregation: false
 
   - scenario_2:
       label: "scenario_2"

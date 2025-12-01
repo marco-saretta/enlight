@@ -355,25 +355,25 @@ class EnlightModel:
 # TODO HYDRO CONSTR
 #----------------
         # # Weekly res hydro availability constraint
-        # if self.scenario_config.get('run_mode') == 'yearly':
+        if self.scenario_config.get('run_mode') == 'yearly':
             
-        #     if np.max(self.data.hydro_res_energy) > 0:
-        #         self.hydro_res_energy_availability = {}
+            if np.max(self.data.hydro_res_energy) > 0:
+                self.hydro_res_energy_availability = {}
                 
-        #     for w in range(1, self.data.W+1):
-        #         # If this is not done as a loop we instead create W x Z constraints with TxG variables in each constraint (easily more than 2 million in each constraint where most are multiplied by 0)
-        #         hours_in_week = self.data.T_W_xr.coords["T"][
-        #             self.data.T_W_xr.sel(W=w) == 1
-        #         ]  # e.g. [1, 2, 3, ..., 167, 168] in week 1 or [8569, 8570, ..., 8759, 8760] in week 52
-        #         self.hydro_res_energy_availability[w] = self.model.add_constraints(
-        #             (self.hydro_res_units_offer.sel(T=hours_in_week).dot(  # shape: (168, G_hydro_res). Last week has 24 extra hours...
-        #                 self.data.G_hydro_res_Z_xr)  # shape: (168, Z)
-        #             ).sum("T")  # shape: (Z,)
-        #             <=
-        #             self.data.hydro_res_energy.loc[w]  # shape: (Z,)
-        #             ,
-        #             name=f"hydro_res_energy_availability_{w}"
-        #         )
+            for w in range(1, self.data.W+1):
+                # If this is not done as a loop we instead create W x Z constraints with TxG variables in each constraint (easily more than 2 million in each constraint where most are multiplied by 0)
+                hours_in_week = self.data.T_W_xr.coords["T"][
+                    self.data.T_W_xr.sel(W=w) == 1
+                ]  # e.g. [1, 2, 3, ..., 167, 168] in week 1 or [8569, 8570, ..., 8759, 8760] in week 52
+                self.hydro_res_energy_availability[w] = self.model.add_constraints(
+                    (self.hydro_res_units_offer.sel(T=hours_in_week).dot(  # shape: (168, G_hydro_res). Last week has 24 extra hours...
+                        self.data.G_hydro_res_Z_xr)  # shape: (168, Z)
+                    ).sum("T")  # shape: (Z,)
+                    <=
+                    self.data.hydro_res_energy.loc[w]  # shape: (Z,)
+                    ,
+                    name=f"hydro_res_energy_availability_{w}"
+                )
             
             
         # elif self.scenario_config.get('run_mode') == 'weekly':
@@ -393,8 +393,9 @@ class EnlightModel:
                 
 
         self.demand_flexible_classic_limit = self.model.add_constraints(  # "amount" is the maximum weekly consumption of the flexible load in zone z
-            self.demand_flexible_classic_bid.sum(dim='T')
-            <= self.data.flexible_demands_dfs['demand_flexible_classic']['amount']
+            (self.data.T_W_xr * self.demand_flexible_classic_bid).sum("T")  # shape: (W, Z)
+            <=
+            self.data.flexible_demands_dfs["demand_flexible_classic"]["amount"]
             ,
             name='demand_flexible_classic_limit'
         )

@@ -221,6 +221,7 @@ class DataLoader:
         )
         self.hydro_ps_initial_SOC = self.yaml_data.get('hydro_ps_initial_soc')
 
+
     # -------------------------------------------------------------------------
     # Generation data
     # -------------------------------------------------------------------------
@@ -320,8 +321,10 @@ class DataLoader:
         self.T_W_xr = xr.DataArray(
             self.T_W_df.values,
             coords={
-                "T": self.times,   # match with e.g. hydro_res_units_offer
-                "W": np.arange(1, self.W+1)
+                # TODO check this 
+                #"T": self.times,   # match with e.g. hydro_res_units_offer
+                "T": np.arange(1, self.T + 1),
+                "W": np.arange(1, self.W + 1)
             },
             dims=["T", "W"]
         )

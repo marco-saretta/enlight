@@ -73,7 +73,7 @@ class EnlightRunner:
             len(self.bidding_zones)
         )
 
-    def run_scenario(self, scenario_name: str) -> None:
+    def run_scenario(self, scenario_name: str, dry_run: bool = False) -> None:
             """
             Run a specific scenario based on its configuration.
             """
@@ -92,10 +92,10 @@ class EnlightRunner:
             self.logger.info(f"Running scenario '{scenario_name}' in mode: {mode}")
 
             if mode == "yearly":
-                self._run_yearly(scenario_name, scenario_config)
+                self._run_yearly(scenario_name, scenario_config, dry_run)
 
             elif mode == "weekly":
-                self._run_weekly(scenario_name, scenario_config)
+                self._run_weekly(scenario_name, scenario_config, dry_run)
 
             else:
                 raise ValueError(f"Unknown run_mode: '{mode}'. Expected 'yearly' or 'weekly'")
@@ -104,7 +104,7 @@ class EnlightRunner:
             scenario_timer.stop()
             self.logger.info(f"Scenario '{scenario_name}' completed successfully\n")
 
-    def _run_yearly(self, scenario_name, scenario_config: Dict) -> None:
+    def _run_yearly(self, scenario_name, scenario_config: Dict, dry_run) -> None:
         """
         Execute a yearly simulation scenario.
         
@@ -142,16 +142,18 @@ class EnlightRunner:
         
         # STEP 3: MODEL EXECUTION
         timer_model = Timer(self.logger, "Model execution")
-        
-        self.enlight_model = EnlightModel(
-            data=self.data,
-            scenario_name=scenario_name,
-            scenario_config=scenario_config,
-            config_yaml=self.config_yaml,
-            root_path=self.root_path,
-            logger=self.logger,
-        )
-        self.enlight_model.run_model()
+        if dry_run:
+            pass
+        else:
+            self.enlight_model = EnlightModel(
+                data=self.data,
+                scenario_name=scenario_name,
+                scenario_config=scenario_config,
+                config_yaml=self.config_yaml,
+                root_path=self.root_path,
+                logger=self.logger
+                )
+            self.enlight_model.run_model()
         
         timer_model.stop()
         
@@ -169,7 +171,7 @@ class EnlightRunner:
         
         # self.logger.info(f"Yearly scenario '{scenario_name}' completed")
         
-    def _run_weekly(self, scenario_name, scenario_config: Dict) -> None:
+    def _run_weekly(self, scenario_name, scenario_config: Dict, dry_run) -> None:
         """
         Execute a weekly simulation scenario.
         
@@ -197,7 +199,6 @@ class EnlightRunner:
         end_week = week_dict['end_week']
         
         week_range = range(start_week, end_week + 1)
-        
         for week in tqdm(week_range, desc="Running weekly simulations"):
             
             # STEP 2: DATA LOADING
@@ -211,7 +212,11 @@ class EnlightRunner:
                 )
             
             # STEP 3: MODEL EXECUTION
-            timer_model = Timer(self.logger, "Model execution")
+        timer_model = Timer(self.logger, "Model execution")
+        
+        if dry_run:
+            pass
+        else:
             
             self.enlight_model = EnlightModel(
                 data=self.data_w,
@@ -223,7 +228,7 @@ class EnlightRunner:
             )
             self.enlight_model.run_model()
             
-            timer_model.stop()
+        timer_model.stop()
             
             # STEP 4: STORE RESULTS
             # self.exporter = DataExporter(

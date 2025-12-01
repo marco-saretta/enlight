@@ -15,7 +15,7 @@ if __name__ == "__main__":
     r = EnlightRunner(root_path=root_path)
     
     # Creates instance of the DataProcessor:
-    r.run_scenario('scenario_1')
+    r.run_scenario('scenario_1', dry_run = False)
     
     #r.run_scenario('scenario_2')
     
