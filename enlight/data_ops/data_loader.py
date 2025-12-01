@@ -1,108 +1,135 @@
-from pathlib import Path
 from dataclasses import dataclass
 from logging import Logger
+from pathlib import Path
+
+import numpy as np
 import pandas as pd
 import xarray as xr
-import numpy as np
 import yaml
+
 import enlight.utils as utils
+
 
 @dataclass
 class DataLoader:
     """
-    Loads energy system input data for a given week from structured CSV files
-    and a YAML auxiliary scenario metadata file.
-    
-    Example usage:
-    open interactive window in VSCode,
-    >>> cd ../../
-    run the script data_loader.py in the interactive window,
-    >>> data = DataLoader(week=1, input_path='simulations/scenario_1/data')
+    Load energy system input data (renewables, demand, storage, lines, etc.)
+    for a given scenario and optionally a specific week.
     """
     scenario_name: str
     scenario_config: dict
     config_yaml: dict
     logger: Logger
     root_path: Path
-    week: int | None = None   
-    
-    def __post_init__(self):
-        """
-        Post-initialization to load and validate all required datasets.
-        """
-        # Initialize logger
-        self.logger.info(f"-------------- DATA LOADER: {self.scenario_name} --------------")
+    week: int | None = None
+
+    # -------------------------------------------------------------------------
+    # Initialization
+    # -------------------------------------------------------------------------
+    def __post_init__(self) -> None:
+        """Post-init: prepare paths, load files, and build mappings."""
+        self.logger.info(
+            f"-------------- DATA LOADER: {self.scenario_name} --------------"
+        )
         
-        
-        # Load YAML metadata (auxiliary scenario data)
         self._init_data_paths()
         self.load_yaml_aux_data()
         self._init_time_index()
-        
-        # Load CSV datasets
+
+        # Renewables & demand
         self.load_generation_data()
         self.load_inflexible_demand_data()
         self.load_flexible_demand_data()
+
+        # Time mapping
         self.map_hours_to_weeks()
+
+        # Transmission lines
         self.load_lines_data()
         self.map_transmission_lines()
+
+        # Hydro reservoir
         self.load_hydro_reservoir_data()
         self.load_hydro_res_units_marginal_cost()
         self.map_hydro_res_units_to_zones()
+
+        # Pumped hydro
         self.load_hydro_pumped_data()
         self.load_hydro_ps_units_marginal_cost()
         self.map_hydro_ps_units_to_zones()
+
+        # Conventional thermal
         self.load_conventional_units_data()
         self.load_conventional_units_marginal_cost()
         self.map_conventional_units_to_zones()
+
+        # BESS
         self.load_bess_units()
         self.load_bess_units_marginal_cost()
         self.map_bess_units_to_zones()
+
+        # PtX
         self.load_ptx_data()
         self.load_ptx_bid_prices()
         self.map_ptx_units_to_zones()
+
+        # DH
         self.load_dh_data()
         self.load_dh_bid_prices()
         self.map_dh_units_to_zones()
 
+    # -------------------------------------------------------------------------
+    # Path and time utilities
+    # -------------------------------------------------------------------------
     def _init_data_paths(self) -> None:
-        """Initialize all data directory paths according to the updated folder structure."""
-        # Demand paths
+        """Initialize scenario base and data directories."""
+        self.base_path = self.root_path / "simulations" / self.scenario_name
+        self.data_path = self.base_path / "data"
         
-        self.base_path = self.root_path / 'simulations' / f'{self.scenario_name}'
-        self.data_path = self.base_path / 'data'
-        
-    def _init_time_index(self):
-        """Initialize the time index for the scenario based on the loaded demand data."""
-        
-        if self.scenario_config.get('run_mode') == 'yearly':
+    def _init_time_index(self) -> None:
+        """Build hourly time index based on scenario run mode."""
+        mode = self.scenario_config.get("run_mode")
+
+        if mode == "yearly":
             self.T = 8760
-            
-        elif self.scenario_config.get('run_mode') == 'weekly':
+        elif mode == "weekly":
             self.T = 168
-        
+        else:
+            raise ValueError(f"Unknown run_mode: {mode}")
+
         self.time_index = np.arange(self.T)
-        self.times = list(self.time_index)  
-        # this is important: if the time index of the cost dataframes don't match the model variables' then it assumes 0-cost
+        self.times = list(self.time_index)
 
-    def _load_csv(self, filename: str, index_col=0) -> pd.DataFrame:
-        """Helper function to load a CSV file. Raises FileNotFoundError if missing."""
-        file_path = self.data_path / filename
-        if not file_path.exists():
-            raise FileNotFoundError(f"Required file not found: {file_path}")
-        return pd.read_csv(file_path, index_col=index_col)
+    def _load_csv(
+        self,
+        filename: str,
+        index_col: int | None = 0,
+    ) -> pd.DataFrame:
+        """Load CSV file from data path, raise if missing."""
+        path = self.data_path / filename
+        if not path.exists():
+            raise FileNotFoundError(f"Missing required file: {path}")
+        return pd.read_csv(path, index_col=index_col)
 
-    def _filter_by_week(self, df: pd.DataFrame, week: int, hours_per_week: int = 168, week_col: str = 'Week') -> pd.DataFrame:
+    def _filter_by_week(
+        self,
+        df: pd.DataFrame,
+        week: int,
+        hours_per_week: int = 168,
+        week_col: str = 'Week'
+    ) -> pd.DataFrame:
         """
         Slice a continuous hourly dataframe into week-sized blocks.
         The final week absorbs any leftover hours.
 
         Example for length 8760:
             Weeks 1–51: 168 rows each
-            Week 52:    168 + 24 = 192 rows (final remainder)
+            Week 52: 168 + 24 = 192 rows (final remainder)
         """
-        
-        # TODO: Delete these two following lines, as the rest of the funciton already creats the week index and then slides based on that. In the input data of the preprocessing, it should be removed the week column as well.
+        # TODO: Delete these two following lines, as the rest of the function
+        # already creates the week index and then slices based on that.
+        # In the input data of the preprocessing, the week column should be
+        # removed as well.
         if week_col in df.columns:
             return df[df[week_col] == self.week].drop(columns=week_col)
 
@@ -110,15 +137,16 @@ class DataLoader:
             raise ValueError("week must be >= 1")
 
         n = len(df)
-        n_full_weeks = n // hours_per_week       # e.g. 8760 // 168 = 52
-        remainder = n % hours_per_week           # e.g. 24
+        n_full_weeks = n // hours_per_week
+        remainder = n % hours_per_week
 
         # Last week number (includes the remainder)
         last_week = n_full_weeks if remainder == 0 else n_full_weeks
 
         if week > last_week:
             raise IndexError(
-                f"Week {week} is out of range. Maximum allowable week is {last_week}."
+                f"Week {week} is out of range. "
+                f"Maximum allowable week is {last_week}."
             )
 
         # Standard start index
@@ -132,78 +160,105 @@ class DataLoader:
 
         return df.iloc[start:end].copy()
 
+    # -------------------------------------------------------------------------
+    # Auxiliary data loading
+    # -------------------------------------------------------------------------
     def load_yaml_aux_data(self):
-        """
-        Load auxiliary metadata for the scenario from a YAML file.
-        Exposes the content as a dictionary: self.yaml_data
-        and attaches key values as class attributes (flattened).
-        """
+        """Load auxiliary metadata from YAML and expose as attributes."""
         yaml_path = self.data_path / f'{self.scenario_name}_aux_data.yaml'
         
         with open(yaml_path, 'r') as f:
             self.yaml_data = yaml.safe_load(f)
 
-        # Flatten and assign attributes for convenience
+        # Flatten and assign attributes
         self.scenario_name = self.yaml_data.get('scenario_name')
         self.prediction_year = self.yaml_data.get('prediction_year')
         self.bidding_zones = self.yaml_data.get('bidding_zones', [])
         self.solver_name = self.yaml_data.get('solver_name')
 
-        # Nested values
+        # Extract nested values for renewables and demand
         wind_on = self.yaml_data.get('wind_on', {})
         wind_off = self.yaml_data.get('wind_off', {})
         solar = self.yaml_data.get('solar', {})
         hydro_ror = self.yaml_data.get('hydro_ror', {})
         demand_classic = self.yaml_data.get('demand_inflexible_classic', {})
         demand_ev = self.yaml_data.get('demand_inflexible_ev', {})
-        # The flexible demand data is set up to also be run dynamically,
-        #    for now it's hardcoded like the other values for simplicity.
-        demand_flexible_classic = self.yaml_data.get('demand_flexible_classic', {})
+        demand_flexible_classic = self.yaml_data.get(
+            'demand_flexible_classic', {}
+        )
         demand_flexible_ev = self.yaml_data.get('demand_flexible_ev', {})
 
+        # Bid prices
         self.wind_onshore_bid_price = wind_on.get('bid_prices')
         self.wind_offshore_bid_price = wind_off.get('bid_prices')
         self.solar_pv_bid_price = solar.get('bid_prices')
         self.hydro_ror_bid_price = hydro_ror.get('bid_prices')
 
+        # Weather years
         self.wind_on_weather_year = wind_on.get('weather_year')
         self.wind_off_weather_year = wind_off.get('weather_year')
         self.solar_weather_year = solar.get('weather_year')
         self.hydro_ror_weather_year = hydro_ror.get('weather_year')
 
+        # Value of lost load (VOLL) and willingness to pay (WTP)
         self.voll_classic = demand_classic.get('voll')
         self.voll_ev = demand_ev.get('voll')
         self.wtp_classic = demand_flexible_classic.get('wtp')
         self.wtp_ev = demand_flexible_ev.get('wtp')
 
         # Storage roundtrip efficiencies and initial SOCs
-            # BESS
-        self.bess_charging_efficiency = float(np.sqrt(self.yaml_data.get('bess_roundtrip')))  # np.float gives errors. It has to just be a Python scalar
-        self.bess_discharging_efficiency = float(np.sqrt(self.yaml_data.get('bess_roundtrip')))
+        # BESS
+        bess_roundtrip = self.yaml_data.get('bess_roundtrip')
+        self.bess_charging_efficiency = float(np.sqrt(bess_roundtrip))
+        self.bess_discharging_efficiency = float(np.sqrt(bess_roundtrip))
         self.bess_initial_SOC = self.yaml_data.get('bess_initial_soc')
-            # Pumped hydro storage
-        self.hydro_ps_charging_efficiency = float(np.sqrt(self.yaml_data.get('hydro_ps_roundtrip')))  # np.float gives errors. It has to just be a Python scalar
-        self.hydro_ps_discharging_efficiency = float(np.sqrt(self.yaml_data.get('hydro_ps_roundtrip')))
+        
+        # Pumped hydro storage
+        hydro_ps_roundtrip = self.yaml_data.get('hydro_ps_roundtrip')
+        self.hydro_ps_charging_efficiency = float(np.sqrt(hydro_ps_roundtrip))
+        self.hydro_ps_discharging_efficiency = float(
+            np.sqrt(hydro_ps_roundtrip)
+        )
         self.hydro_ps_initial_SOC = self.yaml_data.get('hydro_ps_initial_soc')
-        
+
+    # -------------------------------------------------------------------------
+    # Generation data
+    # -------------------------------------------------------------------------
     def load_generation_data(self):
-        """Load all renewable generation time-series data filtered by week and validate them."""
-        
-        self.wind_onshore_production = self._load_csv('wind_onshore_production.csv')
-        self.wind_offshore_production = self._load_csv('wind_offshore_production.csv')
+        """Load renewable generation time-series, filter by week if needed."""
+        self.wind_onshore_production = self._load_csv(
+            'wind_onshore_production.csv'
+        )
+        self.wind_offshore_production = self._load_csv(
+            'wind_offshore_production.csv'
+        )
         self.solar_pv_production = self._load_csv('solar_pv_production.csv')
         self.hydro_ror_production = self._load_csv('hydro_ror_production.csv')
         
         if self.scenario_config.get('run_mode') == 'weekly':
-            self.wind_onshore_production = self._filter_by_week(self.wind_onshore_production, week=self.week) # type: ignore
-            self.wind_offshore_production = self._filter_by_week(self.wind_offshore_production, week=self.week) # type: ignore
-            self.solar_pv_production = self._filter_by_week(self.solar_pv_production, week=self.week) # type: ignore
-            self.hydro_ror_production = self._filter_by_week(self.hydro_ror_production, week=self.week) # type: ignore
+            self.wind_onshore_production = self._filter_by_week(
+                self.wind_onshore_production, week=self.week
+            )
+            self.wind_offshore_production = self._filter_by_week(
+                self.wind_offshore_production, week=self.week
+            )
+            self.solar_pv_production = self._filter_by_week(
+                self.solar_pv_production, week=self.week
+            )
+            self.hydro_ror_production = self._filter_by_week(
+                self.hydro_ror_production, week=self.week
+            )
                 
-        #utils.validate_df_positive_numeric(self.wind_onshore_production, "wind_onshore_production")
-        utils.validate_df_positive_numeric(self.wind_offshore_production, "wind_offshore_production")
-        utils.validate_df_positive_numeric(self.solar_pv_production, "solar_pv_production")
-        utils.validate_df_positive_numeric(self.hydro_ror_production, "hydro_ror_production")
+        # Validate data
+        utils.validate_df_positive_numeric(
+            self.wind_offshore_production, "wind_offshore_production"
+        )
+        utils.validate_df_positive_numeric(
+            self.solar_pv_production, "solar_pv_production"
+        )
+        utils.validate_df_positive_numeric(
+            self.hydro_ror_production, "hydro_ror_production"
+        )
 
     def load_inflexible_demand_data(self):
         """Load inflexible demand data (classic and EV) filtered by week and validate."""
@@ -735,12 +790,33 @@ class DataLoader:
             )
 
     def load_ptx_data(self):
+        
         self.ptx_units_df = self._load_csv('ptx_units.csv')
-        self.ptx_units_id = list(self.ptx_units_df.index)  # shape (L_DH)
+        
+        if self.scenario_config.get('plant_aggregation'):
+            # Aggregate PtX plants by product (and zone)
+            self.agg_ptx = utils.agg_by_zone_tech(
+                df=self.ptx_units_df,
+                prodcost="Demand price",
+                power="Electric capacity",
+                tech="Product",
+                output="bid_price_weighted"
+            )
+            
+            # self.ptx_units_id = list(self.ptx_units_df.index)  # shape (L_DH)
+            # Set a new index with combined zone and product for the aggregated eletrolyzer, MeOH, etc. units
+            self.agg_ptx = utils.set_agg_idx(self.agg_ptx)
+            self.ptx_units_id = list(self.agg_ptx.index)
+            
+                # We repeat the capacities for each PRODUCT (by zone and X)
+            self.ptx_units_el_cap = np.outer(np.ones(self.T),
+                                             self.agg_ptx.capacity_el.to_numpy())
 
-        # Repeat capacities for each time steps
-        self.ptx_units_el_cap = np.outer(np.ones(self.T),
-                                        self.ptx_units_df["Electric capacity"].to_numpy())
+        else:
+            self.ptx_units_id = list(self.ptx_units_df.index)  # shape (L_DH)
+            # Repeat capacities for each time steps
+            self.ptx_units_el_cap = np.outer(np.ones(self.T),
+                                             self.ptx_units_df["Electric capacity"].to_numpy())
         
     def load_ptx_bid_prices(self):
         """
@@ -748,7 +824,12 @@ class DataLoader:
         These bid prices are simply the LCoX of each plant.
         """
         # Convert the bid prices pandas Series to a DataFrame with time index
-        self.ptx_units_bid_prices_series = self.ptx_units_df["Demand price"]
+        if self.scenario_config.get('plant_aggregation'):
+            # Use the capacity-weighted average production cost per product type (and zone)
+            self.ptx_units_bid_prices_series = self.agg_ptx.bid_price_weighted
+        else:
+            self.ptx_units_bid_prices_series = self.ptx_units_df["Demand price"]
+        
         self.ptx_units_bid_prices_series.index.name = "L_PtX"
 
         self.ptx_units_bid_prices_df = pd.DataFrame(
@@ -764,8 +845,12 @@ class DataLoader:
         Build binary PtX unit-to-zone assignment matrix (L_PtX x Z).
         L_PtX_Z[l_PtX, z] = 1 if PtX unit l_PtX belongs to zone z, else 0.
         """
-        # Create dummy variables (one-hot encode) from PtX unit zone assignment
-        self.L_PtX_Z_df = pd.get_dummies(self.ptx_units_df['zone_el']).astype(int)
+        
+        if self.scenario_config.get('plant_aggregation'):
+            self.L_PtX_Z_df = pd.get_dummies(self.agg_ptx['zone_el']).astype(int)
+        else:
+            # Create dummy variables (one-hot encode) from PtX unit zone assignment
+            self.L_PtX_Z_df = pd.get_dummies(self.ptx_units_df['zone_el']).astype(int)
 
         # Ensure all zones are represented as columns, even if some have no PtX units
         self.L_PtX_Z_df = self.L_PtX_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
@@ -782,15 +867,41 @@ class DataLoader:
 
     def load_dh_data(self):
         self.dh_units_df = self._load_csv('dh_units.csv')
-        self.dh_units_id = list(self.dh_units_df.index)  # shape (L_DH)
+        
+        if self.scenario_config.get('plant_aggregation'):
+            # Aggregate DH plants by technology (and zone)
+            self.agg_dh = utils.agg_by_zone_tech(
+                df=self.dh_units_df,
+                prodcost="demand_price",
+                power="Electric_capacity",  # Thermal capacity given in MW_power...
+                tech="Type",
+                output="bid_price_weighted"
+            )
+            
+            # Set a new index with combined zone and technology for the aggregated DH units
+            self.agg_dh = utils.set_agg_idx(self.agg_dh)
+            self.dh_units_id = list(self.agg_dh.index)
+            # We repeat the capacities for each technology (by zone as well)
+            self.dh_units_el_cap = np.outer(np.ones(self.T),
+                                            self.agg_dh.capacity_el.to_numpy())
+            
+        else:
+            self.dh_units_id = list(self.dh_units_df.index)  # shape (L_DH)
 
-        # Repeat capacities for each time steps
-        self.dh_units_el_cap = np.outer(np.ones(self.T),
-                                        self.dh_units_df["Thermal capacity"].to_numpy())
+            # Repeat capacities for each time steps
+            self.dh_units_el_cap = np.outer(np.ones(self.T),
+                                            self.dh_units_df["Thermal capacity"].to_numpy())
         
     def load_dh_bid_prices(self):
         # Convert the bid prices pandas Series to a DataFrame with time index
-        self.dh_units_bid_prices_series = self.dh_units_df.demand_price
+        
+        
+        if self.scenario_config.get('plant_aggregation'):
+            # Use the capacity-weighted average production cost per product type (and zone)
+            self.dh_units_bid_prices_series = self.agg_dh.bid_price_weighted
+        else:
+            self.dh_units_bid_prices_series = self.dh_units_df.demand_price
+        
         self.dh_units_bid_prices_series.index.name = "L_DH"
 
         self.dh_units_bid_prices_df = pd.DataFrame(
@@ -807,7 +918,10 @@ class DataLoader:
         L_DH_Z[l_DH, z] = 1 if DH unit l_DH belongs to zone z, else 0.
         """
         # Create dummy variables (one-hot encode) from DH unit zone assignment
-        self.L_DH_Z_df = pd.get_dummies(self.dh_units_df['zone_el']).astype(int)
+        if self.scenario_config.get('plant_aggregation'):
+            self.L_DH_Z_df = pd.get_dummies(self.agg_dh['zone_el']).astype(int)
+        else:
+            self.L_DH_Z_df = pd.get_dummies(self.dh_units_df['zone_el']).astype(int)
 
         # Ensure all zones are represented as columns, even if some have no DH units
         self.L_DH_Z_df = self.L_DH_Z_df.reindex(columns=self.bidding_zones, fill_value=0)
