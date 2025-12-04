@@ -17,5 +17,19 @@ if __name__ == "__main__":
     # Creates instance of the DataProcessor:
     r.run_scenario('scenario_1', dry_run = False)
     
+    # just a debug
+    m1 = r.enlight_model.model
+    
+    # Creates instance of the DataProcessor:
+    r.run_scenario('scenario_2', dry_run = False)
+    
+    # just a debug
+    m2 = r.enlight_model.model
+    print(m2.constraints['hydro_res_energy_availability_1'])
+    # m.variables
+    # m.constraints
+    # m.constraints['power_balance']
+    
+    
     #r.run_scenario('scenario_2')
     

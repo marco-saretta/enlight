@@ -17,13 +17,28 @@ scenario_list:
       label: "scenario_1"
       run_mode: "yearly"
       year: 2030
-      plant_aggregation: false
+      plant_aggregation: true
 
   - scenario_2:
       label: "scenario_2"
+      run_mode: "yearly"
+      year: 2030
+      plant_aggregation: false
+
+  - scenario_3:
+      label: "scenario_3"
       run_mode: "weekly"
       year: 2040
       plant_aggregation: true
+      week_range:
+        start_week: 1
+        end_week: 2         # 52 for full year
+  
+  - scenario_4:
+      label: "scenario_4"
+      run_mode: "weekly"
+      year: 2040
+      plant_aggregation: false
       week_range:
         start_week: 1
         end_week: 2         # 52 for full year
@@ -50,33 +65,33 @@ solver_name: "gurobi"  # Options: "gurobi", "highs"
 bidding_zones:
   # EU Member States (alphabetically)
   - AT     # Austria
-  - BE     # Belgium
-  - BG     # Bulgaria
-  - CZ     # Czech Republic
-  - DELU   # Germany and Luxembourg
-  - DK1    # Denmark West
-  - DK2    # Denmark East
-  - EE     # Estonia
-  - EL     # Greece
-  - ES     # Spain
-  - FI     # Finland
-  - FR     # France
-  - HR     # Croatia
-  - HU     # Hungary
-  - IT     # Italy
-  - LT     # Lithuania
-  - LV     # Latvia
-  - NL     # Netherlands
-  - PL     # Poland
-  - PT     # Portugal
-  - RO     # Romania
-  - SE1    # Sweden Zone 1
-  - SE2    # Sweden Zone 2
-  - SE3    # Sweden Zone 3
-  - SE4    # Sweden Zone 4
-  - SEM    # Single Electricity Market (Ireland & Northern Ireland)
-  - SI     # Slovenia
-  - SK     # Slovakia
+  #- BE     # Belgium
+  #- BG     # Bulgaria
+  #- CZ     # Czech Republic
+  #- DELU   # Germany and Luxembourg
+  #- DK1    # Denmark West
+  #- DK2    # Denmark East
+  #- EE     # Estonia
+  #- EL     # Greece
+  #- ES     # Spain
+  #- FI     # Finland
+  #- FR     # France
+  #- HR     # Croatia
+  #- HU     # Hungary
+  #- IT     # Italy
+  #- LT     # Lithuania
+  #- LV     # Latvia
+  #- NL     # Netherlands
+  #- PL     # Poland
+  #- PT     # Portugal
+  #- RO     # Romania
+  #- SE1    # Sweden Zone 1
+  #- SE2    # Sweden Zone 2
+  #- SE3    # Sweden Zone 3
+  #- SE4    # Sweden Zone 4
+  #- SEM    # Single Electricity Market (Ireland & Northern Ireland)
+  #- SI     # Slovenia
+  #- SK     # Slovakia
 
   # Extra-EU Bidding Zones (alphabetically)
   # - AL     # Albania

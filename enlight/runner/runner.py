@@ -238,36 +238,7 @@ class EnlightRunner:
         # self.exporter.concatenate()
 
         
-    def load_data_all_simulations(self, simulation_path: Path) -> None:
-        '''
-        This method loads data for an entire year (the year given
-        in the scenario fed to DataProcessor.)
-        
-        The method loads all of the processed data from that DataProcessor
-        instance into 52 separate DataLoader objects. Afterwards this is
-        used to instantiate 52 EnlightModels to get the electricity profiles
-        and DA dispatch for the entire year.
-        '''
-        # Initialize empty dict to store all of the DataLoader instances.
-        self.data_loader_dict = {}
 
-        # Load the number of weeks defined in the yaml file.
-        self.weeks = range(self.start_week, self.end_week+1)
-        self.num_weeks = len(self.weeks)
-
-        # Only not "self.weeks" during testing of the classes
-        # self.sim_weeks = self.weeks
-        self.sim_weeks = [self.weeks[0], self.weeks[-1]]
-
-        # Load all of the data into separate DataLoader instances:
-        for w in self.sim_weeks:
-            self.data_loader_dict[f"week_{w}"] = (
-                DataLoader(
-                    week=w,
-                    input_path=Path(simulation_path) / 'data',
-                    logger=self.logger
-                )
-            )
 
 
 
