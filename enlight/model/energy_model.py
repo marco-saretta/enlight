@@ -2,7 +2,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import linopy
-
 import enlight.utils as utils
 
 
@@ -511,16 +510,18 @@ class EnlightModel:
 
         self.logger.info("OBJ - Finished building objective function")
 
-    def solve_model(self, solver_name):
+    def solve_model(self):
         """
         Solve the model using the solver specified in yaml config file.
         """
-        self.logger.info("SOLVE - Start solving model")
         if self.data.solver_name == "gurobi":
-            self.model.solve(solver_name=solver_name, Method=1)  # use dual simplex instead of barrier algorithm immediately
+            self.logger.info("SOLVE - Start solving model with Gurobi")
+            self.model.solve(solver_name=self.data.solver_name, Method=1)  # use dual simplex instead of barrier algorithm immediately
         else:
-            self.model.solve(solver_name=solver_name)
+            self.logger.info(f"SOLVE - Start solving model with {self.data.solver_name}")
+            self.model.solve(solver_name=self.data.solver_name)
         self.logger.info('SOLVE - Model solved, good job champ!')
+
 
     def save_model_to_lp_file(self):
         """
@@ -532,11 +533,14 @@ class EnlightModel:
         self.logger.info('SAVE - Saved .lp model file')
 
 
-
-    def run_model(self):
+    def run_model(self, save_model_to_lp = False):
         """
         Solve the model using Gurobi.
         """
-        #self.save_model_to_lp_file()
-        self.solve_model(solver_name='gurobi')
-        utils.save_model_results(self, week=self.data.week)
+        
+        if save_model_to_lp:
+            self.save_model_to_lp_file()  
+        
+        self.solve_model()
+        
+        #utils.save_model_results(self, week=self.data.week)

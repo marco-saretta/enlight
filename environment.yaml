@@ -15,6 +15,7 @@ dependencies:
   - dask
   - tqdm
   - pytz
+  - joblib
   - scipy
   - ipykernel
   - jupyterlab

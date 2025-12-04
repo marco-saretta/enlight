@@ -52,7 +52,7 @@ scenario_list:
 # "highs": Open-source alternative, no license required
 # -----------------------------------------------------------------------------
 
-solver_name: "gurobi"  # Options: "gurobi", "highs"
+solver_name: "highs"  # Options: "gurobi", "highs"
 
 
 # -----------------------------------------------------------------------------

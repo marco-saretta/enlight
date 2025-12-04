@@ -10,6 +10,7 @@ from enlight.data_ops import ResultsVisualizer
 from enlight.model import EnlightModel
 import enlight.utils as utils
 from enlight.utils import Timer, log_time
+import joblib
 
 class EnlightRunner:
     """
@@ -110,7 +111,8 @@ class EnlightRunner:
         
         Args:
             scenario_name: Name of the scenario
-            config: Configuration dictionary for this scenario
+            scenario_config: Configuration dictionary for this scenario
+            dry_run: If True, skip model execution
         """
         
         self.logger.info(f"========== STARTING YEARLY RUN: {scenario_name} ==========")
@@ -136,14 +138,15 @@ class EnlightRunner:
             config_yaml=self.config_yaml,
             root_path=self.root_path,
             logger=self.logger,
-            )
+        )
         
         timer_loading.stop()
         
         # STEP 3: MODEL EXECUTION
         timer_model = Timer(self.logger, "Model execution")
+        
         if dry_run:
-            pass
+            self.logger.info("Dry run - skipping model execution")
         else:
             self.enlight_model = EnlightModel(
                 data=self.data,
@@ -152,24 +155,35 @@ class EnlightRunner:
                 config_yaml=self.config_yaml,
                 root_path=self.root_path,
                 logger=self.logger
-                )
+            )
             self.enlight_model.run_model()
+            
+            # TODO Save with joblib
+            #model_file = self.root_path / 'simulations' / f'{scenario_name}/results/{scenario_name}_model.pkl'
+            #joblib.dump(self.enlight_model, model_file, compress=3)  # compress=3 for good compression
+        
         
         timer_model.stop()
         
-        # # STEP 4: EXPORT RESULTS
-        # timer_results = Timer(self.logger, "Results extraction")
+        # STEP 4: EXPORT RESULTS
+        if not dry_run:
+            timer_results = Timer(self.logger, "Results export")
+            
+            exporter = DataExporter(
+                enlight_model=self.enlight_model,
+                scenario_name=scenario_name,
+                scenario_config=scenario_config,
+                root_path=self.root_path,
+                logger=self.logger
+            )
+            
+            exporter.export_solution()  # ✓ Actually call the export!
+            
+            timer_results.stop()
+            
+            self.logger.info(f"✓ Export for '{scenario_name}' completed")
         
-        # # Assuming EnlightModel has a method to save results
-        # # Adjust based on your actual implementation
-        # if hasattr(self.enlight_model, 'save_results'):
-        #     self.enlight_model.save_results(week=None)  # or year=year
-        # else:
-        #     self.logger.warning("No save_results method found in EnlightModel")
-        
-        # timer_results.stop()
-        
-        # self.logger.info(f"Yearly scenario '{scenario_name}' completed")
+        self.logger.info(f"Yearly scenario '{scenario_name}' completed")
         
     def _run_weekly(self, scenario_name, scenario_config: Dict, dry_run) -> None:
         """
