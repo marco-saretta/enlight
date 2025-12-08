@@ -80,46 +80,45 @@ class EnlightRunner:
             """
             # Start timing the entire scenario
             scenario_timer = Timer(self.logger, f"Scenario '{scenario_name}'")
-            
+           
             if scenario_name not in self.scenarios_dict:
                 raise ValueError(f"Scenario '{scenario_name}' not found in scenario_list")
-
+ 
             # Get configuration for this specific scenario
             scenario_config = self.scenarios_dict[scenario_name]
-            
+           
             # Extract run mode
             mode = scenario_config.get("run_mode")
-            
             self.logger.info(f"Running scenario '{scenario_name}' in mode: {mode}")
-
+ 
             if mode == "yearly":
                 self._run_yearly(scenario_name, scenario_config, dry_run)
-
+ 
             elif mode == "weekly":
                 self._run_weekly(scenario_name, scenario_config, dry_run)
-
+ 
             else:
                 raise ValueError(f"Unknown run_mode: '{mode}'. Expected 'yearly' or 'weekly'")
-
+ 
             # Stop timing the entire scenario
             scenario_timer.stop()
             self.logger.info(f"Scenario '{scenario_name}' completed successfully\n")
-
+ 
     def _run_yearly(self, scenario_name, scenario_config: Dict, dry_run) -> None:
         """
         Execute a yearly simulation scenario.
-        
+       
         Args:
             scenario_name: Name of the scenario
             scenario_config: Configuration dictionary for this scenario
             dry_run: If True, skip model execution
         """
-        
+       
         self.logger.info(f"========== STARTING YEARLY RUN: {scenario_name} ==========")
-        
+       
         # STEP 1: DATA PREPROCESSING
         timer_preprocess = Timer(self.logger, "Data preprocessing")
-        
+       
         self.data_processor = DataProcessor(
             scenario_name=scenario_name,
             scenario_config=scenario_config,
@@ -128,10 +127,10 @@ class EnlightRunner:
             logger=self.logger,
         )
         timer_preprocess.stop()
-        
+       
         # STEP 2: DATA LOADING
         timer_loading = Timer(self.logger, "Data loading")
-        
+       
         self.data = DataLoader(
             scenario_name=scenario_name,
             scenario_config=scenario_config,
@@ -139,30 +138,31 @@ class EnlightRunner:
             root_path=self.root_path,
             logger=self.logger,
         )
-        
+       
         timer_loading.stop()
-        
+       
         # STEP 3: MODEL EXECUTION
         timer_model = Timer(self.logger, "Model execution")
-        
-        if dry_run:
+       
+        self.enlight_model = EnlightModel(
+            data=self.data,
+            scenario_name=scenario_name,
+            scenario_config=scenario_config,
+            config_yaml=self.config_yaml,
+            root_path=self.root_path,
+            logger=self.logger
+        )
+           
+        if dry_run:    
             self.logger.info("Dry run - skipping model execution")
         else:
-            self.enlight_model = EnlightModel(
-                data=self.data,
-                scenario_name=scenario_name,
-                scenario_config=scenario_config,
-                config_yaml=self.config_yaml,
-                root_path=self.root_path,
-                logger=self.logger
-            )
             self.enlight_model.run_model()
-            
+           
             # TODO Save with joblib
             #model_file = self.root_path / 'simulations' / f'{scenario_name}/results/{scenario_name}_model.pkl'
             #joblib.dump(self.enlight_model, model_file, compress=3)  # compress=3 for good compression
-        
-        
+       
+      
         timer_model.stop()
         
         # STEP 4: EXPORT RESULTS
@@ -181,7 +181,10 @@ class EnlightRunner:
             
             timer_results.stop()
             
-            self.logger.info(f"✓ Export for '{scenario_name}' completed")
+            self.logger.info(f"Export for '{scenario_name}' completed")
+            
+        else:
+            pass
         
         self.logger.info(f"Yearly scenario '{scenario_name}' completed")
         

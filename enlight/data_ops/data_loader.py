@@ -97,7 +97,7 @@ class DataLoader:
         else:
             raise ValueError(f"Unknown run_mode: {mode}")
 
-        self.time_index = np.arange(self.T)
+        self.time_index = np.arange(1, self.T+1)
         self.times = list(self.time_index)
 
     def _load_csv(
@@ -680,10 +680,6 @@ class DataLoader:
 
             # Fill in 0s for any zones that do not has PHS
             self.agg_bess = self.agg_bess.reindex(self.bidding_zones, fill_value=0)
-
-            # self.bess_units_id = list(self.bess_units_df.index)  # Shape: (G_bess,)
-            # No longer any unit id's when aggregating by zone
-
 
             # We need to repeat the charge/discharge and storage capacities for each bess unit for all time steps:
             self.bess_units_el_cap = np.outer(

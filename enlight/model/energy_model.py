@@ -22,7 +22,7 @@ class EnlightModel:
     def __init__(self, data, scenario_name, scenario_config,
                 config_yaml, root_path, logger):
 
-        linopy.options.set_value(display_max_rows=40, display_max_terms=15)
+        linopy.options.set_value(display_max_rows=50, display_max_terms=50)
 
         self.data = data
         self.scenario_name = scenario_name
