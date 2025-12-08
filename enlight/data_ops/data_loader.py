@@ -104,12 +104,13 @@ class DataLoader:
         self,
         filename: str,
         index_col: int | None = 0,
+        header: int | list[int] | None = 0,
     ) -> pd.DataFrame:
         """Load CSV file from data path, raise if missing."""
         path = self.data_path / filename
         if not path.exists():
             raise FileNotFoundError(f"Missing required file: {path}")
-        return pd.read_csv(path, index_col=index_col)
+        return pd.read_csv(path, index_col=index_col, header=header)
 
     def _filter_by_week(
         self,
@@ -332,29 +333,38 @@ class DataLoader:
     def load_lines_data(self):
         """Load transmission line capacity or flow data for both directions."""
         # the index_col is set to the transmission line number
-        self.lines_a_b_df = self._load_csv("lines_a_b.csv", index_col=0)  # type: ignore
-        self.lines_b_a_df = self._load_csv("lines_b_a.csv", index_col=0)  # type: ignore
+        self.lines_a_b_df = self._load_csv("lines_a_b.csv", index_col=0, header=[0,1])  # type: ignore
+        self.lines_b_a_df = self._load_csv("lines_b_a.csv", index_col=0, header=[0,1])  # type: ignore
 
-        # Create a new dataframe with zone information and weekly capacity data
-        # week_col = str(self.week)
-        # self.lines_week_df = self.lines_a_b_df[["from_zone", "to_zone"]].copy()
-        # self.lines_week_df["capacity_a_to_b"] = self.lines_a_b_df[week_col]
-        # self.lines_week_df["capacity_b_to_a"] = self.lines_b_a_df[week_col]
+        # The columns are now MultiIndex with (from_zone, to_zone)
+        # Extract from_zone and to_zone from the MultiIndex columns
+        from_zones = [col[0] for col in self.lines_a_b_df.columns]
+        to_zones = [col[1] for col in self.lines_a_b_df.columns]
         
+        # Create line_labels as 'FROM-TO' strings
+        self.line_labels = [f"{from_z}-{to_z}" for from_z, to_z in zip(from_zones, to_zones)]
+        
+        # Create lines as tuples for the incidence matrix
+        self.lines = list(zip(from_zones, to_zones))
+        
+        # The capacity arrays are already in the right shape: (T, L)
+        # where T = 8760 hours and L = number of lines
+        self.lines_a_to_b_cap = self.lines_a_b_df.to_numpy()  # shape: (T, L)
+        self.lines_b_to_a_cap = self.lines_b_a_df.to_numpy()  # shape: (T, L)
         # Get the names of the weeks
-        week_cols = self.lines_a_b_df.columns[~self.lines_a_b_df.columns.isin(['from_zone', 'to_zone'])]
+        # week_cols = self.lines_a_b_df.columns[~self.lines_a_b_df.columns.isin(['from_zone', 'to_zone'])]
         
-        # Repeat the weekly capacity for all hours in that week for lines a to b
-        arr_a_to_b_1 = np.repeat(self.lines_a_b_df[week_cols].to_numpy(), 168, axis=1) # shape: (L, 8736)
-        arr_a_to_b_2 = np.outer(np.ones(self.T%len(week_cols)), self.lines_a_b_df[week_cols[-1]].to_numpy()).T  # shape: (L, 24)
-        lines_a_to_b_cap = np.concatenate((arr_a_to_b_1, arr_a_to_b_2), axis=1)  # shape: (L, 8760)
-        self.lines_a_to_b_cap = lines_a_to_b_cap.T  #shape: (8760, L)
+        # # Repeat the weekly capacity for all hours in that week for lines a to b
+        # arr_a_to_b_1 = np.repeat(self.lines_a_b_df[week_cols].to_numpy(), 168, axis=1) # shape: (L, 8736)
+        # arr_a_to_b_2 = np.outer(np.ones(self.T%len(week_cols)), self.lines_a_b_df[week_cols[-1]].to_numpy()).T  # shape: (L, 24)
+        # lines_a_to_b_cap = np.concatenate((arr_a_to_b_1, arr_a_to_b_2), axis=1)  # shape: (L, 8760)
+        # self.lines_a_to_b_cap = lines_a_to_b_cap.T  #shape: (8760, L)
 
-        # Repeat the weekly capacity for all hours in that week for lines b to a
-        arr_b_to_a_1 = np.repeat(self.lines_b_a_df[week_cols].to_numpy(), 168, axis=1) # shape: (L, 8736)
-        arr_b_to_a_2 = np.outer(np.ones(self.T%len(week_cols)), self.lines_b_a_df[week_cols[-1]].to_numpy()).T  # shape: (L, 24)
-        lines_b_to_a_cap = np.concatenate((arr_b_to_a_1, arr_b_to_a_2), axis=1)  # shape: (L, 8760)
-        self.lines_b_to_a_cap = lines_b_to_a_cap.T  #shape: (8760, L)
+        # # Repeat the weekly capacity for all hours in that week for lines b to a
+        # arr_b_to_a_1 = np.repeat(self.lines_b_a_df[week_cols].to_numpy(), 168, axis=1) # shape: (L, 8736)
+        # arr_b_to_a_2 = np.outer(np.ones(self.T%len(week_cols)), self.lines_b_a_df[week_cols[-1]].to_numpy()).T  # shape: (L, 24)
+        # lines_b_to_a_cap = np.concatenate((arr_b_to_a_1, arr_b_to_a_2), axis=1)  # shape: (L, 8760)
+        # self.lines_b_to_a_cap = lines_b_to_a_cap.T  #shape: (8760, L)
         # Repeat static line capacities over all time steps
         # Shape: (T, L)
 
@@ -374,12 +384,11 @@ class DataLoader:
         # )
         
     def map_transmission_lines(self):   
+        """Map transmission lines and create incidence matrix."""
         
-        # More efficient way to create lines and labels
-        line_zones = self.lines_a_b_df[["from_zone", "to_zone"]].values
-        self.lines = [tuple(row) for row in line_zones]  
-        self.line_labels = [f"{a}-{b}" for a, b in line_zones]  # Create labels for each line
-        self.lines = [tuple(x) for x in self.lines_a_b_df[['from_zone', 'to_zone']].to_numpy()]  # Shape: (L,)
+        # Extract from_zone and to_zone from the MultiIndex columns
+        # The columns are tuples like (from_zone, to_zone)
+        # self.lines and self.line_labels were already created in load_lines_data()
         
         # Build L_Z_df: incidence matrix for power balance
         # L_Z_df[l, z] = +1 if zone z is fromZone of line l
@@ -398,7 +407,7 @@ class DataLoader:
         self.L_Z_xr = xr.DataArray(
             self.L_Z_df.values,
             coords={
-                "L": self.line_labels,   # match with thermal_gen_bid_vol
+                "L": self.line_labels,   # Use the string labels like 'AT-CH'
                 "Z": self.bidding_zones
             },
             dims=["L", "Z"]

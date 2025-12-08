@@ -65,7 +65,7 @@ solver_name: "highs"  # Options: "gurobi", "highs"
 bidding_zones:
   # EU Member States (alphabetically)
   - AT     # Austria
-  #- BE     # Belgium
+  - BE     # Belgium
   #- BG     # Bulgaria
   #- CZ     # Czech Republic
   #- DELU   # Germany and Luxembourg

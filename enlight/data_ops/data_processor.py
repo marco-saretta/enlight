@@ -642,29 +642,27 @@ class DataProcessor:
         lines_b_a_file = self.path_lines / self.lines_selection / "lines_b_a.csv"
 
         # Check if both transmission lines files exist
+        # Check if both transmission lines files exist
         if lines_a_b_file.exists() and lines_b_a_file.exists():
-            # self.lines_a_b_raw = pd.read_csv(lines_a_b_file, index_col=0)
-            # self.lines_b_a_raw = pd.read_csv(lines_b_a_file, index_col=0)
+            # Load CSVs with two header rows: from_zone and to_zone
+            self.lines_a_b_raw = pd.read_csv(lines_a_b_file, header=[0, 1])
+            self.lines_b_a_raw = pd.read_csv(lines_b_a_file, header=[0, 1])
 
-            # self.lines_a_b = self.lines_a_b_raw[self.lines_a_b_raw.index.isin(self.bidding_zones_list)]
-            # self.lines_b_a = self.lines_b_a_raw[self.lines_b_a_raw.index.isin(self.bidding_zones_list)]
-
-            # New code below ensures that the source and destination zone have both been chosen as bidding zones.
-            self.lines_a_b_raw = pd.read_csv(lines_a_b_file)  # , index_col=0)
-            self.lines_b_a_raw = pd.read_csv(lines_b_a_file)  # , index_col=0)
-
-            self.lines_a_b = self.lines_a_b_raw[
-                self.lines_a_b_raw[["from_zone", "to_zone"]]
-                .isin(self.bidding_zones_list)
-                .all(axis=1)
+            # Filter columns where both from_zone and to_zone are in bidding_zones_list
+            # The columns are MultiIndex with (from_zone, to_zone)
+            mask_a_b = [
+                (col[0] in self.bidding_zones_list and col[1] in self.bidding_zones_list)
+                for col in self.lines_a_b_raw.columns
             ]
-            self.lines_b_a = self.lines_b_a_raw[
-                self.lines_b_a_raw[["to_zone", "from_zone"]]
-                .isin(self.bidding_zones_list)
-                .all(axis=1)
+            mask_b_a = [
+                (col[0] in self.bidding_zones_list and col[1] in self.bidding_zones_list)
+                for col in self.lines_b_a_raw.columns
             ]
+            
+            self.lines_a_b = self.lines_a_b_raw.loc[:, mask_a_b]
+            self.lines_b_a = self.lines_b_a_raw.loc[:, mask_b_a]
 
-            if self.overwrite_preprocessed_data:
+        if self.overwrite_preprocessed_data:
                 utils.save_data(
                     self.lines_a_b,
                     "lines_a_b.csv",
