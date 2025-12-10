@@ -179,13 +179,14 @@ See `docs/` for detailed guides on configuration, architecture, API reference, a
 pytest tests/
 ```
 
-## License
 
-GPL-3.0 license.
+## Project Information
 
-## Authors
+**Version:** 1.0  
+**License:** GPL-3.0  
+**Authors:** Marco Saretta, Viktor Johnsen  
+**Repository:** [github.com/marco-saretta/enlight](https://github.com/marco-saretta/enlight)
 
-**Marco Saretta** | Collaborator: Viktor Johnsen
 
 ## Citation
 

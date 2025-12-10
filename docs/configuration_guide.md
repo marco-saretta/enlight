@@ -5,12 +5,13 @@
 ### `simulation_config.yaml`
 
 ```yaml
-scenarios:
-  - scenario1
-  - scenario2
-simulation_years: 5
-simulation_timesteps: 8760
+  - scenario_1:
+      label: "scenario_1"
+      run_mode: "yearly"
+      year: 2030
+      plant_aggregation: true
 ```
 
-## 
-[Return to documentation index](./index.md)
+---
+
+[Back to Table of Contents](./index.md)

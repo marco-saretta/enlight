@@ -8,5 +8,6 @@ To run tests, navigate to the `test` directory and execute:
 pytest
 ```
 
-## 
-[Return to documentation index](./index.md)
+---
+
+[Back to Table of Contents](./index.md)

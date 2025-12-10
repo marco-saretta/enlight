@@ -1,17 +1,25 @@
-# EnergyHubX Detailed Documentation
+# ENLIGHT Documentation
+
 
 ## Table of Contents
-1. [Introduction](./introduction.md)
-2. [System Requirements](./system_requirements.md)
-3. [Installation](./installation.md)
-4. [Usage](./usage.md)
-5. [Architecture](./architecture.md)
-6. [Configuration](./configuration.md)
-7. [Module Components](./components.md)
-8. [Code Documentation](./code_documentation.md)
-9. [Testing](./testing.md)
-10. [Troubleshooting](./troubleshooting.md)
-11. [Appendices](./appendices.md)
-12. [References](./references.md)
 
-Please refer to these sections for detailed information on each aspect of the EnergyHubX module.
+### Getting Started
+1. [Installation Guide](./installation_guide.md) - Setup instructions and requirements
+2. [User Guide](./user_guide.md) - Running simulations and interpreting results
+3. [Configuration Guide](./configuration_guide.md) - Scenario setup and parameters
+
+### Model Documentation
+4. [Model Documentation](./model.md) - Complete mathematical formulation
+
+### Technical Documentation
+5. [System Architecture](./system_architecture.md) - Code structure and data flow
+6. [Testing Guide](./testing_guide.md) - Test suite and validation
+
+### Support
+7. [Troubleshooting Guide](./troubleshooting_guide.md) - Common issues and solutions
+8. [Testing guide](./testing_guide.md) - Additional resources and references
+
+
+---
+
+**Last updated:** December 2025

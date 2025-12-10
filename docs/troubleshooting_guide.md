@@ -8,5 +8,6 @@ Ensure all dependencies are installed correctly. Use:
 pip install -r requirements.txt
 ```
 
-## 
-[Return to documentation index](./index.md)
+---
+
+[Back to Table of Contents](./index.md)
