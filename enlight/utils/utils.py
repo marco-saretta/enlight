@@ -1,12 +1,15 @@
 import logging
-import pandas as pd
-import numpy as np
+import time
 from pathlib import Path
 from typing import Optional
+import pandas as pd
+import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
 import seaborn as sns
 import linopy
+from contextlib import contextmanager
+
 
 def validate_df_positive_numeric(df: pd.DataFrame, name: str, check_numeric: bool = True, check_positive: bool = True) -> None:
     """
@@ -39,36 +42,151 @@ def load_csv_if_exists(path: Path) -> pd.DataFrame:
         raise ValueError(f"File {path} is empty.")
     return df
 
-def setup_logging(log_dir: str = "logs", log_file: str = "enlight.log") -> logging.Logger:
+def setup_logging(
+    log_dir: str = "logs",
+    log_file: str = "enlight.log",
+    level: int = logging.INFO,
+    logger_name: str = "enlight"
+) -> logging.Logger:
     """
-    Configure logging, create log folder if it doesn't exist, and return a logger.
-
+    Configure a centralized logger for the entire Enlight project.
+    
     Args:
         log_dir (str): Folder to store log files (default "logs").
-        log_file (str): Log file name (default "app.log").
-
+        log_file (str): Log file name (default "enlight.log").
+        level (int): Logging level (default logging.INFO).
+        logger_name (str): Name of the logger (default "enlight").
+    
     Returns:
-        logging.Logger: Configured logger.
+        logging.Logger: Configured logger instance.
     """
     # Ensure the logs folder exists
     log_path = Path(log_dir)
     log_path.mkdir(parents=True, exist_ok=True)
-
+    
     # Full path for the log file
     file_path = log_path / log_file
-
-    # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.StreamHandler(),        # Console output
-            logging.FileHandler(file_path)  # File output
-        ]
-    )
-
-    return logging.getLogger(__name__)
     
+    # Get or create the logger (using a specific name ensures we reuse the same logger)
+    logger = logging.getLogger(logger_name)
+    
+    # Only configure if handlers haven't been added yet (prevents duplicate handlers)
+    if not logger.handlers:
+        logger.setLevel(level)
+        
+        # Create formatters
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        
+        # Console handler
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
+        console_handler.setFormatter(formatter)
+        
+        # File handler
+        file_handler = logging.FileHandler(file_path, mode='a', encoding='utf-8')
+        file_handler.setLevel(level)
+        file_handler.setFormatter(formatter)
+        
+        # Add handlers to logger
+        logger.addHandler(console_handler)
+        logger.addHandler(file_handler)
+    
+    return logger
+    
+@contextmanager
+def log_time(logger: logging.Logger, operation_name: str):
+    """
+    Context manager to log execution time of a code block.
+    
+    Usage:
+        with log_time(logger, "Data loading"):
+            # your code here
+            load_data()
+    
+    Args:
+        logger: Logger instance to use for logging.
+        operation_name: Descriptive name of the operation being timed.
+    """
+    start_time = time.time()
+    logger.info(f"Starting: {operation_name}")
+    
+    try:
+        yield
+    finally:
+        elapsed_time = time.time() - start_time
+        logger.info(f"Completed: {operation_name} in {elapsed_time:.2f} seconds")    
+
+def get_logger(name: str = "enlight") -> logging.Logger:
+    """
+    Get the centralized logger instance.
+    
+    Args:
+        name: Logger name (default "enlight").
+    
+    Returns:
+        logging.Logger: The logger instance.
+    """
+    logger = logging.getLogger(name)
+    if not logger.handlers:
+        # If logger hasn't been set up yet, initialize it
+        return setup_logging(logger_name=name)
+    return logger
+
+class Timer:
+    """
+    Simple timer class to measure execution time without indentation.
+    
+    Usage:
+        timer = Timer(logger, "Data loading")
+        # your code here
+        load_data()
+        timer.stop()  # Logs elapsed time
+    """
+    
+    def __init__(self, logger: logging.Logger, operation_name: str, auto_start: bool = True):
+        """
+        Initialize timer.
+        
+        Args:
+            logger: Logger instance to use.
+            operation_name: Name of the operation being timed.
+            auto_start: If True, starts timing immediately.
+        """
+        self.logger = logger
+        self.operation_name = operation_name
+        self.start_time = None
+        self.end_time = None
+        
+        if auto_start:
+            self.start()
+    
+    def start(self):
+        """Start the timer."""
+        self.start_time = time.time()
+        self.logger.info(f"Starting: {self.operation_name}")
+        return self
+    
+    def stop(self):
+        """Stop the timer and log elapsed time."""
+        if self.start_time is None:
+            self.logger.warning(f"Timer '{self.operation_name}' was never started")
+            return None
+        
+        self.end_time = time.time()
+        elapsed = self.end_time - self.start_time
+        self.logger.info(f"Completed: {self.operation_name} in {elapsed:.2f} seconds")
+        return elapsed
+    
+    def elapsed(self) -> float:
+        """Get elapsed time without stopping the timer."""
+        if self.start_time is None:
+            return 0.0
+        return time.time() - self.start_time
+
+
 def save_data(
     data: pd.DataFrame,
     filename: str,
@@ -545,50 +663,46 @@ def hourly_int_index_to_datetime(df: pd.DataFrame, year0: int):
     df_dt = df_dt.set_index(dates[df_dt.index])  # Set datetime corresponding to the hours as new index
     return df_dt
 
-def load_plot_config(palette):
-    # Set palette for easier and consistent plotting
-    sns.set_palette(palette)  # seaborn
-    plt.rcParams['axes.prop_cycle'] = plt.cycler(color=palette)  # matplotlib.pyplot
+def load_plot_config():
+    """Configure global plotting styles and palettes."""
 
+    # ---------------------------------------------------------
+    # Define a unified color registry (expandable)
+    # ---------------------------------------------------------
+    colors = {
+        "dtu": [
+            "#990000", "#2F3EEA", "#1FD082", "#030F4F", "#F6D04D",
+            "#FC7634", "#F7BBB1", "#E83F48", "#008835", "#79238E"
+        ],
+        "nature": {
+            "orange": "#e69f00",
+            "sky_blue": "#56b4e9",
+            "bluish_green": "#009e73",
+            "yellow": "#f0e442",
+            "blue": "#0072b2",
+            "vermillion": "#d55e00",
+            "reddish_purple": "#cc79a7"
+        }
+    }
 
-def agg_by_zone_tech(df, prodcost="prodcost", power="capacity_el", tech="fuel", output="prodcost_weighted"):
-    '''
-    Aggregates power capacity and production costs for a participant type by fuel/technology/product type and zone.
-    '''
-    df_agg = df.groupby(["zone_el", tech]).agg(
-        capacity_el=(power, "sum"),
-        pcw=(prodcost, lambda x: (x * df[power]).sum())
-    )
-    df_agg[output] = df_agg.pcw / df_agg.capacity_el
+    # Flat nature palette list (useful for seaborn / sns.set_palette)
+    nature_palette = list(colors["nature"].values())
 
-    return df_agg
+    # ---------------------------------------------------------
+    # Apply style + palette globally
+    # ---------------------------------------------------------
+    plt.style.use("seaborn-v0_8-whitegrid")
+    plt.rcParams.update({
+        "font.family": "Arial",
+        "axes.titleweight": "bold",
+        "axes.labelsize": 12,
+        "xtick.labelsize": 10,
+        "ytick.labelsize": 10,
+        "figure.figsize": (10, 6),
+        "axes.prop_cycle": plt.cycler(color=nature_palette)
+    })
 
-def agg_storage_by_zone(df, bid_price="Pumped_cons", offer_price="Pumped_prod", power="capacity_el", storage_cap="Storage_Capacity"):
-    '''
-    Aggregated power capacity and production costs for a storage type by fuel/technology/product type and zone.
-    '''
-    df_agg = df.groupby("zone_el").agg(
-        capacity_el=(power, "sum"),
-        capacity_stor=(storage_cap, "sum"),
-        bpw=(bid_price, lambda x: (x * df[power]).sum()),
-        opw=(offer_price, lambda x: (x * df[power]).sum())
-    )
-    df_agg["bid_price_weighted"] = df_agg.bpw / df_agg.capacity_el
-    df_agg["offer_price_weighted"] = df_agg.opw / df_agg.capacity_el
-
-    return df_agg
-
-def set_agg_idx(df):
-    '''
-    Combine the zone and fuel type to a single index
-    '''
-    df_agg = df.copy()
-    idx_col = df_agg.index.map(" ".join)  # e.g. to "FR Nuclear"
-    df_agg = df_agg.reset_index()  # keep bidding zone and fuel type and columns
-    df_agg.index = idx_col  # set the new index
-
-    return df_agg
-
+    
 #### OBSOLETE FUNCTIONS - DO NOT CONSIDER ####
 
 # Function to extract results
@@ -838,3 +952,42 @@ def capture_prices(model, el_price_df, windon_prod_df, windof_prod_df,
     captureprices_df.loc[:,'Nuclear'] = (el_price_df * nuclear_prod_df).sum() / nuclear_prod_df.sum()
     
     return(captureprices_df)
+
+
+def agg_by_zone_tech(df, prodcost="prodcost", power="capacity_el", tech="fuel", output="prodcost_weighted"):
+    '''
+    Aggregates power capacity and production costs for a participant type by fuel/technology/product type and zone.
+    '''
+    df_agg = df.groupby(["zone_el", tech]).agg(
+        capacity_el=(power, "sum"),
+        pcw=(prodcost, lambda x: (x * df[power]).sum())
+    )
+    df_agg[output] = df_agg.pcw / df_agg.capacity_el
+
+    return df_agg
+
+def agg_storage_by_zone(df, bid_price="Pumped_cons", offer_price="Pumped_prod", power="capacity_el", storage_cap="Storage_Capacity"):
+    '''
+    Aggregated power capacity and production costs for a storage type by fuel/technology/product type and zone.
+    '''
+    df_agg = df.groupby("zone_el").agg(
+        capacity_el=(power, "sum"),
+        capacity_stor=(storage_cap, "sum"),
+        bpw=(bid_price, lambda x: (x * df[power]).sum()),
+        opw=(offer_price, lambda x: (x * df[power]).sum())
+    )
+    df_agg["bid_price_weighted"] = df_agg.bpw / df_agg.capacity_el
+    df_agg["offer_price_weighted"] = df_agg.opw / df_agg.capacity_el
+
+    return df_agg
+
+def set_agg_idx(df):
+    '''
+    Combine the zone and fuel type to a single index
+    '''
+    df_agg = df.copy()
+    idx_col = df_agg.index.map(" ".join)  # e.g. to "FR Nuclear"
+    df_agg = df_agg.reset_index()  # keep bidding zone and fuel type and columns
+    df_agg.index = idx_col  # set the new index
+
+    return df_agg

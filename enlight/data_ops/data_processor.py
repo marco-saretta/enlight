@@ -19,33 +19,25 @@ class DataProcessor:
     """
 
     scenario_name: str
+    scenario_config: dict
     config_yaml: dict
     logger: Logger
-    base_config_path: Path = Path("config")
-    base_data_path: Path = Path("data")
+    root_path: Path
     overwrite_preprocessed_data: bool = True
-
+        
     def __post_init__(self) -> None:
-        """
-        Eagerly load and process all required data, including all networks, upon instantiation.
+        
+        self.logger.info(f"-------------- DATA PROCESSOR: {self.scenario_name} --------------")
 
-        Note: This method performs all data loading and processing steps immediately when the object is created,
-        which may have side effects (such as file I/O) and performance implications.
-        """
-        # Initialize logger
-        self.logger.info(f"INITIALIZING DATA PROCESSOR: {self.scenario_name}")
-
-        # Initialize auxiliary data dictionary
         self.aux_data_dict: Dict[str, Any] = {"scenario_name": self.scenario_name}
-
+        
+        self._get_config_yaml_data()
         self._init_data_paths()
-        self._write_bidding_zones()
-        self._write_generators()  # NEWLY ADDED
         self._load_scenarios_config()
         self._load_setup()
-        self._init_data_visualizer_dicts()  # NEWLY ADDED - needed for DataVisualizer
+        self._init_data_visualizer_dicts()
         self._prepare_all_renewable_sources()
-        self._process_hydro_reservoir_data()  # "process" = "load, process and save"
+        self._process_hydro_reservoir_data()
         self._process_hydro_pumped_storage()
         self._process_conventional_thermal_units_data()
         self._process_bess()
@@ -55,84 +47,94 @@ class DataProcessor:
         self._process_transmission_lines_data()
         self._prepare_inflexible_demand_sources()
         self._process_flexible_demand_sources()
-        # Save aux data to YAML after all processing
         if self.overwrite_preprocessed_data:
             self._save_aux_data_to_yaml()
 
+    def _get_config_yaml_data(self):
+        self.scenario_label = self.scenario_config.get("label")
+        self.run_mode = self.scenario_config.get("run_mode")
+        self.run_year = self.scenario_config.get("run_year")
+        self.plant_aggregation = self.scenario_config.get("plant_aggregation")
+
+        self.bidding_zones_list = self.config_yaml.get("bidding_zones", [])
+        self.VRE_generators = self.config_yaml.get("VRE_generators", [])
+
+        self.aux_data_dict.update({
+        "scenario_label": self.scenario_label,
+        "run_mode": self.run_mode,
+        "run_year": self.run_year,
+        "plant_aggregation": self.plant_aggregation,
+        "bidding_zones": self.bidding_zones_list,
+        })
+        
     def _init_data_paths(self) -> None:
         """Initialize all data directory paths according to the updated folder structure."""
         # Demand paths
+        
+        self.data_path = self.root_path / 'data'
+        self.config_path = self.root_path / 'config'
+        self.simulations_path = self.root_path / 'simulations'
+        
+        # Define the path to the scenarios configuration Excel file
+        self.scenario_config_path = self.config_path / "scenarios_config.xlsx"
+        
         self.path_demand_inflex_classic = (
-            self.base_data_path / "demand_inflexible_classic"
+            self.data_path / "demand_inflexible_classic"
         )
-        self.path_demand_flex_classic = self.base_data_path / "demand_flexible_classic"
-        self.path_demand_inflex_ev = self.base_data_path / "demand_inflexible_ev"
-        self.path_demand_flex_ev = self.base_data_path / "demand_flexible_ev"
+        self.path_demand_flex_classic = self.data_path / "demand_flexible_classic"
+        self.path_demand_inflex_ev = self.data_path / "demand_inflexible_ev"
+        self.path_demand_flex_ev = self.data_path / "demand_flexible_ev"
 
         # Market data paths
-        self.path_fuel_projections = self.base_data_path / "fuel_price_projections"
+        self.path_fuel_projections = self.data_path / "fuel_price_projections"
 
         # Hydro paths
-        # self.path_hydro_ror = self.base_data_path / "hydro_run_of_river"
-        self.path_hydro_reservoir = self.base_data_path / "hydro_reservoir"
-        self.path_hydro_pumped = self.base_data_path / "hydro_pumped_storage"
+        self.path_hydro_ror = self.data_path / "hydro_run_of_river"
+        self.path_hydro_reservoir = self.data_path / "hydro_reservoir"
+        self.path_hydro_pumped = self.data_path / "hydro_pumped_storage"
 
         # Renewable paths
-        # self.path_solar_pv = self.base_data_path / "solar_pv"
-        # self.path_wind_onshore = self.base_data_path / "wind_onshore"
-        # self.path_wind_offshore = self.base_data_path / "wind_offshore"
+        self.path_solar_pv = self.data_path / "solar_pv"
+        self.path_wind_onshore = self.data_path / "wind_onshore"
+        self.path_wind_offshore = self.data_path / "wind_offshore"
 
         # Thermal and other paths
-        self.path_thermal_plants = self.base_data_path / "thermal_plants"
-        self.path_district_heating = self.base_data_path / "district_heating"
-        self.path_ptx = self.base_data_path / "ptx"
-        self.path_lines = self.base_data_path / "lines"
+        self.path_thermal_plants = self.data_path / "thermal_plants"
+        self.path_district_heating = self.data_path / "district_heating"
+        self.path_ptx = self.data_path / "ptx"
+        self.path_lines = self.data_path / "lines"
 
         # BESS path
-        self.path_bess = self.base_data_path / "bess"
+        self.path_bess = self.data_path / "bess"
 
         # Common subdirectories
         self.capacity_projections_subdir = "capacity_projections"
         self.weather_years_subdir = "weather_years"
         self.profile_years_subdir = "profile_years"
 
+        # Output path for the scenario data
         self.output_path = (
-            Path("simulations") / self.scenario_name / "data"
-        )  # Output path for the scenario data
+            self.simulations_path / self.scenario_name / "data"
+        )  
 
     def _load_scenarios_config(self) -> None:
         """
         Load the system configuration for various scenarios from an Excel file.
 
-        This method reads the 'scenarios_config.xlsx' file located in the base configuration path
-        and stores its content in the 'scenario_config_df' attribute for later use.
-
         Raises:
             FileNotFoundError: If the configuration file does not exist.
         """
-        # Define the path to the scenarios configuration Excel file
-        scenario_config_path = self.base_config_path / "scenarios_config.xlsx"
 
         # Check if the configuration file exists
-        if not scenario_config_path.exists():
+        if not self.scenario_config_path.exists():
             raise FileNotFoundError(
-                f"System configuration not found: {scenario_config_path}"
+                f"System configuration not found: {self.scenario_config_path}"
             )
 
         # Load the configuration file into a DataFrame
         self.scenario_config_df = pd.read_excel(
-            scenario_config_path, index_col=0, sheet_name="Python"
+            self.scenario_config_path, index_col=0, sheet_name="Python"
         )
-
-    def _write_bidding_zones(self) -> None:
-        self.bidding_zones_list = self.config_yaml.get("bidding_zones", [])
-
-        self.aux_data_dict["bidding_zones"] = self.bidding_zones_list
-
-    def _write_generators(self) -> None:
-        # The list of conventional generators is not yet useful but included for completeness.
-        # self.conventional_generators = self.config_yaml.get("conventional_generators", [])
-        self.VRE_generators = self.config_yaml.get("VRE_generators", [])
 
     def _load_setup(self) -> None:
         """
@@ -257,8 +259,9 @@ class DataProcessor:
             profile_df[common_cols] * cap_year[common_cols].values
         )
 
-        # # Add the week column
-        # production_df["Week"] = profile_df["Week"]
+        if self.run_mode == "weekly":
+            # Add the week column
+            production_df["Week"] = profile_df["Week"]
 
         return production_df, profile_df, cap_year
 
@@ -267,7 +270,7 @@ class DataProcessor:
         Load, process, and store renewable generation profiles and capacities.
         Covers: Wind Onshore, Wind Offshore, Solar PV, Hydro ROR.
         """
-        self.scenario_config_df
+
         sources_dict = {}  # create a dictionary of dictionaries to dynamically create the sources list used to load the VRE data from the excel-configuration file.
         for vre_gen in self.VRE_generators:
             label, tech = (
@@ -276,7 +279,7 @@ class DataProcessor:
             sources_dict[label] = {}
             sources_dict[label]["label"] = label
             sources_dict[label]["aux_label"] = tech
-            sources_dict[label]["data_path"] = self.base_data_path / tech
+            sources_dict[label]["data_path"] = self.data_path / tech
             sources_dict[label]["wy_subdir"] = self.weather_years_subdir
             sources_dict[label]["wy_label"] = tech + "_wy"
             sources_dict[label]["output_file"] = tech + "_production.csv"
@@ -646,29 +649,27 @@ class DataProcessor:
         lines_b_a_file = self.path_lines / self.lines_selection / "lines_b_a.csv"
 
         # Check if both transmission lines files exist
+        # Check if both transmission lines files exist
         if lines_a_b_file.exists() and lines_b_a_file.exists():
-            # self.lines_a_b_raw = pd.read_csv(lines_a_b_file, index_col=0)
-            # self.lines_b_a_raw = pd.read_csv(lines_b_a_file, index_col=0)
+            # Load CSVs with two header rows: from_zone and to_zone
+            self.lines_a_b_raw = pd.read_csv(lines_a_b_file, header=[0, 1])
+            self.lines_b_a_raw = pd.read_csv(lines_b_a_file, header=[0, 1])
 
-            # self.lines_a_b = self.lines_a_b_raw[self.lines_a_b_raw.index.isin(self.bidding_zones_list)]
-            # self.lines_b_a = self.lines_b_a_raw[self.lines_b_a_raw.index.isin(self.bidding_zones_list)]
-
-            # New code below ensures that the source and destination zone have both been chosen as bidding zones.
-            self.lines_a_b_raw = pd.read_csv(lines_a_b_file)  # , index_col=0)
-            self.lines_b_a_raw = pd.read_csv(lines_b_a_file)  # , index_col=0)
-
-            self.lines_a_b = self.lines_a_b_raw[
-                self.lines_a_b_raw[["from_zone", "to_zone"]]
-                .isin(self.bidding_zones_list)
-                .all(axis=1)
+            # Filter columns where both from_zone and to_zone are in bidding_zones_list
+            # The columns are MultiIndex with (from_zone, to_zone)
+            mask_a_b = [
+                (col[0] in self.bidding_zones_list and col[1] in self.bidding_zones_list)
+                for col in self.lines_a_b_raw.columns
             ]
-            self.lines_b_a = self.lines_b_a_raw[
-                self.lines_b_a_raw[["to_zone", "from_zone"]]
-                .isin(self.bidding_zones_list)
-                .all(axis=1)
+            mask_b_a = [
+                (col[0] in self.bidding_zones_list and col[1] in self.bidding_zones_list)
+                for col in self.lines_b_a_raw.columns
             ]
+            
+            self.lines_a_b = self.lines_a_b_raw.loc[:, mask_a_b]
+            self.lines_b_a = self.lines_b_a_raw.loc[:, mask_b_a]
 
-            if self.overwrite_preprocessed_data:
+        if self.overwrite_preprocessed_data:
                 utils.save_data(
                     self.lines_a_b,
                     "lines_a_b.csv",
@@ -746,8 +747,13 @@ class DataProcessor:
         # --- Validation ---
         utils.validate_df_positive_numeric(demand_profile, profile_file)
 
+        demand_profile = demand_profile[self.bidding_zones_list]
+        
+        if self.run_mode == "weekly":
+            # Filter the bidding zones chosen in config.yaml
+            demand_profile['Week'] = profile_df["Week"]
+        
         # Filter the bidding zones chosen in config.yaml
-        demand_profile = demand_profile[self.bidding_zones_list]# + ["Week"]]
 
         return demand_profile, profile_df, projection_row
 
@@ -832,7 +838,7 @@ class DataProcessor:
                     ]
                 
                 # Define the path to the CSV file of the flexible load data
-                filepath = self.base_data_path / subdir_label / f"{param_name}" / f"{file}.csv"
+                filepath = self.data_path / subdir_label / f"{param_name}" / f"{file}.csv"
 
                 # Check if the flexible load amount file exists
                 if not filepath.exists():

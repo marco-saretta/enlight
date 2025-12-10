@@ -3,10 +3,7 @@
 European Network for Long-term Insights on Grid prices, Hedging & Trends
 
 ## Overview
-This repository contains a multi-year market forecast model simulating electricity market clearing across all European bidding zones.  
-It reproduces the market clearing algorithm by solving an optimisation problem over a user-configurable time horizon and scenario set.  
-
-The model ingests a comprehensive, structured dataset of energy system components (generation assets, demand profiles, network topology, fuel prices, etc.) and outputs detailed market forecasts including energy balances, generation schedules, line flows, dispatched demand, and curtailment.
+Multi-year electricity market forecast model simulating market clearing across all European bidding zones using solver-based optimization.
 
 ```mermaid
 ---
@@ -15,146 +12,188 @@ config:
 ---
 flowchart LR
  subgraph s1["Configuration"]
-        n2(["config.yaml"])
-        n4(["config.xlsx"])
+        n2(["scenarios_config.xlsx"])
+        n4(["config.yaml"])
   end
- subgraph s2["Generate input data"]
-        n5(["data_processor.py"])
+ subgraph s2["Data Preprocessing"]
+        n5(["DataProcessor"])
   end
- subgraph s3["Run"]
-        n6(["model.py"])
+ subgraph s3["Data Loading"]
+        n6(["DataLoader"])
+  end
+ subgraph s4["Model Execution"]
+        n7(["EnlightModel"])
+  end
+ subgraph s5["Results Export"]
+        n8(["DataExporter"])
   end
     s1 --> s2
     s2 --> s3
-    style n2 stroke-width:1px,stroke-dasharray: 0
-    style n4 stroke-width:1px,stroke-dasharray: 0
-    style n5 stroke-width:1px,stroke-dasharray: 0
-    style n6 stroke-width:1px,stroke-dasharray: 0
+    s3 --> s4
+    s4 --> s5
     style s1 fill:#BBDEFB,color:#000000
-
+    style s2 fill:#C8E6C9,color:#000000
+    style s3 fill:#FFF9C4,color:#000000
+    style s4 fill:#FFCCBC,color:#000000
+    style s5 fill:#E1BEE7,color:#000000
 ```
+
 ## Features
 
 - Models all European bidding zones with multi-year foresight  
-- Reproduces market clearing using a solver-based optimisation approach  
-- Easy scenario configuration via Excel and YAML files  
-- Includes base datasets to get started immediately  
-- Produces detailed results for generation, demand, lineflows, and curtailment  
+- Reproduces market clearing using optimization (Gurobi/HiGHS)  
+- Easy scenario configuration via Excel and YAML
+- Flexible yearly or weekly simulation modes
+- Comprehensive output: prices, dispatch, flows, curtailment
 
 ## Installation
 
-1. **Clone the repository**:
-   Clone the repository via SSH:
-    ```bash
-    https://github.com/marco-saretta/enlight.git
-    ```
-
-2. **Create a conda environment from the provided file**
-   ```bash
-   conda env create -f environment.yaml
-   conda activate enlight-env
-   ```
-
+```bash
+git clone https://github.com/marco-saretta/enlight.git
+cd enlight
+conda env create -f environment.yaml
+conda activate enlight-env
+```
 
 ## Quick Start
 
-1. **Configure your scenarios**
+**1. Configure scenarios** in `config/scenarios_config.xlsx`  
+Define technology capacities, costs, and constraints for each scenario.
 
-   - Edit the Excel file `config/scenarios_config.xlsx` to define scenario-specific inputs such as capacities, costs, and technology availability.  
-   - Adjust general run parameters in `config/config.yaml` (e.g., number of bidding zones, simulation years).  
+**2. Set simulation parameters** in `config/config.yaml`
 
-2. **Run the model**
+```yaml
+scenario_list:
+  - scenario_1:
+      run_mode: "yearly"      # Full year optimization
+      year: 2030
+      plant_aggregation: false
+
+  - scenario_2:
+      run_mode: "weekly"      # Week-by-week optimization
+      year: 2040
+      plant_aggregation: true
+      week_range:
+        start_week: 10
+        end_week: 20
+
+solver_name: "gurobi"         # Options: "gurobi", "highs"
+bidding_zones:                # Select zones to model
+  - AT
+  - DELU
+  - FR
+  # ...
+```
+
+**3. Run simulations**
 
 ```bash
 python main.py
 ```
 
-The script will load configuration and input data, execute the optimisation, and write outputs to `simulations/<scenario_name>/results/`.  
+```python
+# main.py
+from enlight.runner import EnlightRunner
+from pathlib import Path
 
-## Input Data Structure
-
-The repository includes base datasets under the `data/` directory covering:
-
-- Generation units (thermal, hydro, wind, solar, etc.)  
-- Demand profiles (flexible and inflexible, classic and EV)  
-- Network topology and lines  
-- Fuel and CO₂ price projections  
-- Weather and capacity projections for renewables  
-
-Users can extend or replace these datasets to model alternative futures.
-
-## Outputs
-
-Model outputs are stored per scenario in:
-
-```
-simulations/<scenario_name>/results/
+if __name__ == "__main__":
+    root_path = Path(__file__).parent.resolve()
+    r = EnlightRunner(root_path=root_path)
+    
+    r.run_scenario('scenario_1')
+    r.run_scenario('scenario_2')
 ```
 
-Typical outputs include:
+## How It Works: The Four-Step Pipeline
 
-- Unit generation schedules and capacity utilization  
-- Energy balance summaries  
-- Electricity prices and market clearing information  
-- Line flow results across the network  
-- Demand dispatch and curtailment metrics  
+Each scenario execution follows an automated pipeline:
 
+### 1. Data Preprocessing (`DataProcessor`)
+Transforms raw data into model-ready formats. Processes generation profiles, demand, network topology, and validates consistency. Saves to `simulations/<scenario_name>/data/`.
 
-## Code Architecture
+### 2. Data Loading (`DataLoader`)
+Loads preprocessed data into memory as structured objects (DataFrames, arrays). Organizes by time period (yearly: 8760h, weekly: 168h). Accessible for debugging.
+
+### 3. Model Execution (`EnlightModel`)
+Solves market clearing optimization (maximize social welfare subject to power balance, generation limits, transmission capacity, storage dynamics). Outputs dispatch schedules, prices, and flows.
+
+### 4. Results Export (`DataExporter`)
+Extracts solutions, calculates metrics, saves results to `simulations/<scenario_name>/results/`. For weekly mode, combines individual weeks into annual summaries.
+
+## Yearly vs Weekly Mode
+
+**Yearly:** Single optimization over 8760 hours. Captures seasonal patterns and long-term storage. Higher memory requirement.
+
+**Weekly:** Sequential optimization of individual weeks. Lower memory footprint, suitable for large systems. May not capture multi-week storage strategies.
+
+## Output Structure
+
+```
+simulations/<scenario_name>/
+├── data/                          # Preprocessed inputs
+└── results/                       # Model outputs
+    ├── electricity_prices.csv
+    ├── generation_schedules.csv
+    ├── lineflows.csv
+    ├── demand_served.csv
+    ├── curtailment.csv
+    └── marginal_generator.csv
+```
+
+## Logging
+
+Execution logs with timing saved to `logs/enlight.log`:
+
+```
+2024-11-24 10:30:00 - enlight - INFO - Starting: Data preprocessing
+2024-11-24 10:30:05 - enlight - INFO - Completed: Data preprocessing in 5.23 seconds
+2024-11-24 10:30:05 - enlight - INFO - Starting: Model execution
+2024-11-24 10:45:12 - enlight - INFO - Completed: Model execution in 904.56 seconds
+```
+
+## Code Structure
 
 ```
 .
-├── main.py                   # Entry point for running simulations
-├── environment.yaml          # Conda environment specification
-├── requirements.txt          # Python package dependencies
-├── config/                   # Configuration files for scenarios and runs
-│   ├── config.yaml
-│   └── scenarios_config.xlsx
-├── data/                     # Input datasets organized by technology and type
-├── enlight/                  # Core Python package
-│   ├── data_ops/             # Data loading and preprocessing modules
-│   ├── model/                # Market optimisation model implementation
-│   ├── runner/               # Simulation orchestration
-│   └── utils/                # Utility functions
-├── simulations/              # Output folders with scenario results
-├── docs/                     # Project documentation
-├── tests/                    # Unit and integration tests
-└── examples/                 # Example scripts and notebooks
+├── main.py                   # Entry point
+├── config/
+│   ├── config.yaml           # Simulation settings
+│   └── scenarios_config.xlsx # Scenario parameters
+├── data/                     # Base input datasets
+├── enlight/
+│   ├── data_ops/             # Preprocessing, loading, export
+│   ├── model/                # Optimization model
+│   ├── runner/               # Pipeline orchestration
+│   └── utils/                # Logging, timing, helpers
+├── simulations/              # Scenario outputs
+└── logs/                     # Execution logs
 ```
 
-Key code locations:
-- `enlight/data_ops` — data loading and preprocessing
-- `enlight/model` — market/optimisation model(s)
-- `enlight/runner/runner.py` — orchestration of simulation flows
-- `main.py` — top-level entry point that triggers the runner
+## Documentation
 
-## Running Tests
+See `docs/` for detailed guides on configuration, architecture, API reference, and troubleshooting.
 
-Execute the test suite with:
+## Testing
 
 ```bash
 pytest tests/
 ```
 
-Add tests for new features under the `tests/` folder.
-
-
-## Documentation
-
-For detailed guidance, see the `docs/` folder, including:
-
-- Installation instructions  
-- Configuration options and scenario setup  
-- User guide for running and interpreting results  
-- System architecture and design details  
-- API reference for developers  
-- Testing and troubleshooting information  
-
 ## License
 
 GPL-3.0 license.
 
-## Authors & Acknowledgements
+## Authors
 
-Author: Marco Saretta
-Collaborators: Viktor Johnsen
+**Marco Saretta** | Collaborator: Viktor Johnsen
+
+## Citation
+
+```bibtex
+@software{enlight2024,
+  author = {Saretta, Marco and Johnsen, Viktor},
+  title = {ENLIGHT: European Network for Long-term Insights on Grid prices, Hedging \& Trends},
+  year = {2024},
+  url = {https://github.com/marco-saretta/enlight}
+}
+```
