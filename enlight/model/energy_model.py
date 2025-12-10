@@ -275,24 +275,6 @@ class EnlightModel:
             name='dh_units_bid'
         )
 
-        # PtX bid
-        self.ptx_units_bid = self.model.add_variables(
-            lower=0,
-            upper=self.data.ptx_units_el_cap,
-            coords=[self.times, self.data.ptx_units_id],
-            dims=["T", "L_PtX"],
-            name='ptx_units_bid'
-        )
-
-        #  District heating bid for power-to-heat units
-        self.dh_units_bid = self.model.add_variables(
-            lower=0,
-            upper=self.data.dh_units_el_cap,
-            coords=[self.times, self.data.dh_units_id],
-            dims=["T", "L_DH"],
-            name='dh_units_bid'
-        )
-
         # Electricity export
         self.electricity_export = self.model.add_variables(
             coords=[self.times, self.bidding_zones],

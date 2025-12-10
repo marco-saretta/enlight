@@ -637,18 +637,18 @@ def get_unsorted_aggregated_market_curves_from_dataloader_object(example_hour, d
 
     return demand_curve_raw, supply_curve_raw
 
-# def combine_simulations_result(weeks: list, result_path: Path, result: str):
-#     '''
-#     This function combines dataframes of a single result e.g. electricity prices
-#     across multiple simulations (weeks) to arrive at a combined dataframe for all of the
-#     simulations, e.g. the electricity prices for the entire year specified in configuration file.
-#     '''
-#     # Initialize an empty dict to store all of the dataframes after loading
-#     df_dict = {}
-#     for w in weeks:
-#         df_dict[f"week_{w}"] = pd.read_csv(result_path / f"week_{w}/{result}.csv")
-#     df_combined = pd.concat(df_dict.values())  # e.g. electricity prices in the entire year
-#     return df_combined
+def combine_simulations_result(weeks: list, result_path: Path, result: str):
+    '''
+    This function combines dataframes of a single result e.g. electricity prices
+    across multiple simulations (weeks) to arrive at a combined dataframe for all of the
+    simulations, e.g. the electricity prices for the entire year specified in configuration file.
+    '''
+    # Initialize an empty dict to store all of the dataframes after loading
+    df_dict = {}
+    for w in weeks:
+        df_dict[f"week_{w}"] = pd.read_csv(result_path / f"week_{w}/{result}.csv")
+    df_combined = pd.concat(df_dict.values())  # e.g. electricity prices in the entire year
+    return df_combined
 
 def hourly_int_index_to_datetime(df: pd.DataFrame, year0: int):
     '''
