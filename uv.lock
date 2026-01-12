@@ -624,9 +624,6 @@ requires-dist = [
     { name = "yfinance" },
 ]
 
-[package.metadata.requires-dev]
-dev = []
-
 [[package]]
 name = "entsoe-py"
 version = "0.7.8"

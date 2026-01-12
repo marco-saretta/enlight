@@ -5,41 +5,6 @@ European Network for Long-term Insights on Grid prices, Hedging & Trends
 ## Overview
 Multi-year electricity market forecast model simulating market clearing across all European bidding zones using solver-based optimization.
 
-```mermaid
----
-config:
-  theme: redux
----
-flowchart LR
- subgraph s1["Configuration"]
-        n2(["scenarios_config.xlsx"])
-        n4(["config.yaml"])
-  end
- subgraph s2["Data Preprocessing"]
-        n5(["DataProcessor"])
-  end
- subgraph s3["Data Loading"]
-        n6(["DataLoader"])
-  end
- subgraph s4["Model Execution"]
-        n7(["EnlightModel"])
-  end
- subgraph s5["Results Export"]
-        n8(["DataExporter"])
-  end
-    s1 --> s2
-    s2 --> s3
-    s3 --> s4
-    s4 --> s5
-    style s1 fill:#BBDEFB,color:#000000
-    style s2 fill:#C8E6C9,color:#000000
-    style s3 fill:#FFF9C4,color:#000000
-    style s4 fill:#FFCCBC,color:#000000
-    style s5 fill:#E1BEE7,color:#000000
-```
-
-## Features
-
 - Models all European bidding zones with multi-year foresight  
 - Reproduces market clearing using optimization (Gurobi/HiGHS)  
 - Easy scenario configuration via Excel and YAML
@@ -48,11 +13,28 @@ flowchart LR
 
 ## Installation
 
+Clone the repository via:
 ```bash
 git clone https://github.com/marco-saretta/enlight.git
-cd enlight
-conda env create -f environment.yaml
-conda activate enlight-env
+```
+
+Then proceed to create the virtual environment ro run enlight.
+* **Installing with conda**: 
+```bash
+cd <enlight_directory>/enlight        # Set the enlight directory
+conda env create -f environment.yaml  # Create the environment via .yaml file
+conda activate enlight-env            # Activate the environment
+```
+
+* **Installing with uv**:
+```bash
+cd <enlight_directory>/enlight    # Set the enlight directory
+uv sync                           # Create the virtual environment with uv from .toml file
+uv run main.py                    # Run main.py script
+```
+*Note: id uv is not installed, please run the following in powershell. Please refer to the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).*
+```bash
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"    # Optional: install uv
 ```
 
 ## Quick Start
