@@ -1,0 +1,43 @@
+[project]
+name = "enlight"
+version = "0.1.0"
+description = "European Network for Long-term Insights on Grid prices, Hedging and Trends"
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    # Core
+    "numpy>=2.4.1",
+    "pandas>=2.3.3",
+    "xarray>=2024.03.0,<2025.7.0",
+    "scipy",
+    "joblib",
+    "tqdm",
+    "pytz",
+    "pyyaml",
+    "tables",
+
+    # Jupyter
+    "jupyterlab",
+    "ipykernel",
+
+    # IO
+    "openpyxl",
+
+    # Visualization
+    "matplotlib",
+
+    # Modeling + optimization
+    "powerplantmatching>=0.5.15",
+    "linopy>=0.4.4",
+    "highspy",
+    "networkx",
+
+    # Data sources
+    "yfinance",
+    "entsoe-py",
+
+
+    # Commercial solver (requires external install)
+    "gurobipy",
+]
