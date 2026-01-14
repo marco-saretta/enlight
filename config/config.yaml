@@ -75,10 +75,10 @@ bidding_zones:
   #- EL     # Greece
   #- ES     # Spain
   #- FI     # Finland
-  #- FR     # France
+  - FR     # France
   #- HR     # Croatia
   #- HU     # Hungary
-  #- IT     # Italy
+  - IT     # Italy
   #- LT     # Lithuania
   #- LV     # Latvia
   #- NL     # Netherlands
