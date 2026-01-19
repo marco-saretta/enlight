@@ -18,4 +18,8 @@ RUN uv sync --locked --no-cache --no-install-project
 
 ENTRYPOINT ["uv", "run", "./main.py"]
 
+# Build the image
 # docker build -f ./Docker/uv.dockerfile . -t enlight_test:latest
+
+# Build the container
+# docker run enlight_test
