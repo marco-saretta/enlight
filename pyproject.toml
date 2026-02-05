@@ -28,11 +28,11 @@ dependencies = [
     "matplotlib",
     "powerplantmatching>=0.5.15",
     "linopy>=0.4.4",
-    "highspy",
+    "highspy>=1.13.0",
     "networkx",
     "yfinance",
     "entsoe-py",
-    "gurobipy",     # Requires installing license locally
+    "gurobipy>=13.0.0",     # Requires installing license locally
     "hydra-core>=1.3.2",
     "typer==0.15.1",
     "uvicorn==0.34.0",
@@ -44,7 +44,7 @@ dev = [
     "invoke==2.2.0",
     "pre-commit==4.1.0",
     "pytest==8.3.4",
-    "ruff==0.1.3",
+    "ruff>=0.2.1",
     "mypy==1.19.1",
     "mkdocs-material==9.7.1",
     "mkdocstrings-python==2.0.1",

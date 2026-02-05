@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict
-import yaml
+from omegaconf import DictConfig
 from tqdm import tqdm
 from enlight.data_ops import DataProcessor
 from enlight.data_ops import DataLoader
@@ -12,42 +12,44 @@ import enlight.utils as utils
 from enlight.utils import Timer, log_time
 import joblib
 
+
 class EnlightRunner:
     """
     Handles configuration loading, data preparation, and model execution
     for Enlight energy modeling scenarios.
     """
 
-    def __init__(self, root_path: Path) -> None:
+    def __init__(self, config: DictConfig) -> None:
         """Initialize the EnlightRunner."""
-        
+
         self.logger = utils.setup_logging()
-        self.logger.info('========== ENLIGHT object  initialization ==========')
-        
+        self.logger.info("========== ENLIGHT object  initialization ==========")
+
         # Start timing to load the configuration
         config_timer = Timer(self.logger, "Loading general configuration")
-        self.root_path: Path = root_path
+        self.config: DictConfig = config
+        self.root_dir: Path = self.config.paths.root
 
         self._load_config()
         utils.load_plot_config()
-        
+
         # Stop timing the entire scenario
         config_timer.stop()
         self.logger.info("Loading general configuration completed successfully\n")
 
     def _load_config(self) -> None:
         """Load configuration from YAML file and setup scenarios."""
-        self.config_path = self.root_path / 'config'
-        self.config_yaml_path = self.config_path / "config.yaml"
+        # self.configs_dir = self.root_path / 'configs'
+        # self.default_config_path = self.config_path / "default_config.yaml"
 
-        if not self.config_yaml_path.exists():
-            raise FileNotFoundError(f"Configuration file not found: {self.config_yaml_path}")
+        # if not self.default_config_path.exists():
+        #     raise FileNotFoundError(f"Configuration file not found at: {self.default_config_path}")
 
-        with open(self.config_yaml_path, "r", encoding="utf-8") as file:
-            self.config_yaml = yaml.safe_load(file)
+        # with open(self.default_config_path, "r", encoding="utf-8") as file:
+        #     self.config_yaml = yaml.safe_load(file)
 
         # Parse scenario_list properly
-        self.scenarios_dict = {}   # dict: scenario_name → config_dict
+        self.scenarios_dict = {}  # dict: scenario_name → config_dict
 
         for entry in self.config_yaml.get("scenario_list", []):
             if not isinstance(entry, dict):
@@ -68,57 +70,53 @@ class EnlightRunner:
         self.bidding_zones = list(self.config_yaml.get("bidding_zones", []))
 
         # Log minimal information
-        self.logger.info(
-            "Loaded %d scenarios and %d bidding zones.",
-            len(self.scenarios_dict),
-            len(self.bidding_zones)
-        )
+        self.logger.info("Loaded %d scenarios and %d bidding zones.", len(self.scenarios_dict), len(self.bidding_zones))
 
     def run_scenario(self, scenario_name: str, dry_run: bool = False) -> None:
-            """
-            Run a specific scenario based on its configuration.
-            """
-            # Start timing the entire scenario
-            scenario_timer = Timer(self.logger, f"Scenario '{scenario_name}'")
-           
-            if scenario_name not in self.scenarios_dict:
-                raise ValueError(f"Scenario '{scenario_name}' not found in scenario_list")
- 
-            # Get configuration for this specific scenario
-            scenario_config = self.scenarios_dict[scenario_name]
-           
-            # Extract run mode
-            mode = scenario_config.get("run_mode")
-            self.logger.info(f"Running scenario '{scenario_name}' in mode: {mode}")
- 
-            if mode == "yearly":
-                self._run_yearly(scenario_name, scenario_config, dry_run)
- 
-            elif mode == "weekly":
-                self._run_weekly(scenario_name, scenario_config, dry_run)
- 
-            else:
-                raise ValueError(f"Unknown run_mode: '{mode}'. Expected 'yearly' or 'weekly'")
- 
-            # Stop timing the entire scenario
-            scenario_timer.stop()
-            self.logger.info(f"Scenario '{scenario_name}' completed successfully\n")
- 
+        """
+        Run a specific scenario based on its configuration.
+        """
+        # Start timing the entire scenario
+        scenario_timer = Timer(self.logger, f"Scenario '{scenario_name}'")
+
+        if scenario_name not in self.scenarios_dict:
+            raise ValueError(f"Scenario '{scenario_name}' not found in scenario_list")
+
+        # Get configuration for this specific scenario
+        scenario_config = self.scenarios_dict[scenario_name]
+
+        # Extract run mode
+        mode = scenario_config.get("run_mode")
+        self.logger.info(f"Running scenario '{scenario_name}' in mode: {mode}")
+
+        if mode == "yearly":
+            self._run_yearly(scenario_name, scenario_config, dry_run)
+
+        elif mode == "weekly":
+            self._run_weekly(scenario_name, scenario_config, dry_run)
+
+        else:
+            raise ValueError(f"Unknown run_mode: '{mode}'. Expected 'yearly' or 'weekly'")
+
+        # Stop timing the entire scenario
+        scenario_timer.stop()
+        self.logger.info(f"Scenario '{scenario_name}' completed successfully\n")
+
     def _run_yearly(self, scenario_name, scenario_config: Dict, dry_run) -> None:
         """
         Execute a yearly simulation scenario.
-       
+
         Args:
             scenario_name: Name of the scenario
             scenario_config: Configuration dictionary for this scenario
             dry_run: If True, skip model execution
         """
-       
+
         self.logger.info(f"========== STARTING YEARLY RUN: {scenario_name} ==========")
-       
+
         # STEP 1: DATA PREPROCESSING
         timer_preprocess = Timer(self.logger, "Data preprocessing")
-       
+
         self.data_processor = DataProcessor(
             scenario_name=scenario_name,
             scenario_config=scenario_config,
@@ -127,10 +125,10 @@ class EnlightRunner:
             logger=self.logger,
         )
         timer_preprocess.stop()
-       
+
         # STEP 2: DATA LOADING
         timer_loading = Timer(self.logger, "Data loading")
-       
+
         self.data = DataLoader(
             scenario_name=scenario_name,
             scenario_config=scenario_config,
@@ -138,70 +136,69 @@ class EnlightRunner:
             root_path=self.root_path,
             logger=self.logger,
         )
-       
+
         timer_loading.stop()
-       
+
         # STEP 3: MODEL EXECUTION
         timer_model = Timer(self.logger, "Model execution")
-       
+
         self.enlight_model = EnlightModel(
             data=self.data,
             scenario_name=scenario_name,
             scenario_config=scenario_config,
             config_yaml=self.config_yaml,
             root_path=self.root_path,
-            logger=self.logger
+            logger=self.logger,
         )
-           
-        if dry_run:    
+
+        if dry_run:
             self.logger.info("Dry run - skipping model execution")
         else:
             self.enlight_model.run_model()
-           
+
             # TODO Save with joblib
-            #model_file = self.root_path / 'simulations' / f'{scenario_name}/results/{scenario_name}_model.pkl'
-            #joblib.dump(self.enlight_model, model_file, compress=3)  # compress=3 for good compression
-       
-      
+            # model_file = self.root_path / 'simulations' / f'{scenario_name}/results/{scenario_name}_model.pkl'
+            # joblib.dump(self.enlight_model, model_file, compress=3)  # compress=3 for good compression
+
         timer_model.stop()
-        
+
         # STEP 4: EXPORT RESULTS
         if not dry_run:
             timer_results = Timer(self.logger, "Results export")
-            
+
             exporter = DataExporter(
                 enlight_model=self.enlight_model,
                 scenario_name=scenario_name,
                 scenario_config=scenario_config,
                 root_path=self.root_path,
-                logger=self.logger
+                logger=self.logger,
             )
-            
+
             exporter.export_solution()  # ✓ Actually call the export!
-            
+
             timer_results.stop()
-            
+
             self.logger.info(f"Export for '{scenario_name}' completed")
-            
+
         else:
             pass
-        
+
         self.logger.info(f"Yearly scenario '{scenario_name}' completed")
-        
+
     def _run_weekly(self, scenario_name, scenario_config: Dict, dry_run) -> None:
         """
         Execute a weekly simulation scenario.
-        
+
         Args:
             scenario_name: Name of the scenario
             config: Configuration dictionary for this scenario
         """
 
         self.logger.info(f"========== STARTING YEARLY RUN: {scenario_name} ==========")
-        
+
         # STEP 1: DATA PREPROCESSING
         timer_preprocess = Timer(self.logger, "Data preprocessing")
-        
+
         self.data_processor = DataProcessor(
             scenario_name=scenario_name,
             scenario_config=scenario_config,
@@ -209,15 +206,14 @@ class EnlightRunner:
             root_path=self.root_path,
             logger=self.logger,
         )
-        
+
         timer_preprocess.stop()
-        week_dict = scenario_config['week_range']
-        start_week = week_dict['start_week']
-        end_week = week_dict['end_week']
-        
+        week_dict = scenario_config["week_range"]
+        start_week = week_dict["start_week"]
+        end_week = week_dict["end_week"]
+
         week_range = range(start_week, end_week + 1)
         for week in tqdm(week_range, desc="Running weekly simulations"):
-            
             # STEP 2: DATA LOADING
             self.data_w = DataLoader(
                 scenario_name=scenario_name,
@@ -225,16 +221,15 @@ class EnlightRunner:
                 config_yaml=self.config_yaml,
                 root_path=self.root_path,
                 logger=self.logger,
-                week=week
-                )
-            
+                week=week,
+            )
+
             # STEP 3: MODEL EXECUTION
         timer_model = Timer(self.logger, "Model execution")
-        
+
         if dry_run:
             pass
         else:
-            
             self.enlight_model = EnlightModel(
                 data=self.data_w,
                 scenario_name=scenario_name,
@@ -244,20 +239,15 @@ class EnlightRunner:
                 logger=self.logger,
             )
             self.enlight_model.run_model()
-            
+
         timer_model.stop()
-            
-            # STEP 4: STORE RESULTS
-            # self.exporter = DataExporter(
-            #     enlightmodel_obj=self.enlight_model,
-        
+
+        # STEP 4: STORE RESULTS
+        # self.exporter = DataExporter(
+        #     enlightmodel_obj=self.enlight_model,
+
         # Step 5: CONCATENATE RESULTS
         # self.exporter.concatenate()
-
-        
-
-
-
 
     def visualize_data(self, week: int, example_hour: int) -> None:
         """Visualize the data using DataVisualizer (placeholder method)."""
@@ -268,7 +258,7 @@ class EnlightRunner:
                 dataprocessor_obj=self.data_processor,
                 dataloader_obj=self.data,
                 palette=self.palette,  # used to ensure consistent plots
-                logger=self.logger
+                logger=self.logger,
             )
         self.data_vis.plot_annual_total_loads()
         self.data_vis.plot_total_installed_capacity()
@@ -278,16 +268,16 @@ class EnlightRunner:
         self.logger.info("Data visualization completed.")
 
     def visualize_results(self, example_hour: int) -> None:
-        '''
+        """
         Visualize the market clearing with the zonal prices.
-        '''
-        if self.enlight_model.model.status != 'ok':
+        """
+        if self.enlight_model.model.status != "ok":
             self.logger.info("No results can be shown. Please run the model first")
         else:
             self.res_vis = ResultsVisualizer(
                 enlightmodel_obj=self.enlight_model,
                 palette=self.palette,  # used to ensure consistent plots
-                logger=self.logger
+                logger=self.logger,
             )
             self.res_vis.plot_aggregated_curves_with_zonal_prices(example_hour=example_hour)
             self.res_vis.plot_price_duration_curve()
@@ -312,7 +302,6 @@ class EnlightRunner:
     #             palette=self.palette,  # used to ensure consistent plots
     #             logger=self.logger
     #         )
-        
+
     #     # Calls methods
     #     self.data_vis.visualize_NBS_inputs(z0=bidding_zone, prices_path=prices_path)
-        

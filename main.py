@@ -1,18 +1,18 @@
-"""
-Main function to execute the Enlight energy scenario runner.
-
-This function creates an instance of the EnlightRunner, prepares input data,
-and runs a single simulation.
-"""
+import hydra
+from omegaconf import DictConfig
 from enlight.runner import EnlightRunner  # Updated import path
 from pathlib import Path
 
-if __name__ == "__main__":
-    # Get path of project root
-    root_path: Path = Path(__file__).parent.resolve()    
-    
+
+@hydra.main(config_path="configs", config_name="default_config")
+def main(cfg: DictConfig):
+
     # Create an instance of the EnlightRunner
-    r = EnlightRunner(root_path=root_path)
-    
+    enlight_runner = EnlightRunner(config=cfg)
+
     # Creates instance of the DataProcessor:
-    r.run_scenario('scenario_1', dry_run = False)
+    enlight_runner.run_scenario("scenario_1", dry_run=False)
+
+
+if __name__ == "__main__":
+    main()
