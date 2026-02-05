@@ -1,0 +1,40 @@
+defaults:
+  - simulation: 
+  - _self_
+
+network_files:
+# Hindcast dynamic old
+- "hindcast_dyn_old_wy2020.nc"
+
+paths:
+  root: "${hydra:runtime.cwd}"
+  log: "./logs"
+
+# Merge dataframes
+merge_dataframes:
+- electricity_prices.csv
+#- generators_dispatch.csv
+
+# Compute scores
+benchmark_score_files:
+- electricity_prices.csv
+
+metrics:
+- mae
+- rmse
+- smape
+
+years_list:
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+
+api_key: YOUR-ENTSOE-API-KEY
+
+# Per-simulation config
+plot_export_format: "pdf"
+exclude_countries:
+  - 'MK'  # Add problematic countries here
+
