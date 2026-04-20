@@ -1,0 +1,150 @@
+# =============================================================================
+# ENLIGHT Model — Simulation Configuration Template
+# =============================================================================
+# Copy this file and rename it (e.g. sim1.yaml) to define a new simulation.
+# Place it under configs/simulation/.
+#
+# Single sim:  python main.py simulation=sim1
+# Batch run:   add sim1 to simulation_list in default_config.yaml
+# =============================================================================
+
+# @package simulation
+
+label: "sim_1"
+
+# =============================================================================
+# Run control
+# =============================================================================
+run:
+  mode: "rolling_horizon"   # rolling_horizon | yearly
+  prediction_year: 2040
+  plant_aggregation: true
+
+rolling_horizon:          # only read when mode: rolling_horizon
+  start_week: 1
+  end_week:   2           # set to 52 for a full year
+
+# =============================================================================
+# Production
+# =============================================================================
+
+# --- Variable renewables -----------------------------------------------------
+
+wind_onshore:
+  weather_year:  2020
+  capacity_file: TYNDP_2024_National_Trends
+  bid_price:     0.01
+
+wind_offshore:
+  weather_year:  2020
+  capacity_file: TYNDP_2024_National_Trends
+  bid_price:     0.02
+
+solar_pv:
+  weather_year:  2020
+  capacity_file: TYNDP_2024_National_Trends
+  bid_price:     0.03
+
+hydro_ror:
+  weather_year:  2020
+  capacity_file: TYNDP_2024_National_Trends
+  bid_price:     0.04
+
+# --- Hydro reservoir ---------------------------------------------------------
+
+hydro_res:
+  units_file:          hydro_reservoir_units
+  energy_weather_year: 2020
+  bid_price:           ramboll
+
+# --- Hydro pumped storage ----------------------------------------------------
+
+hydro_ps:
+  units_file:           hydro_pumped_storage_units
+  initial_soc:          0.5
+  roundtrip_efficiency: 0.9
+  fuel_projection:      ramboll
+
+# --- Thermal -----------------------------------------------------------------
+
+thermal:
+  units_file:      thermal_plant_units
+  fuel_projection: ramboll
+
+# --- Network -----------------------------------------------------------------
+
+lines:
+  capacity_file: entsoe
+
+# =============================================================================
+# Demand
+# =============================================================================
+
+# --- Inflexible demand -------------------------------------------------------
+# voll: value of lost load [EUR/MWh]
+
+demand_inflexible:
+  classical:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5000
+  industrial:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5001
+  household:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5002
+  public:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5003
+  ev:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5004
+
+# --- Flexible demand ---------------------------------------------------------
+# wtp: willingness to pay [EUR/MWh]
+
+demand_flexible:
+  classical:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+  industrial:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+  household:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+  public:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+  ev:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+
+# =============================================================================
+# Storage
+# =============================================================================
+
+bess:
+  units_file:           bess_units
+  initial_soc:          0.5
+  roundtrip_efficiency: 0.85
+
+# =============================================================================
+# Other units
+# =============================================================================
+
+ptx:
+  units_file: ptx_units
+
+district_heating:
+  units_file: district_heating_units

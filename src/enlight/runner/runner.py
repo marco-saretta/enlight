@@ -1,307 +1,191 @@
 from pathlib import Path
 from typing import Dict
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from tqdm import tqdm
-from enlight.data_ops import DataProcessor
-from enlight.data_ops import DataLoader
-from enlight.data_ops import DataExporter
-from enlight.data_ops import DataVisualizer
-from enlight.data_ops import ResultsVisualizer
+from enlight.data_ops import DataProcessor, DataLoader, DataExporter, DataVisualizer, ResultsVisualizer
 from enlight.model import EnlightModel
 import enlight.utils as utils
-from enlight.utils import Timer, log_time
-import joblib
+from enlight.utils import Timer
 
 
 class EnlightRunner:
     """
     Handles configuration loading, data preparation, and model execution
-    for Enlight energy modeling scenarios.
+    for ENLIGHT energy market simulations.
     """
 
     def __init__(self, config: DictConfig) -> None:
-        """Initialize the EnlightRunner."""
-
         self.logger = utils.setup_logging()
-        self.logger.info("========== ENLIGHT object  initialization ==========")
+        
+        utils.log_section(self.logger, "ENLIGHT initialisation")
 
-        # Start timing to load the configuration
-        config_timer = Timer(self.logger, "Loading general configuration")
+        timer = Timer(self.logger, "Loading configuration")
+
         self.config: DictConfig = config
-        self.root_dir: Path = self.config.paths.root
+        self.sim: DictConfig    = config.simulations       # shorthand used throughout
+        self.root_path: Path    = Path(config.paths.root)
+        self.solver_name: str   = config.solver_name
+        self.bidding_zones: list = list(config.bidding_zones)
 
-        self._load_config()
+        self._setup_simulation_folders()
         utils.load_plot_config()
 
-        # Stop timing the entire scenario
-        config_timer.stop()
-        self.logger.info("Loading general configuration completed successfully\n")
+        timer.stop()
+        self.logger.info(
+            "Configuration loaded — simulation: '%s', zones: %d\n",
+            self.sim.label,
+            len(self.bidding_zones),
+        )
 
-    def _load_config(self) -> None:
-        """Load configuration from YAML file and setup scenarios."""
-        # self.configs_dir = self.root_path / 'configs'
-        # self.default_config_path = self.config_path / "default_config.yaml"
+    def _setup_simulation_folders(self) -> None:
+        """Create output folder structure for the active simulation."""
+        for subfolder in ("data", "results"):
+            path = self.root_path / "simulations" / self.sim.label / subfolder
+            path.mkdir(parents=True, exist_ok=True)
 
-        # if not self.default_config_path.exists():
-        #     raise FileNotFoundError(f"Configuration file not found at: {self.default_config_path}")
-
-        # with open(self.default_config_path, "r", encoding="utf-8") as file:
-        #     self.config_yaml = yaml.safe_load(file)
-
-        # Parse scenario_list properly
-        self.scenarios_dict = {}  # dict: scenario_name → config_dict
-
-        for entry in self.config_yaml.get("scenario_list", []):
-            if not isinstance(entry, dict):
-                raise ValueError("Each scenario entry must be a dictionary")
-
-            scenario_name = list(entry.keys())[0]
-            scenario_cfg = list(entry.values())[0]
-
-            self.scenarios_dict[scenario_name] = scenario_cfg
-
-            # Create simulation folder structure
-            for subfolder in ("data", "results"):
-                path = Path(f"simulations/{scenario_name}/{subfolder}")
-                path.mkdir(parents=True, exist_ok=True)
-
-        # Global settings
-        self.solver_name = str(self.config_yaml.get("solver_name"))
-        self.bidding_zones = list(self.config_yaml.get("bidding_zones", []))
-
-        # Log minimal information
-        self.logger.info("Loaded %d scenarios and %d bidding zones.", len(self.scenarios_dict), len(self.bidding_zones))
-
-    def run_scenario(self, scenario_name: str, dry_run: bool = False) -> None:
+    def run(self, dry_run: bool = False) -> None:
         """
-        Run a specific scenario based on its configuration.
+        Run the active simulation based on its configured mode.
+        Entry point called from main.py.
         """
-        # Start timing the entire scenario
-        scenario_timer = Timer(self.logger, f"Scenario '{scenario_name}'")
+        mode = self.sim.run.mode
+        label = self.sim.label
 
-        if scenario_name not in self.scenarios_dict:
-            raise ValueError(f"Scenario '{scenario_name}' not found in scenario_list")
-
-        # Get configuration for this specific scenario
-        scenario_config = self.scenarios_dict[scenario_name]
-
-        # Extract run mode
-        mode = scenario_config.get("run_mode")
-        self.logger.info(f"Running scenario '{scenario_name}' in mode: {mode}")
+        self.logger.info("Running simulation '%s' in mode: %s", label, mode)
+        scenario_timer = Timer(self.logger, f"Simulation '{label}'")
 
         if mode == "yearly":
-            self._run_yearly(scenario_name, scenario_config, dry_run)
-
-        elif mode == "weekly":
-            self._run_weekly(scenario_name, scenario_config, dry_run)
-
+            self._run_yearly(dry_run)
+        elif mode == "rolling_horizon":
+            self._run_rolling_horizon(dry_run)
         else:
-            raise ValueError(f"Unknown run_mode: '{mode}'. Expected 'yearly' or 'weekly'")
+            raise ValueError(f"Unknown run mode: '{mode}'. Expected 'yearly' or 'rolling_horizon'.")
 
-        # Stop timing the entire scenario
         scenario_timer.stop()
-        self.logger.info(f"Scenario '{scenario_name}' completed successfully\n")
+        self.logger.info("Simulation '%s' completed successfully\n", label)
 
-    def _run_yearly(self, scenario_name, scenario_config: Dict, dry_run) -> None:
-        """
-        Execute a yearly simulation scenario.
+    def _run_yearly(self, dry_run: bool) -> None:
+        """Execute a full-year simulation."""
+        label = self.sim.label
+        self.logger.info("========== YEARLY RUN: %s ==========", label)
 
-        Args:
-            scenario_name: Name of the scenario
-            scenario_config: Configuration dictionary for this scenario
-            dry_run: If True, skip model execution
-        """
-
-        self.logger.info(f"========== STARTING YEARLY RUN: {scenario_name} ==========")
-
-        # STEP 1: DATA PREPROCESSING
-        timer_preprocess = Timer(self.logger, "Data preprocessing")
-
+        # Step 1 — preprocessing
+        timer = Timer(self.logger, "Data preprocessing")
         self.data_processor = DataProcessor(
-            scenario_name=scenario_name,
-            scenario_config=scenario_config,
-            config_yaml=self.config_yaml,
+            sim_config=self.sim,
+            config=self.config,
             root_path=self.root_path,
             logger=self.logger,
         )
-        timer_preprocess.stop()
+        timer.stop()
 
-        # STEP 2: DATA LOADING
-        timer_loading = Timer(self.logger, "Data loading")
-
+        # Step 2 — loading
+        timer = Timer(self.logger, "Data loading")
         self.data = DataLoader(
-            scenario_name=scenario_name,
-            scenario_config=scenario_config,
-            config_yaml=self.config_yaml,
+            sim_config=self.sim,
+            config=self.config,
             root_path=self.root_path,
             logger=self.logger,
         )
+        timer.stop()
 
-        timer_loading.stop()
-
-        # STEP 3: MODEL EXECUTION
-        timer_model = Timer(self.logger, "Model execution")
-
+        # Step 3 — model
+        timer = Timer(self.logger, "Model execution")
         self.enlight_model = EnlightModel(
             data=self.data,
-            scenario_name=scenario_name,
-            scenario_config=scenario_config,
-            config_yaml=self.config_yaml,
+            sim_config=self.sim,
+            config=self.config,
             root_path=self.root_path,
             logger=self.logger,
         )
-
         if dry_run:
-            self.logger.info("Dry run - skipping model execution")
+            self.logger.info("Dry run — skipping model execution.")
         else:
             self.enlight_model.run_model()
+        timer.stop()
 
-            # TODO Save with joblib
-            # model_file = self.root_path / 'simulations' / f'{scenario_name}/results/{scenario_name}_model.pkl'
-            # joblib.dump(self.enlight_model, model_file, compress=3)  # compress=3 for good compression
-
-        timer_model.stop()
-
-        # STEP 4: EXPORT RESULTS
+        # Step 4 — export
         if not dry_run:
-            timer_results = Timer(self.logger, "Results export")
-
+            timer = Timer(self.logger, "Results export")
             exporter = DataExporter(
                 enlight_model=self.enlight_model,
-                scenario_name=scenario_name,
-                scenario_config=scenario_config,
+                sim_config=self.sim,
                 root_path=self.root_path,
                 logger=self.logger,
             )
+            exporter.export_solution()
+            timer.stop()
 
-            exporter.export_solution()  # ✓ Actually call the export!
+    def _run_rolling_horizon(self, dry_run: bool) -> None:
+        """Execute a rolling-horizon simulation over a range of weeks."""
+        label = self.sim.label
+        self.logger.info("========== ROLLING HORIZON RUN: %s ==========", label)
 
-            timer_results.stop()
+        start_week = self.sim.run.rolling_horizon.start_week
+        end_week   = self.sim.run.rolling_horizon.end_week
 
-            self.logger.info(f"Export for '{scenario_name}' completed")
-
-        else:
-            pass
-
-        self.logger.info(f"Yearly scenario '{scenario_name}' completed")
-
-    def _run_weekly(self, scenario_name, scenario_config: Dict, dry_run) -> None:
-        """
-        Execute a weekly simulation scenario.
-
-        Args:
-            scenario_name: Name of the scenario
-            config: Configuration dictionary for this scenario
-        """
-
-        self.logger.info(f"========== STARTING YEARLY RUN: {scenario_name} ==========")
-
-        # STEP 1: DATA PREPROCESSING
-        timer_preprocess = Timer(self.logger, "Data preprocessing")
-
+        # Step 1 — preprocessing (once, outside the weekly loop)
+        timer = Timer(self.logger, "Data preprocessing")
         self.data_processor = DataProcessor(
-            scenario_name=scenario_name,
-            scenario_config=scenario_config,
-            config_yaml=self.config_yaml,
+            sim_config=self.sim,
+            config=self.config,
             root_path=self.root_path,
             logger=self.logger,
         )
+        timer.stop()
 
-        timer_preprocess.stop()
-        week_dict = scenario_config["week_range"]
-        start_week = week_dict["start_week"]
-        end_week = week_dict["end_week"]
+        # Step 2+3 — load and solve per week
+        for week in tqdm(range(start_week, end_week + 1), desc="Rolling horizon"):
+            self.logger.info("--- Week %d ---", week)
 
-        week_range = range(start_week, end_week + 1)
-        for week in tqdm(week_range, desc="Running weekly simulations"):
-            # STEP 2: DATA LOADING
             self.data_w = DataLoader(
-                scenario_name=scenario_name,
-                scenario_config=scenario_config,
-                config_yaml=self.config_yaml,
+                sim_config=self.sim,
+                config=self.config,
                 root_path=self.root_path,
                 logger=self.logger,
                 week=week,
             )
 
-            # STEP 3: MODEL EXECUTION
-        timer_model = Timer(self.logger, "Model execution")
+            if not dry_run:
+                self.enlight_model = EnlightModel(
+                    data=self.data_w,
+                    sim_config=self.sim,
+                    config=self.config,
+                    root_path=self.root_path,
+                    logger=self.logger,
+                )
+                self.enlight_model.run_model()
 
-        if dry_run:
-            pass
-        else:
-            self.enlight_model = EnlightModel(
-                data=self.data_w,
-                scenario_name=scenario_name,
-                scenario_config=scenario_config,
-                config_yaml=self.config_yaml,
-                root_path=self.root_path,
-                logger=self.logger,
-            )
-            self.enlight_model.run_model()
-
-        timer_model.stop()
-
-        # STEP 4: STORE RESULTS
-        # self.exporter = DataExporter(
-        #     enlightmodel_obj=self.enlight_model,
-
-        # Step 5: CONCATENATE RESULTS
-        # self.exporter.concatenate()
+                # TODO: export per-week results
+                # TODO: concatenate weekly results after loop
 
     def visualize_data(self, week: int, example_hour: int) -> None:
-        """Visualize the data using DataVisualizer (placeholder method)."""
-        # Check if the attribute has already been initialized
-        #   by e.g. visualize_NBS_data().
+        """Visualize preprocessed input data."""
         if not hasattr(self, "data_vis"):
             self.data_vis = DataVisualizer(
                 dataprocessor_obj=self.data_processor,
                 dataloader_obj=self.data,
-                palette=self.palette,  # used to ensure consistent plots
+                palette=self.palette,
                 logger=self.logger,
             )
         self.data_vis.plot_annual_total_loads()
         self.data_vis.plot_total_installed_capacity()
         self.data_vis.plot_profiles(starting_hour=example_hour)
         self.data_vis.plot_aggregated_supply_and_demand_curves(example_hour=example_hour)
-
-        self.logger.info("Data visualization completed.")
+        self.logger.info("Data visualisation completed.")
 
     def visualize_results(self, example_hour: int) -> None:
-        """
-        Visualize the market clearing with the zonal prices.
-        """
+        """Visualize market clearing results and zonal prices."""
         if self.enlight_model.model.status != "ok":
-            self.logger.info("No results can be shown. Please run the model first")
-        else:
-            self.res_vis = ResultsVisualizer(
-                enlightmodel_obj=self.enlight_model,
-                palette=self.palette,  # used to ensure consistent plots
-                logger=self.logger,
-            )
-            self.res_vis.plot_aggregated_curves_with_zonal_prices(example_hour=example_hour)
-            self.res_vis.plot_price_duration_curve()
-            self.res_vis.plot_DA_schedule(starting_hour=example_hour)
+            self.logger.info("No results to show — run the model first.")
+            return
 
-            self.logger.info("Results visualization completed.")
-
-    # Not yet ready to be used:
-    # def visualize_NBS_data(self, bidding_zone: str, prices_path: Path) -> None:
-    #     '''
-    #     Visualizes any interesting input data for the NBS.
-    #     The week is currently not interesting but may become
-    #     so in the future. It is needed to initialize the
-    #     DataVisualizer instance.
-    #     '''
-    #     # Check if the attribute has already been initialized
-    #     #   by e.g. visualize_data().
-    #     if not hasattr(self, "data_vis"):
-    #         self.data_vis = DataVisualizer(
-    #             dataprocessor_obj=self.data_processor,
-    #             dataloader_obj=self.data,
-    #             palette=self.palette,  # used to ensure consistent plots
-    #             logger=self.logger
-    #         )
-
-    #     # Calls methods
-    #     self.data_vis.visualize_NBS_inputs(z0=bidding_zone, prices_path=prices_path)
+        self.res_vis = ResultsVisualizer(
+            enlightmodel_obj=self.enlight_model,
+            palette=self.palette,
+            logger=self.logger,
+        )
+        self.res_vis.plot_aggregated_curves_with_zonal_prices(example_hour=example_hour)
+        self.res_vis.plot_price_duration_curve()
+        self.res_vis.plot_DA_schedule(starting_hour=example_hour)
+        self.logger.info("Results visualisation completed.")

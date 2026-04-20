@@ -2,6 +2,7 @@
 stuff/*
 simulations/*
 logs/*
+outputs/*
 
 # test cache
 manual_test/

@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
-import seaborn as sns
+#import seaborn as sns
 import linopy
 from contextlib import contextmanager
 
@@ -95,6 +95,13 @@ def setup_logging(
         logger.addHandler(file_handler)
     
     return logger
+
+def log_section(logger: logging.Logger, title: str, width: int = 50) -> None:
+    """Log a clearly visible section header."""
+    border = "=" * width
+    logger.info(border)
+    logger.info(f"  {title}")
+    logger.info(border)
     
 @contextmanager
 def log_time(logger: logging.Logger, operation_name: str):

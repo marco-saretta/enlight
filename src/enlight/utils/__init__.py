@@ -2,6 +2,7 @@ from .utils import (
     validate_df_positive_numeric,
     load_csv_if_exists,
     setup_logging,
+    log_section,
     log_time,
     get_logger,
     Timer,

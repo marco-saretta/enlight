@@ -9,9 +9,9 @@ def main(cfg: DictConfig):
 
     # Create an instance of the EnlightRunner
     enlight_runner = EnlightRunner(config=cfg)
-
+    
     # Creates instance of the DataProcessor:
-    enlight_runner.run_scenario("scenario_1", dry_run=False)
+    #enlight_runner.run_scenario("scenario_1", dry_run=False)
 
 
 if __name__ == "__main__":
