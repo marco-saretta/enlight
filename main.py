@@ -1,6 +1,6 @@
 import hydra
 from omegaconf import DictConfig
-from enlight.runner import EnlightRunner  # Updated import path
+from enlight.runner import EnlightRunner
 from pathlib import Path
 
 
