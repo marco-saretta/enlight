@@ -10,6 +10,7 @@
 
 defaults:
   - simulations: _template   # active simulation when running in single-sim mode
+  - entsoe_api_key: placeholder
   - _self_
 
 # -----------------------------------------------------------------------------
@@ -18,6 +19,14 @@ defaults:
 paths:
   root: "${hydra:runtime.cwd}"
   log:  "${hydra:runtime.cwd}/logs"
+
+# -----------------------------------------------------------------------------
+# Solver
+# -----------------------------------------------------------------------------
+# gurobi : commercial, high performance, requires license
+# highs  : open-source, no license required
+# -----------------------------------------------------------------------------
+solver_name: highs
 
 # -----------------------------------------------------------------------------
 # Multi-run mode
@@ -30,15 +39,13 @@ paths:
 #   mode: MULTIRUN
 #   sweeper:
 #     params:
-#       simulations: glob(*) # Iterate over all the simulation files
+#       simulations: glob(*)      # Iterate over all the simulation files
+#       simulations: sim_1, sim_2 # Iterate over selected simulation files
 
-# -----------------------------------------------------------------------------
-# Solver
-# -----------------------------------------------------------------------------
-# gurobi : commercial, high performance, requires license
-# highs  : open-source, no license required
-# -----------------------------------------------------------------------------
-solver_name: highs
+job_logging:
+  handlers:
+    file:
+      filename: logs/enlight.log
 
 # -----------------------------------------------------------------------------
 # Bidding zones
@@ -92,13 +99,3 @@ bidding_zones:
   # - NO5  # Norway Zone 5
   # - RS   # Serbia
   # - XK   # Kosovo
-
-# -----------------------------------------------------------------------------
-# Output
-# -----------------------------------------------------------------------------
-plot_export_format: pdf   # Options: pdf, png, svg
-
-# -----------------------------------------------------------------------------
-# ENTSO-E API
-# -----------------------------------------------------------------------------
-api_key: "YOUR-ENTSOE-API-KEY"

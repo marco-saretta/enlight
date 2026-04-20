@@ -15,25 +15,28 @@ class EnlightRunner:
     """
 
     def __init__(self, config: DictConfig) -> None:
-        self.logger = utils.setup_logging()
-        
+        # Logger is the first thing we set up so all subsequent steps can use it
+        self.logger = utils.setup_logging(log_dir=str(Path(config.paths.log)))
         utils.log_section(self.logger, "ENLIGHT initialisation")
 
-        timer = Timer(self.logger, "Loading configuration")
+        timer = Timer(self.logger, "Loading and validating configuration")
 
+        # Store config references
         self.config: DictConfig = config
-        self.sim: DictConfig    = config.simulations       # shorthand used throughout
-        self.root_path: Path    = Path(config.paths.root)
-        self.solver_name: str   = config.solver_name
+        self.sim: DictConfig = config.simulations
+        self.root_path: Path = Path(config.paths.root)
+        self.solver_name: str = config.solver_name
         self.bidding_zones: list = list(config.bidding_zones)
 
         self._setup_simulation_folders()
         utils.load_plot_config()
 
         timer.stop()
+
         self.logger.info(
-            "Configuration loaded — simulation: '%s', zones: %d\n",
+            "Configuration loaded — simulation: '%s', mode: '%s', zones: %d",
             self.sim.label,
+            self.sim.run.mode,
             len(self.bidding_zones),
         )
 
@@ -51,8 +54,8 @@ class EnlightRunner:
         mode = self.sim.run.mode
         label = self.sim.label
 
-        self.logger.info("Running simulation '%s' in mode: %s", label, mode)
-        scenario_timer = Timer(self.logger, f"Simulation '{label}'")
+        utils.log_section(self.logger, f"RUN: {label}  [{mode}]")
+        sim_timer = Timer(self.logger, f"Simulation '{label}'")
 
         if mode == "yearly":
             self._run_yearly(dry_run)
@@ -61,13 +64,39 @@ class EnlightRunner:
         else:
             raise ValueError(f"Unknown run mode: '{mode}'. Expected 'yearly' or 'rolling_horizon'.")
 
-        scenario_timer.stop()
+        sim_timer.stop()
         self.logger.info("Simulation '%s' completed successfully\n", label)
+
+    # def _run_yearly(self, dry_run: bool) -> None:
+    #     """Execute a full-year simulation."""
+    #     self._preprocess()
+    #     self._load_data()
+    #     self._solve(dry_run)
+    #     if not dry_run:
+    #         self._export()
+
+    # def _run_rolling_horizon(self, dry_run: bool) -> None:
+    #     """Execute a rolling-horizon simulation over a range of weeks."""
+    #     start_week = self.sim.rolling_horizon.start_week
+    #     end_week   = self.sim.rolling_horizon.end_week
+
+    #     self._preprocess()
+
+    #     for week in tqdm(range(start_week, end_week + 1), desc="Rolling horizon"):
+    #         self.logger.info("--- Week %d / %d ---", week, end_week)
+    #         self._load_data(week=week)
+    #         self._solve(dry_run, week=week)
+    #         if not dry_run:
+    #             self._export(week=week)
+
+    #     if not dry_run:
+    #         self._concatenate_weekly_results(start_week, end_week)
 
     def _run_yearly(self, dry_run: bool) -> None:
         """Execute a full-year simulation."""
         label = self.sim.label
-        self.logger.info("========== YEARLY RUN: %s ==========", label)
+
+        utils.log_section(self.logger, f"YEARLY RUN - {label}")
 
         # Step 1 — preprocessing
         timer = Timer(self.logger, "Data preprocessing")
@@ -98,6 +127,7 @@ class EnlightRunner:
             root_path=self.root_path,
             logger=self.logger,
         )
+
         if dry_run:
             self.logger.info("Dry run — skipping model execution.")
         else:
@@ -119,10 +149,11 @@ class EnlightRunner:
     def _run_rolling_horizon(self, dry_run: bool) -> None:
         """Execute a rolling-horizon simulation over a range of weeks."""
         label = self.sim.label
-        self.logger.info("========== ROLLING HORIZON RUN: %s ==========", label)
+
+        utils.log_section(self.logger, f"ROLLING HORIZON RUN - {label}")
 
         start_week = self.sim.run.rolling_horizon.start_week
-        end_week   = self.sim.run.rolling_horizon.end_week
+        end_week = self.sim.run.rolling_horizon.end_week
 
         # Step 1 — preprocessing (once, outside the weekly loop)
         timer = Timer(self.logger, "Data preprocessing")

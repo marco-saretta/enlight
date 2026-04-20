@@ -8,7 +8,6 @@
 # Batch run:   add sim1 to simulation_list in default_config.yaml
 # =============================================================================
 
-# @package simulation
 
 label: "sim_template"
 
