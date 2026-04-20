@@ -2,7 +2,10 @@
 stuff/*
 simulations/*
 logs/*
+
+# Hydra
 outputs/*
+multirun/*
 
 # test cache
 manual_test/

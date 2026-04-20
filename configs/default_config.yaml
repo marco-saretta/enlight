@@ -9,7 +9,7 @@
 # =============================================================================
 
 defaults:
-  - simulations: sim_1   # active simulation when running in single-sim mode
+  - simulations: _template   # active simulation when running in single-sim mode
   - _self_
 
 # -----------------------------------------------------------------------------
@@ -20,15 +20,17 @@ paths:
   log:  "${hydra:runtime.cwd}/logs"
 
 # -----------------------------------------------------------------------------
-# Batch mode
+# Multi-run mode
 # -----------------------------------------------------------------------------
 # List simulation config names (without .yaml) to run sequentially.
 # Leave empty to run only the simulation selected in `defaults` above.
 # -----------------------------------------------------------------------------
-simulation_list: []
-# simulation_list:
-#   - sim1
-#   - sim2
+
+# hydra:
+#   mode: MULTIRUN
+#   sweeper:
+#     params:
+#       simulations: glob(*) # Iterate over all the simulation files
 
 # -----------------------------------------------------------------------------
 # Solver
