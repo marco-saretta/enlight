@@ -11,3 +11,6 @@ def main(config: DictConfig) -> None:
 
 if __name__ == "__main__":
     main()
+
+# uv run main.py --run simulations=sim_1
+# uv run main.py --multirun simulations=_template,sim_1

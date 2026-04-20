@@ -18,20 +18,19 @@ class DataProcessor:
     configuration files have been changed.
     """
 
-    scenario_name: str
-    scenario_config: dict
-    config_yaml: dict
+    sim_config: dict
+    global_config: dict
     logger: Logger
-    root_path: Path
     overwrite_preprocessed_data: bool = True
         
     def __post_init__(self) -> None:
         
-        self.logger.info(f"-------------- DATA PROCESSOR: {self.scenario_name} --------------")
+        self.sim_label = self.sim_config.label
+        self.logger.info(f"-------------- DATA PROCESSOR: {self.sim_label} --------------")
 
-        self.aux_data_dict: Dict[str, Any] = {"scenario_name": self.scenario_name}
+        self.aux_data_dict: Dict[str, Any] = {"sim_label": self.sim_label}
         
-        self._get_config_yaml_data()
+        self._get_global_config_data()
         self._init_data_paths()
         self._load_scenarios_config()
         self._load_setup()
@@ -50,14 +49,14 @@ class DataProcessor:
         if self.overwrite_preprocessed_data:
             self._save_aux_data_to_yaml()
 
-    def _get_config_yaml_data(self):
-        self.scenario_label = self.scenario_config.get("label")
-        self.run_mode = self.scenario_config.get("run_mode")
-        self.run_year = self.scenario_config.get("run_year")
-        self.plant_aggregation = self.scenario_config.get("plant_aggregation")
+    def _get_global_config_data(self):
+        self.scenario_label = self.sim_config.get("label")
+        self.run_mode = self.sim_config.get("run_mode")
+        self.run_year = self.sim_config.get("run_year")
+        self.plant_aggregation = self.sim_config.get("plant_aggregation")
 
-        self.bidding_zones_list = self.config_yaml.get("bidding_zones", [])
-        self.VRE_generators = self.config_yaml.get("VRE_generators", [])
+        self.bidding_zones_list = self.global_config.get("bidding_zones", [])
+        self.VRE_generators = self.global_config.get("VRE_generators", [])
 
         self.aux_data_dict.update({
         "scenario_label": self.scenario_label,
@@ -70,13 +69,13 @@ class DataProcessor:
     def _init_data_paths(self) -> None:
         """Initialize all data directory paths according to the updated folder structure."""
         # Demand paths
-        
+        self.root_path = self.global_config.paths.root
         self.data_path = self.root_path / 'data'
         self.config_path = self.root_path / 'config'
         self.simulations_path = self.root_path / 'simulations'
         
         # Define the path to the scenarios configuration Excel file
-        self.scenario_config_path = self.config_path / "scenarios_config.xlsx"
+        self.sim_config_path = self.config_path / "scenarios_config.xlsx"
         
         self.path_demand_inflex_classic = (
             self.data_path / "demand_inflexible_classic"
@@ -114,7 +113,7 @@ class DataProcessor:
 
         # Output path for the scenario data
         self.output_path = (
-            self.simulations_path / self.scenario_name / "data"
+            self.simulations_path / self.sim_label / "data"
         )  
 
     def _load_scenarios_config(self) -> None:
@@ -126,21 +125,21 @@ class DataProcessor:
         """
 
         # Check if the configuration file exists
-        if not self.scenario_config_path.exists():
+        if not self.sim_config_path.exists():
             raise FileNotFoundError(
-                f"System configuration not found: {self.scenario_config_path}"
+                f"System configuration not found: {self.sim_config_path}"
             )
 
         # Load the configuration file into a DataFrame
-        self.scenario_config_df = pd.read_excel(
-            self.scenario_config_path, index_col=0, sheet_name="Python"
+        self.sim_config_df = pd.read_excel(
+            self.sim_config_path, index_col=0, sheet_name="Python"
         )
 
     def _load_setup(self) -> None:
         """
         Load scenario setup configuration from the loaded configuration DataFrame.
 
-        This method extracts the 'SETUP' section from the 'scenario_config_df' DataFrame,
+        This method extracts the 'SETUP' section from the 'sim_config_df' DataFrame,
         sets up the configurations for the scenario, and determines the prediction year.
 
         Raises:
@@ -150,17 +149,17 @@ class DataProcessor:
         setup_label = "SETUP"
 
         # Check if the 'SETUP' section is present in the configuration DataFrame
-        if setup_label not in self.scenario_config_df.index:
+        if setup_label not in self.sim_config_df.index:
             raise ValueError("Missing SETUP section in system config.")
 
         # Extract and copy the setup configuration section from the DataFrame
-        self.setup_config_df = self.scenario_config_df.loc[setup_label].copy()
+        self.setup_config_df = self.sim_config_df.loc[setup_label].copy()
 
         # Extract and copy the solver chosen in the configuration yaml-file
-        self.aux_data_dict["solver_name"] = self.config_yaml.get("solver_name")
+        self.aux_data_dict["solver_name"] = self.global_config.get("solver_name")
 
         # Store the setup configuration and determine the prediction year from the scenario name
-        self.prediction_year = int(self.setup_config_df[self.scenario_name])  # type: ignore
+        self.prediction_year = int(self.setup_config_df[self.sim_label])  # type: ignore
 
         self.aux_data_dict["prediction_year"] = self.prediction_year
 
@@ -193,10 +192,10 @@ class DataProcessor:
         """
 
         label = config["label"]  # e.g., "WIND_ON"
-        scenario = self.scenario_name
+        scenario = self.sim_label
 
         # --- Extract scenario-specific parameters ---
-        section = self.scenario_config_df.loc[label].copy().set_index("key")
+        section = self.sim_config_df.loc[label].copy().set_index("key")
         weather_year = section.at[config["wy_key"], scenario]
         cap_file = section.at[config["cap_file_key"], scenario]
         bid_price = float(section.at[config["bid_price_key"], scenario])
@@ -283,7 +282,7 @@ class DataProcessor:
             sources_dict[label]["wy_subdir"] = self.weather_years_subdir
             sources_dict[label]["wy_label"] = tech + "_wy"
             sources_dict[label]["output_file"] = tech + "_production.csv"
-            for subkey in self.scenario_config_df.loc[label, "key"]:
+            for subkey in self.sim_config_df.loc[label, "key"]:
                 sources_dict[label][subkey.replace(tech + "_", "") + "_key"] = subkey
         sources = list(sources_dict.values())
 
@@ -313,15 +312,15 @@ class DataProcessor:
         """
 
         # Load the configuration section for hydro reservoir
-        hydro_res_df = self.scenario_config_df.loc["HYDRO_RES"].copy()
+        hydro_res_df = self.sim_config_df.loc["HYDRO_RES"].copy()
         hydro_res_df.set_index("key", inplace=True)
 
         # Extract hydro reservoir configuration values
         hydro_res_units_file = hydro_res_df.loc[
-            "hydro_res_units_file", self.scenario_name
+            "hydro_res_units_file", self.sim_label
         ]
         hydro_res_energy_wy = hydro_res_df.loc[
-            "hydro_res_energy_wy", self.scenario_name
+            "hydro_res_energy_wy", self.sim_label
         ]
 
         # Define file paths
@@ -392,17 +391,17 @@ class DataProcessor:
         """
 
         # Load the configuration section for hydro pumped storage
-        hydro_ps_df = self.scenario_config_df.loc["HYDRO_PS"].copy()
+        hydro_ps_df = self.sim_config_df.loc["HYDRO_PS"].copy()
         hydro_ps_df.set_index("key", inplace=True)
 
         # Extract the pumped hydro storage roundtrip efficiency and
         #   initial SOC and store them in the auxiliary yaml data dictionary
-        self.aux_data_dict["hydro_ps_roundtrip"] = float(hydro_ps_df.loc["hydro_ps_roundtrip", self.scenario_name])
-        self.aux_data_dict["hydro_ps_initial_soc"] = float(hydro_ps_df.loc["hydro_ps_initial_soc", self.scenario_name])
+        self.aux_data_dict["hydro_ps_roundtrip"] = float(hydro_ps_df.loc["hydro_ps_roundtrip", self.sim_label])
+        self.aux_data_dict["hydro_ps_initial_soc"] = float(hydro_ps_df.loc["hydro_ps_initial_soc", self.sim_label])
 
         # Extract hydro pumped storage configuration values
         hydro_ps_units_filename = hydro_ps_df.loc[
-            "hydro_ps_units_file", self.scenario_name
+            "hydro_ps_units_file", self.sim_label
         ]
 
         # Define file path
@@ -448,11 +447,11 @@ class DataProcessor:
         """
 
         # Load the configuration section for conventional units
-        thermal_df = self.scenario_config_df.loc["THERMAL"].copy()
+        thermal_df = self.sim_config_df.loc["THERMAL"].copy()
         thermal_df.set_index("key", inplace=True)
 
         # Extract thermal units file name
-        thermal_units_file = thermal_df.loc["thermal_units_file", self.scenario_name]
+        thermal_units_file = thermal_df.loc["thermal_units_file", self.sim_label]
 
         # Define the path to the thermal plant units CSV file
         thermal_units_filepath = (
@@ -494,16 +493,16 @@ class DataProcessor:
         """
 
         # Load the configuration section for hydro pumped storage
-        bess_df = self.scenario_config_df.loc["BESS"].copy()
+        bess_df = self.sim_config_df.loc["BESS"].copy()
         bess_df.set_index("key", inplace=True)
 
         # Extract the BESS roundtrip efficiency and initial SOC and store them in the auxiliary yaml data dictionary
-        self.aux_data_dict["bess_roundtrip"] = float(bess_df.loc["bess_roundtrip", self.scenario_name])
-        self.aux_data_dict["bess_initial_soc"] = float(bess_df.loc["bess_initial_soc", self.scenario_name])
+        self.aux_data_dict["bess_roundtrip"] = float(bess_df.loc["bess_roundtrip", self.sim_label])
+        self.aux_data_dict["bess_initial_soc"] = float(bess_df.loc["bess_initial_soc", self.sim_label])
 
         # Extract hydro pumped storage configuration values
         bess_units_filename = bess_df.loc[
-            "bess_units_file", self.scenario_name
+            "bess_units_file", self.sim_label
         ]
 
         # Define file path
@@ -543,10 +542,10 @@ class DataProcessor:
         '''
         
         # Load the configuration section for ptx units
-        ptx_series = self.scenario_config_df.loc["PTX"].copy()
+        ptx_series = self.sim_config_df.loc["PTX"].copy()
 
         # Extract PtX units file name - the series is the "ptx_units_file" for each scenario
-        ptx_units_file = ptx_series.loc[self.scenario_name]
+        ptx_units_file = ptx_series.loc[self.sim_label]
 
         # Define the path to the ptx units CSV file
         ptx_units_filepath = (
@@ -583,10 +582,10 @@ class DataProcessor:
         '''
         
         # Load the configuration section for ptx units
-        dh_series = self.scenario_config_df.loc["DH"].copy()
+        dh_series = self.sim_config_df.loc["DH"].copy()
 
         # Extract DH units file name -- the series is the "dh_units_file" for each scenario
-        dh_units_file = dh_series.loc[self.scenario_name]
+        dh_units_file = dh_series.loc[self.sim_label]
 
         # Define the path to the DH units CSV file
         dh_units_filepath = (
@@ -635,14 +634,14 @@ class DataProcessor:
         lines_label = "LINES"
 
         # Check if the 'SETUP' section is present in the configuration DataFrame
-        if lines_label not in self.scenario_config_df.index:
+        if lines_label not in self.sim_config_df.index:
             raise ValueError("Missing LINES section in system config.")
 
         # Extract and copy the setup configuration section from the DataFrame
-        self.lines_config_df = self.scenario_config_df.loc[lines_label].copy()
+        self.lines_config_df = self.sim_config_df.loc[lines_label].copy()
 
         # Store the setup configuration and determine the prediction year from the scenario name
-        self.lines_selection = str(self.lines_config_df[self.scenario_name])
+        self.lines_selection = str(self.lines_config_df[self.sim_label])
 
         # Define the paths to the transmission lines CSV files
         lines_a_b_file = self.path_lines / self.lines_selection / "lines_a_b.csv"
@@ -703,8 +702,8 @@ class DataProcessor:
         Returns:
             pd.DataFrame: Scaled demand profile (MW) for prediction year
         """
-        scenario = self.scenario_name
-        section = self.scenario_config_df.loc[config["label"]].copy().set_index("key")
+        scenario = self.sim_label
+        section = self.sim_config_df.loc[config["label"]].copy().set_index("key")
 
         # --- Extract configuration values ---
         profile_year = section.at[config["profile_year_key"], scenario]
@@ -816,7 +815,7 @@ class DataProcessor:
         alternative_parameter_names = ["amount", "cap"]  # used for keys in the excel config file
 
         # Load the configuration section for the flexible loads
-        flex_demands_df = self.scenario_config_df.loc[flex_demands].copy()
+        flex_demands_df = self.sim_config_df.loc[flex_demands].copy()
         flex_demands_df.set_index("key", inplace=True)
 
         # Extract flexible loads configuration values,
@@ -827,14 +826,14 @@ class DataProcessor:
             # Load WTP for each flexible load type
             voll_flex = float(flex_demands_df.loc[  # extract the willingness-to-pay from the excel config file
                 flex_load.lower() + "_wtp",
-                self.scenario_name
+                self.sim_label
                 ])
             self.aux_data_dict[subdir_label] = {"wtp": voll_flex}  # use subdir_label because it's more descriptive
 
             # Load (weekly) amount and (hourly) capacity for each flexible load type
             for param_name, alt_param_name in zip(parameter_names, alternative_parameter_names):
                 file = flex_demands_df.loc[
-                    flex_load.lower() + f"_{alt_param_name}_file", self.scenario_name
+                    flex_load.lower() + f"_{alt_param_name}_file", self.sim_label
                     ]
                 
                 # Define the path to the CSV file of the flexible load data
@@ -866,7 +865,7 @@ class DataProcessor:
 
     def _save_aux_data_to_yaml(self) -> None:
         """Save auxiliary data dictionary to a YAML file."""
-        yaml_path = Path(self.output_path) / f"{self.scenario_name}_aux_data.yaml"
+        yaml_path = Path(self.output_path) / f"{self.sim_label}_aux_data.yaml"
 
         # Ensure output directory exists
         yaml_path.parent.mkdir(parents=True, exist_ok=True)

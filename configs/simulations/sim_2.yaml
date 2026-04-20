@@ -9,7 +9,7 @@
 # =============================================================================
 
 
-label: "sim_template"
+label: "sim_2"
 
 # =============================================================================
 # Run control
@@ -21,7 +21,7 @@ run:
 
 rolling_horizon:          # only read when mode: rolling_horizon
   start_week: 1
-  end_week:   52           # set to 52 for a full year
+  end_week:   52          # set to 52 for a full year
 
 # =============================================================================
 # Production
@@ -30,7 +30,7 @@ rolling_horizon:          # only read when mode: rolling_horizon
 # --- Variable renewables -----------------------------------------------------
 
 wind_onshore:
-  weather_year:  2020
+  weather_year:  2022
   capacity_file: TYNDP_2024_National_Trends
   bid_price:     0.01
 
@@ -54,7 +54,6 @@ hydro_ror:
 hydro_res:
   units_file:          hydro_reservoir_units
   energy_weather_year: 2020
-  bid_price:           ramboll
 
 # --- Hydro pumped storage ----------------------------------------------------
 
@@ -62,7 +61,6 @@ hydro_ps:
   units_file:           hydro_pumped_storage_units
   initial_soc:          0.5
   roundtrip_efficiency: 0.9
-  fuel_projection:      ramboll
 
 # --- Thermal -----------------------------------------------------------------
 
@@ -87,6 +85,7 @@ demand_inflexible:
     profile_year: 2020
     amount_file:  TYNDP_2024_National_Trends
     voll:         5000
+    
   industrial:
     profile_year: 2020
     amount_file:  TYNDP_2024_National_Trends
