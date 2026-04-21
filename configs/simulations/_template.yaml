@@ -1,33 +1,27 @@
-# =============================================================================
-# ENLIGHT Model — Simulation Configuration Template
-# =============================================================================
-# Copy this file and rename it (e.g. sim1.yaml) to define a new simulation.
-# Place it under configs/simulation/.
+# ENLIGHT Model - Simulation Configuration Template
 #
-# Single sim:  python main.py simulation=sim1
-# Batch run:   add sim1 to simulation_list in default_config.yaml
-# =============================================================================
+# Copy this file, rename it (e.g. sim_new.yaml), place it under
+# configs/simulations/, then reference it from the CLI:
+#
+#   python main.py simulations=sim_new
 
+label: sim_template   # written to output metadata; keep it unique
 
-label: "sim_template"
-
-# =============================================================================
 # Run control
-# =============================================================================
 run:
-  mode: "rolling_horizon"   # rolling_horizon | yearly
-  prediction_year: 2040
-  plant_aggregation: true
+  mode:              rolling_horizon   # rolling_horizon | yearly
+  prediction_year:   2040              # projection year for capacities and demand
+  plant_aggregation: true              # aggregate units by zone+fuel before solving [bool]
 
-rolling_horizon:          # only read when mode: rolling_horizon
-  start_week: 1
-  end_week:   52           # set to 52 for a full year
+rolling_horizon:                       # ignored when mode: yearly
+  start_week: 1                        # first week to simulate [1-52]
+  end_week:   52                       # last week to simulate  [1-52]
 
-# =============================================================================
 # Production
-# =============================================================================
-
-# --- Variable renewables -----------------------------------------------------
+# Variable renewables
+# weather_year  : historical year used for the generation profile
+# capacity_file : capacity projection dataset (file stem in data/*/projections/)
+# bid_price     : offer price submitted to the market [EUR/MWh]
 
 wind_onshore:
   weather_year:  2020
@@ -49,14 +43,19 @@ hydro_ror:
   capacity_file: TYNDP_2024_National_Trends
   bid_price:     0.04
 
-# --- Hydro reservoir ---------------------------------------------------------
+# Hydro reservoir
+# energy_weather_year : historical year for reservoir energy availability
+# bid_price           : numeric [EUR/MWh] or ramboll (Ramboll fuel price projection)
 
 hydro_res:
   units_file:          hydro_reservoir_units
   energy_weather_year: 2020
   bid_price:           ramboll
 
-# --- Hydro pumped storage ----------------------------------------------------
+# Hydro pumped storage
+# initial_soc          : state-of-charge at t=0 as fraction of storage capacity [0-1]
+# roundtrip_efficiency : pump-turbine roundtrip efficiency [0-1]
+# fuel_projection      : fuel price dataset used to derive marginal costs
 
 hydro_ps:
   units_file:           hydro_pumped_storage_units
@@ -64,23 +63,25 @@ hydro_ps:
   roundtrip_efficiency: 0.9
   fuel_projection:      ramboll
 
-# --- Thermal -----------------------------------------------------------------
+# Thermal
+# fuel_projection : fuel price dataset used to compute marginal costs
 
 thermal:
   units_file:      thermal_plant_units
   fuel_projection: ramboll
 
-# --- Network -----------------------------------------------------------------
+# Transmission network
+# capacity_file : entsoe uses the ENTSO-E NTC file
 
 lines:
   capacity_file: entsoe
 
-# =============================================================================
 # Demand
-# =============================================================================
-
-# --- Inflexible demand -------------------------------------------------------
-# voll: value of lost load [EUR/MWh]
+# Inflexible demand
+# Modelled as a price-inelastic bid at the value of lost load (voll).
+# profile_year : historical year used for the demand profile shape
+# amount_file  : annual energy projection dataset name
+# voll         : value of lost load, maximum bid price [EUR/MWh]
 
 demand_inflexible:
   classical:
@@ -104,8 +105,11 @@ demand_inflexible:
     amount_file:  TYNDP_2024_National_Trends
     voll:         5004
 
-# --- Flexible demand ---------------------------------------------------------
-# wtp: willingness to pay [EUR/MWh]
+# Flexible demand
+# Modelled as a price-elastic bid at the willingness to pay (wtp).
+# amount_file   : annual energy projection dataset name
+# capacity_file : hourly capacity projection dataset name
+# wtp           : willingness to pay, maximum bid price [EUR/MWh]
 
 demand_flexible:
   classical:
@@ -129,18 +133,17 @@ demand_flexible:
     capacity_file: TYNDP_2024_National_Trends
     wtp:           100
 
-# =============================================================================
 # Storage
-# =============================================================================
+# Battery energy storage system (BESS)
+# initial_soc          : state-of-charge at t=0 as fraction of storage capacity [0-1]
+# roundtrip_efficiency : roundtrip efficiency [0-1]
 
 bess:
   units_file:           bess_units
   initial_soc:          0.5
   roundtrip_efficiency: 0.85
 
-# =============================================================================
-# Other units
-# =============================================================================
+# Other demand units
 
 ptx:
   units_file: ptx_units

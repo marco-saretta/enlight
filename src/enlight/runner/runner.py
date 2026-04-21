@@ -6,6 +6,7 @@ from enlight.data_ops import DataProcessor, DataLoader, DataExporter, DataVisual
 from enlight.model import EnlightModel
 import enlight.utils as utils
 from enlight.utils import Timer
+from enlight.utils.validation import validate_simulation_config
 
 
 class EnlightRunner:
@@ -43,27 +44,29 @@ class EnlightRunner:
             path = self.root_path / "simulations" / self.sim_config.label / subfolder
             path.mkdir(parents=True, exist_ok=True)
 
+    def _validate_config(self) -> None:
+        """Validate simulation config. Full logic lives in utils/validation.py."""
+        validate_simulation_config(self.sim_config)
+        self.logger.info("Config validation passed.")
+
     def run(self, dry_run: bool = False) -> None:
         """
         Run the active simulation based on its configured mode.
         Entry point called from main.py.
         """
-        # Read config parameters
         mode = self.sim_config.run.mode
         label = self.sim_config.label
 
-        # Prepare logger section
+        self._validate_config()
         utils.log_section(self.logger, f"RUN: {label}  [{mode}]")
 
-        # Execute simulation running method
         if mode == "yearly":
-            self._run_yearly(dry_run)               
+            self._run_yearly(dry_run)
         elif mode == "rolling_horizon":
-            self._run_rolling_horizon(dry_run)      
+            self._run_rolling_horizon(dry_run)
         else:
-            raise ValueError(f"Unknown run mode: '{mode}'. Expected 'yearly' or 'rolling_horizon'.")
+            raise ValueError(f"Unknown run mode: '{mode}'.")
 
-        # Exit message
         self.logger.info("Simulation '%s' completed successfully\n", label)
 
     def _run_rolling_horizon(self, dry_run: bool) -> None:

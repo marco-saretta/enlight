@@ -73,6 +73,7 @@ def setup_logging(
     # Only configure if handlers haven't been added yet (prevents duplicate handlers)
     if not logger.handlers:
         logger.setLevel(level)
+        logger.propagate = False  # prevent messages from reaching the Hydra root logger
         
         # Create formatters
         formatter = logging.Formatter(
