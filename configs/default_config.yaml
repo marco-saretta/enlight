@@ -1,32 +1,43 @@
-# ENLIGHT Model - Global Configuration
+# ┌─────────────────────────────────────────────────────────────────┐
+# │  ENLIGHT Model — Global Configuration                           │
+# └─────────────────────────────────────────────────────────────────┘
 #
-# Global settings shared across all simulations.
-# Simulation-specific parameters live in configs/simulations/<name>.yaml.
+#  Global settings shared across all simulations.
+#  Simulation-specific parameters live in configs/simulations/<name>.yaml.
 #
-# Single sim:  python main.py simulations=sim_1
-# Multi-run:   uncomment the hydra block at the bottom of this file
+#  Single sim:  python main.py simulations=sim_1
+#  Multi-run:   uncomment the hydra block at the bottom of this file
 
 defaults:
   - simulations: _template   # active simulation config (single-sim mode)
   - entsoe_api_key: placeholder
   - _self_
 
-# Paths
-# paths.log is consumed by setup_logging() in utils.py.
+# ═══════════════════════════════════════════════════════════════════
+#  PATHS
+#  paths.log is consumed by setup_logging() in utils.py
+# ═══════════════════════════════════════════════════════════════════
+
 paths:
   root: "${hydra:runtime.cwd}"
   log:  "${hydra:runtime.cwd}/logs"
 
-# Solver
-# gurobi : commercial, high performance, requires a valid license
-# highs  : open-source, no license required
+# ═══════════════════════════════════════════════════════════════════
+#  SOLVER
+#  gurobi : commercial, high performance, requires a valid license
+#  highs  : open-source, no license required
+# ═══════════════════════════════════════════════════════════════════
+
 solver_name: highs
 
-# Bidding zones
-# Comment out zones to exclude them. Each active zone must have input data.
+# ═══════════════════════════════════════════════════════════════════
+#  BIDDING ZONES
+#  Comment out zones to exclude them. Each active zone must have input data.
+# ═══════════════════════════════════════════════════════════════════
+
 bidding_zones:
 
-  # EU member states
+  # ─── EU Member States ──────────────────────────────────────────
   - AT   # Austria
   - BE   # Belgium
   # - BG   # Bulgaria
@@ -56,7 +67,7 @@ bidding_zones:
   # - SI   # Slovenia
   # - SK   # Slovakia
 
-  # Extra-EU bidding zones
+  # ─── Extra-EU Bidding Zones ────────────────────────────────────
   - CH   # Switzerland
   # - AL   # Albania
   # - BA   # Bosnia and Herzegovina
@@ -71,10 +82,12 @@ bidding_zones:
   # - RS   # Serbia
   # - XK   # Kosovo
 
-# Multi-run mode
-# Run all configs:      python main.py --multirun simulations='glob(*)'
-# Run selected configs: python main.py --multirun simulations=sim_1,sim_2
-#
+# ═══════════════════════════════════════════════════════════════════
+#  MULTI-RUN MODE
+#  Run all configs:      python main.py --multirun simulations='glob(*)'
+#  Run selected configs: python main.py --multirun simulations=sim_1,sim_2
+# ═══════════════════════════════════════════════════════════════════
+
 # hydra:
 #   mode: MULTIRUN
 #   sweeper:

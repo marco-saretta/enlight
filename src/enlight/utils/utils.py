@@ -42,157 +42,119 @@ def load_csv_if_exists(path: Path) -> pd.DataFrame:
         raise ValueError(f"File {path} is empty.")
     return df
 
+def _fmt_elapsed(seconds: float) -> str:
+    """Format an elapsed time as '3.1s' or '2m 5s'."""
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    m, s = divmod(seconds, 60)
+    return f"{int(m)}m {s:.0f}s"
+
+
 def setup_logging(
     log_dir: str = "logs",
     log_file: str = "enlight.log",
     level: int = logging.INFO,
-    logger_name: str = "enlight"
+    logger_name: str = "enlight",
 ) -> logging.Logger:
     """
-    Configure a centralized logger for the entire Enlight project.
-    
+    Configure a two-handler logger: clean console output and a timestamped log file.
+
+    Console prints the message only (no timestamp or level prefix) so the
+    output stays readable during interactive runs. The file handler records
+    full timestamps for post-run analysis.
+
     Args:
-        log_dir (str): Folder to store log files (default "logs").
-        log_file (str): Log file name (default "enlight.log").
-        level (int): Logging level (default logging.INFO).
-        logger_name (str): Name of the logger (default "enlight").
-    
+        log_dir:     Directory for the log file (created if missing).
+        log_file:    Log file name.
+        level:       Logging level for both handlers.
+        logger_name: Logger name; reusing the same name returns the same instance.
+
     Returns:
-        logging.Logger: Configured logger instance.
+        Configured Logger instance.
     """
-    # Ensure the logs folder exists
     log_path = Path(log_dir)
     log_path.mkdir(parents=True, exist_ok=True)
-    
-    # Full path for the log file
-    file_path = log_path / log_file
-    
-    # Get or create the logger (using a specific name ensures we reuse the same logger)
+
     logger = logging.getLogger(logger_name)
-    
-    # Only configure if handlers haven't been added yet (prevents duplicate handlers)
-    if not logger.handlers:
-        logger.setLevel(level)
-        logger.propagate = False  # prevent messages from reaching the Hydra root logger
-        
-        # Create formatters
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
+    if logger.handlers:
+        return logger
+
+    logger.setLevel(level)
+    logger.propagate = False  # prevent Hydra from double-printing
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(level)
+    console_handler.setFormatter(logging.Formatter("%(message)s"))
+
+    file_handler = logging.FileHandler(log_path / log_file, mode="a", encoding="utf-8")
+    file_handler.setLevel(level)
+    file_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s  %(levelname)-8s  %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
-        
-        # Console handler
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(level)
-        console_handler.setFormatter(formatter)
-        
-        # File handler
-        file_handler = logging.FileHandler(file_path, mode='a', encoding='utf-8')
-        file_handler.setLevel(level)
-        file_handler.setFormatter(formatter)
-        
-        # Add handlers to logger
-        logger.addHandler(console_handler)
-        logger.addHandler(file_handler)
-    
+    )
+
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
     return logger
 
-def log_section(logger: logging.Logger, title: str, width: int = 50) -> None:
-    """Log a clearly visible section header."""
+
+def log_section(logger: logging.Logger, title: str, width: int = 56) -> None:
+    """Log a section header with a surrounding border of '=' characters."""
     border = "=" * width
+    logger.info("")
     logger.info(border)
-    logger.info(f"  {title}")
+    logger.info("  %s", title)
     logger.info(border)
-    
+
+
 @contextmanager
 def log_time(logger: logging.Logger, operation_name: str):
-    """
-    Context manager to log execution time of a code block.
-    
-    Usage:
-        with log_time(logger, "Data loading"):
-            # your code here
-            load_data()
-    
-    Args:
-        logger: Logger instance to use for logging.
-        operation_name: Descriptive name of the operation being timed.
-    """
-    start_time = time.time()
-    logger.info(f"Starting: {operation_name}")
-    
+    """Context manager that logs start and elapsed time of a block."""
+    start = time.perf_counter()
+    logger.info("Starting: %s", operation_name)
     try:
         yield
     finally:
-        elapsed_time = time.time() - start_time
-        logger.info(f"Completed: {operation_name} in {elapsed_time:.2f} seconds")    
+        logger.info("Done: %s in %s", operation_name, _fmt_elapsed(time.perf_counter() - start))
+
 
 def get_logger(name: str = "enlight") -> logging.Logger:
-    """
-    Get the centralized logger instance.
-    
-    Args:
-        name: Logger name (default "enlight").
-    
-    Returns:
-        logging.Logger: The logger instance.
-    """
+    """Return the named logger, initialising it if it has no handlers yet."""
     logger = logging.getLogger(name)
     if not logger.handlers:
-        # If logger hasn't been set up yet, initialize it
         return setup_logging(logger_name=name)
     return logger
 
+
 class Timer:
     """
-    Simple timer class to measure execution time without indentation.
-    
+    Explicit start/stop timer for pipeline steps.
+
+    Logs 'Starting: <name>' on creation and 'Done: <name> in <time>' on stop().
+
     Usage:
         timer = Timer(logger, "Data loading")
-        # your code here
         load_data()
-        timer.stop()  # Logs elapsed time
+        timer.stop()
     """
-    
-    def __init__(self, logger: logging.Logger, operation_name: str, auto_start: bool = True):
-        """
-        Initialize timer.
-        
-        Args:
-            logger: Logger instance to use.
-            operation_name: Name of the operation being timed.
-            auto_start: If True, starts timing immediately.
-        """
+
+    def __init__(self, logger: logging.Logger, operation_name: str) -> None:
         self.logger = logger
         self.operation_name = operation_name
-        self.start_time = None
-        self.end_time = None
-        
-        if auto_start:
-            self.start()
-    
-    def start(self):
-        """Start the timer."""
-        self.start_time = time.time()
-        self.logger.info(f"Starting: {self.operation_name}")
-        return self
-    
-    def stop(self):
-        """Stop the timer and log elapsed time."""
-        if self.start_time is None:
-            self.logger.warning(f"Timer '{self.operation_name}' was never started")
-            return None
-        
-        self.end_time = time.time()
-        elapsed = self.end_time - self.start_time
-        self.logger.info(f"Completed: {self.operation_name} in {elapsed:.2f} seconds")
+        self._start = time.perf_counter()
+        logger.info("Starting: %s", operation_name)
+
+    def stop(self) -> float:
+        """Stop the timer, log elapsed time, and return the elapsed seconds."""
+        elapsed = time.perf_counter() - self._start
+        self.logger.info("Done: %s in %s", self.operation_name, _fmt_elapsed(elapsed))
         return elapsed
-    
+
     def elapsed(self) -> float:
-        """Get elapsed time without stopping the timer."""
-        if self.start_time is None:
-            return 0.0
-        return time.time() - self.start_time
+        """Return elapsed seconds without stopping the timer."""
+        return time.perf_counter() - self._start
 
 
 def save_data(

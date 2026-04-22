@@ -1,19 +1,23 @@
-from pydantic import BaseModel, Field, validator
-from typing import Literal, Optional
-from omegaconf import DictConfig
+from typing import Literal, Optional, Union
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from omegaconf import DictConfig, OmegaConf
 
+
+# ---------------------------------------------------------------------------
+# Sub-models
+# ---------------------------------------------------------------------------
 
 class RollingHorizonConfig(BaseModel):
     start_week: int = Field(ge=1, le=52)
     end_week:   int = Field(ge=1, le=52)
 
-    @validator("end_week")
-    def end_after_start(cls, v, values):
-        if "start_week" in values and v < values["start_week"]:
+    @model_validator(mode="after")
+    def end_not_before_start(self) -> "RollingHorizonConfig":
+        if self.end_week < self.start_week:
             raise ValueError(
-                f"end_week ({v}) must be >= start_week ({values['start_week']})"
+                f"end_week ({self.end_week}) must be >= start_week ({self.start_week})"
             )
-        return v
+        return self
 
 
 class RunConfig(BaseModel):
@@ -22,81 +26,119 @@ class RunConfig(BaseModel):
     plant_aggregation: bool
 
 
-class WindConfig(BaseModel):
-    weather_year:  int
+class VREConfig(BaseModel):
+    """Config shared by wind_onshore, wind_offshore, solar_pv, hydro_ror."""
+    weather_year:  int = Field(ge=1980, le=2030)
     capacity_file: str
     bid_price:     float = Field(ge=0)
 
 
-class SimulationConfig(BaseModel):
-    class Config:
-        extra = "ignore"   # tolerate keys not yet covered by the schema
+class HydroResConfig(BaseModel):
+    units_file:          str
+    energy_weather_year: int = Field(ge=1980, le=2030)
+    bid_price:           Union[float, str]
 
-    label:           str
-    run:             RunConfig
-    rolling_horizon: Optional[RollingHorizonConfig] = None
-    wind_onshore:    WindConfig
-    wind_offshore:   WindConfig
-    solar_pv:        WindConfig
-
-    @validator("rolling_horizon", always=True)
-    def rolling_horizon_required_when_mode_matches(cls, v, values):
-        run = values.get("run")
-        if run and run.mode == "rolling_horizon" and v is None:
-            raise ValueError(
-                "rolling_horizon block is required when run.mode is 'rolling_horizon'"
-            )
+    @field_validator("bid_price")
+    @classmethod
+    def bid_price_valid(cls, v: Union[float, str]) -> Union[float, str]:
+        if isinstance(v, str) and v != "ramboll":
+            raise ValueError(f"bid_price must be a number or 'ramboll', got '{v}'")
+        if isinstance(v, (int, float)) and v < 0:
+            raise ValueError(f"bid_price must be >= 0, got {v}")
         return v
 
 
-def validate_simulation_config(cfg: DictConfig) -> None:
-    """
-    Validate a simulation DictConfig before the pipeline starts.
-    Raises ValueError with a clear message on the first problem found.
-    """
-    label = cfg.label
+class StorageConfig(BaseModel):
+    """Config shared by hydro_ps and bess."""
+    units_file:           str
+    initial_soc:          float = Field(ge=0, le=1)
+    roundtrip_efficiency: float = Field(gt=0, le=1)
+    fuel_projection:      Optional[str] = None
 
-    def err(msg: str) -> ValueError:
-        return ValueError(f"[{label}] {msg}")
 
-    # Run block
-    mode = cfg.run.mode
-    if mode not in ("yearly", "rolling_horizon"):
-        raise err(f"run.mode must be 'yearly' or 'rolling_horizon', got '{mode}'")
+class ThermalConfig(BaseModel):
+    units_file:      str
+    fuel_projection: str
 
-    year = cfg.run.prediction_year
-    if not (2020 <= year <= 2060):
-        raise err(f"run.prediction_year must be between 2020 and 2060, got {year}")
 
-    # Rolling horizon block
-    if mode == "rolling_horizon":
-        if not hasattr(cfg, "rolling_horizon"):
-            raise err("rolling_horizon block is required when run.mode is 'rolling_horizon'")
-        rh = cfg.rolling_horizon
-        if not (1 <= rh.start_week <= 52):
-            raise err(f"rolling_horizon.start_week must be 1-52, got {rh.start_week}")
-        if not (1 <= rh.end_week <= 52):
-            raise err(f"rolling_horizon.end_week must be 1-52, got {rh.end_week}")
-        if rh.end_week < rh.start_week:
-            raise err(
-                f"rolling_horizon.end_week ({rh.end_week}) must be "
-                f">= start_week ({rh.start_week})"
+class LinesConfig(BaseModel):
+    capacity_file: str
+
+
+class DemandCategoryConfig(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    profile_year:  Optional[int]   = None
+    amount_file:   str
+    capacity_file: Optional[str]   = None
+    voll:          Optional[float] = None
+    wtp:           Optional[float] = None
+
+
+class DemandConfig(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    classical:  DemandCategoryConfig
+    industrial: DemandCategoryConfig
+    household:  DemandCategoryConfig
+    public:     DemandCategoryConfig
+    ev:         DemandCategoryConfig
+
+
+class UnitsConfig(BaseModel):
+    units_file: str
+
+
+# ---------------------------------------------------------------------------
+# Top-level simulation config
+# ---------------------------------------------------------------------------
+
+class SimulationConfig(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    label:             str
+    run:               RunConfig
+    rolling_horizon:   Optional[RollingHorizonConfig] = None
+    wind_onshore:      VREConfig
+    wind_offshore:     VREConfig
+    solar_pv:          VREConfig
+    hydro_ror:         VREConfig
+    hydro_res:         HydroResConfig
+    hydro_ps:          StorageConfig
+    thermal:           ThermalConfig
+    lines:             LinesConfig
+    demand_inflexible: DemandConfig
+    demand_flexible:   DemandConfig
+    bess:              StorageConfig
+    ptx:               UnitsConfig
+    district_heating:  UnitsConfig
+
+    @model_validator(mode="after")
+    def rolling_horizon_required_for_mode(self) -> "SimulationConfig":
+        if self.run.mode == "rolling_horizon" and self.rolling_horizon is None:
+            raise ValueError(
+                "rolling_horizon block is required when run.mode is 'rolling_horizon'"
             )
+        return self
 
-    # Bid prices (VRE) — skip string values like "ramboll"
-    for tech in ("wind_onshore", "wind_offshore", "solar_pv", "hydro_ror"):
-        price = getattr(cfg, tech).bid_price
-        if isinstance(price, (int, float)) and price < 0:
-            raise err(f"{tech}.bid_price must be >= 0, got {price}")
 
-    # Storage efficiencies
-    for unit in ("hydro_ps", "bess"):
-        eff = getattr(cfg, unit).roundtrip_efficiency
-        if not (0 < eff <= 1):
-            raise err(f"{unit}.roundtrip_efficiency must be in (0, 1], got {eff}")
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
 
-    # Storage initial SOC
-    for unit in ("hydro_ps", "bess"):
-        soc = getattr(cfg, unit).initial_soc
-        if not (0 <= soc <= 1):
-            raise err(f"{unit}.initial_soc must be in [0, 1], got {soc}")
+def validate_simulation_config(sim_cfg: DictConfig) -> SimulationConfig:
+    """
+    Parse and validate a simulation DictConfig against the full schema.
+
+    Converts the Hydra DictConfig to a plain dict, then runs it through
+    Pydantic. Raises pydantic.ValidationError with structured field-level
+    messages on failure.
+
+    Args:
+        sim_cfg: The simulations sub-config from the Hydra DictConfig.
+
+    Returns:
+        A fully-validated SimulationConfig instance.
+    """
+    raw = OmegaConf.to_container(sim_cfg, resolve=True)
+    return SimulationConfig.model_validate(raw)

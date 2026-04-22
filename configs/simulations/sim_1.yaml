@@ -1,9 +1,14 @@
-# ENLIGHT Model - Simulation Configuration
-# Short test run: 2 weeks, rolling horizon.
+# ┌─────────────────────────────────────────────────────────────────┐
+# │  ENLIGHT Model — Simulation Configuration                       │
+# │  Short test run: 2 weeks, rolling horizon                       │
+# └─────────────────────────────────────────────────────────────────┘
 
 label: sim_1
 
-# Run control
+# ═══════════════════════════════════════════════════════════════════
+#  RUN CONTROL
+# ═══════════════════════════════════════════════════════════════════
+
 run:
   mode:              rolling_horizon
   prediction_year:   2040
@@ -11,9 +16,14 @@ run:
 
 rolling_horizon:
   start_week: 1
-  end_week:   2       # 2 weeks for a quick test run
+  end_week:   2   # 2 weeks for a quick test run
 
-# Production
+# ═══════════════════════════════════════════════════════════════════
+#  PRODUCTION
+# ═══════════════════════════════════════════════════════════════════
+
+# ─── Variable Renewables ───────────────────────────────────────────
+
 wind_onshore:
   weather_year:  2020
   capacity_file: TYNDP_2024_National_Trends
@@ -34,10 +44,14 @@ hydro_ror:
   capacity_file: TYNDP_2024_National_Trends
   bid_price:     0.04
 
+# ─── Hydro Reservoir ───────────────────────────────────────────────
+
 hydro_res:
   units_file:          hydro_reservoir_units
   energy_weather_year: 2020
   bid_price:           ramboll
+
+# ─── Hydro Pumped Storage ──────────────────────────────────────────
 
 hydro_ps:
   units_file:           hydro_pumped_storage_units
@@ -45,14 +59,25 @@ hydro_ps:
   roundtrip_efficiency: 0.9
   fuel_projection:      ramboll
 
+# ─── Thermal ───────────────────────────────────────────────────────
+
 thermal:
   units_file:      thermal_plant_units
   fuel_projection: ramboll
 
+# ═══════════════════════════════════════════════════════════════════
+#  TRANSMISSION
+# ═══════════════════════════════════════════════════════════════════
+
 lines:
   capacity_file: entsoe
 
-# Demand
+# ═══════════════════════════════════════════════════════════════════
+#  DEMAND
+# ═══════════════════════════════════════════════════════════════════
+
+# ─── Inflexible Demand ─────────────────────────────────────────────
+
 demand_inflexible:
   classical:
     profile_year: 2020
@@ -74,6 +99,8 @@ demand_inflexible:
     profile_year: 2020
     amount_file:  TYNDP_2024_National_Trends
     voll:         5004
+
+# ─── Flexible Demand ───────────────────────────────────────────────
 
 demand_flexible:
   classical:
@@ -97,13 +124,17 @@ demand_flexible:
     capacity_file: TYNDP_2024_National_Trends
     wtp:           100
 
-# Storage
+# ═══════════════════════════════════════════════════════════════════
+#  STORAGE
+# ═══════════════════════════════════════════════════════════════════
+
 bess:
   units_file:           bess_units
   initial_soc:          0.5
   roundtrip_efficiency: 0.85
 
-# Other demand units
+# ─── Other Demand Units ────────────────────────────────────────────
+
 ptx:
   units_file: ptx_units
 

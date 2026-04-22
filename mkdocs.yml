@@ -1,0 +1,29 @@
+site_name: ENLIGHT
+site_description: European Network for Long-term Insights on Grid prices, Hedging & Trends
+site_author: Marco Saretta
+repo_url: https://github.com/marco-saretta-DTU/enlight
+repo_name: marco-saretta-DTU/enlight
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  features:
+    - content.code.copy
+    - content.code.annotate
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quick Start: quickstart.md
+  - Configuration: configuration.md

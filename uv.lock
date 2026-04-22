@@ -564,19 +564,15 @@ dependencies = [
     { name = "gurobipy" },
     { name = "highspy" },
     { name = "hydra-core" },
-    { name = "ipykernel" },
     { name = "linopy" },
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "openpyxl" },
     { name = "pandas" },
     { name = "pydantic" },
-    { name = "ruff" },
     { name = "scipy" },
     { name = "seaborn" },
     { name = "tqdm" },
-    { name = "typer" },
-    { name = "uvicorn" },
     { name = "xarray" },
     { name = "yfinance" },
 ]
@@ -585,6 +581,7 @@ dependencies = [
 dev = [
     { name = "coverage" },
     { name = "invoke" },
+    { name = "ipykernel" },
     { name = "mkdocs-material" },
     { name = "mkdocstrings-python" },
     { name = "mypy" },
@@ -599,33 +596,30 @@ requires-dist = [
     { name = "gurobipy", specifier = ">=13.0.0" },
     { name = "highspy", specifier = ">=1.13.0" },
     { name = "hydra-core", specifier = ">=1.3.2" },
-    { name = "ipykernel" },
     { name = "linopy", specifier = ">=0.4.4" },
     { name = "matplotlib" },
     { name = "numpy", specifier = ">=2.4.1" },
     { name = "openpyxl" },
     { name = "pandas", specifier = ">=2.3.3" },
-    { name = "pydantic", specifier = ">=2.13.2" },
-    { name = "ruff", specifier = ">=0.15.0" },
+    { name = "pydantic", specifier = ">=2.0" },
     { name = "scipy" },
-    { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "seaborn", specifier = ">=0.13" },
     { name = "tqdm" },
-    { name = "typer", specifier = "==0.15.1" },
-    { name = "uvicorn", specifier = "==0.34.0" },
     { name = "xarray", specifier = ">=2024.3.0,<2025.7.0" },
     { name = "yfinance" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "coverage", specifier = "==7.6.9" },
-    { name = "invoke", specifier = "==2.2.0" },
-    { name = "mkdocs-material", specifier = "==9.7.1" },
-    { name = "mkdocstrings-python", specifier = "==2.0.1" },
-    { name = "mypy", specifier = "==1.19.1" },
-    { name = "pre-commit", specifier = "==4.1.0" },
-    { name = "pytest", specifier = "==8.3.4" },
-    { name = "ruff", specifier = ">=0.2.1" },
+    { name = "coverage", specifier = ">=7.0" },
+    { name = "invoke", specifier = ">=2.0" },
+    { name = "ipykernel" },
+    { name = "mkdocs-material", specifier = ">=9.5" },
+    { name = "mkdocstrings-python", specifier = ">=1.0" },
+    { name = "mypy", specifier = ">=1.0" },
+    { name = "pre-commit", specifier = ">=4.0" },
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "ruff", specifier = ">=0.2" },
 ]
 
 [[package]]
@@ -881,15 +875,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/9f/6b/56939031627076c2df54685e652a5a7a41b56112c0aa67fb2bcc8f8d5190/gurobipy-13.0.1-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:f7e556a4e7dd077a53fa6a683805e409ce66bae33b9b2af2122e81432d32b02a", size = 14738383, upload-time = "2026-01-21T10:42:34.24Z" },
     { url = "https://files.pythonhosted.org/packages/d9/67/c8e65fef49bbbfd0f526d90713b49e61c7df8f4e302df4868efe5544e98d/gurobipy-13.0.1-cp314-cp314t-manylinux_2_26_aarch64.whl", hash = "sha256:81405565946d7e212890884c7569e0af4183178d67dfcadaec861b16172012eb", size = 87122127, upload-time = "2026-01-21T10:43:36.176Z" },
     { url = "https://files.pythonhosted.org/packages/9d/6b/b5a10633dc2bf62c8e15c0f114e064b68a7cc0b147f800d630d02830b09d/gurobipy-13.0.1-cp314-cp314t-win_amd64.whl", hash = "sha256:70348777693ed8b7348fe43db4444151d49ab7dec7d46b959fb98c2c1e557028", size = 11879457, upload-time = "2026-01-21T10:43:48.059Z" },
-]
-
-[[package]]
-name = "h11"
-version = "0.16.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/01/ee/02a2c011bdab74c6fb3c75474d40b3052059d95df7e73351460c8588d963/h11-0.16.0.tar.gz", hash = "sha256:4e35b956cf45792e4caa5885e69fba00bdbc6ffafbfa020300e549b208ee5ff1", size = 101250, upload-time = "2025-04-24T03:35:25.427Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl", hash = "sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86", size = 37515, upload-time = "2025-04-24T03:35:24.344Z" },
 ]
 
 [[package]]
@@ -1260,18 +1245,6 @@ wheels = [
 ]
 
 [[package]]
-name = "markdown-it-py"
-version = "4.0.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "mdurl" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5b/f5/4ec618ed16cc4f8fb3b701563655a69816155e79e24a17b651541804721d/markdown_it_py-4.0.0.tar.gz", hash = "sha256:cb0a2b4aa34f932c007117b194e945bd74e0ec24133ceb5bac59009cda1cb9f3", size = 73070, upload-time = "2025-08-11T12:57:52.854Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/94/54/e7d793b573f298e1c9013b8c4dade17d481164aa517d1d7148619c2cedbf/markdown_it_py-4.0.0-py3-none-any.whl", hash = "sha256:87327c59b172c5011896038353a81343b6754500a08cd7a4973bb48c6d578147", size = 87321, upload-time = "2025-08-11T12:57:51.923Z" },
-]
-
-[[package]]
 name = "markupsafe"
 version = "3.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1398,15 +1371,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c7/74/97e72a36efd4ae2bccb3463284300f8953f199b5ffbc04cbbb0ec78f74b1/matplotlib_inline-0.2.1.tar.gz", hash = "sha256:e1ee949c340d771fc39e241ea75683deb94762c8fa5f2927ec57c83c4dffa9fe", size = 8110, upload-time = "2025-10-23T09:00:22.126Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/af/33/ee4519fa02ed11a94aef9559552f3b17bb863f2ecfe1a35dc7f548cde231/matplotlib_inline-0.2.1-py3-none-any.whl", hash = "sha256:d56ce5156ba6085e00a9d54fead6ed29a9c47e215cd1bba2e976ef39f5710a76", size = 9516, upload-time = "2025-10-23T09:00:20.675Z" },
-]
-
-[[package]]
-name = "mdurl"
-version = "0.1.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
 ]
 
 [[package]]
@@ -2377,19 +2341,6 @@ wheels = [
 ]
 
 [[package]]
-name = "rich"
-version = "14.3.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "markdown-it-py" },
-    { name = "pygments" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/74/99/a4cab2acbb884f80e558b0771e97e21e939c5dfb460f488d19df485e8298/rich-14.3.2.tar.gz", hash = "sha256:e712f11c1a562a11843306f5ed999475f09ac31ffb64281f73ab29ffdda8b3b8", size = 230143, upload-time = "2026-02-01T16:20:47.908Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ef/45/615f5babd880b4bd7d405cc0dc348234c5ffb6ed1ea33e152ede08b2072d/rich-14.3.2-py3-none-any.whl", hash = "sha256:08e67c3e90884651da3239ea668222d19bea7b589149d8014a21c633420dbb69", size = 309963, upload-time = "2026-02-01T16:20:46.078Z" },
-]
-
-[[package]]
 name = "rsa"
 version = "4.9.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2502,15 +2453,6 @@ wheels = [
 ]
 
 [[package]]
-name = "shellingham"
-version = "1.5.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/58/15/8b3609fd3830ef7b27b655beb4b4e9c62313a4e8da8c676e142cc210d58e/shellingham-1.5.4.tar.gz", hash = "sha256:8dbca0739d487e5bd35ab3ca4b36e11c4078f3a234bfce294b0a0291363404de", size = 10310, upload-time = "2023-10-24T04:13:40.426Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl", hash = "sha256:7ecfff8f2fd72616f7481040475a65b2bf8af90a56c89140852d1120324e8686", size = 9755, upload-time = "2023-10-24T04:13:38.866Z" },
-]
-
-[[package]]
 name = "six"
 version = "1.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2592,21 +2534,6 @@ wheels = [
 ]
 
 [[package]]
-name = "typer"
-version = "0.15.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "click" },
-    { name = "rich" },
-    { name = "shellingham" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/cb/ce/dca7b219718afd37a0068f4f2530a727c2b74a8b6e8e0c0080a4c0de4fcd/typer-0.15.1.tar.gz", hash = "sha256:a0588c0a7fa68a1978a069818657778f86abe6ff5ea6abf472f940a08bfe4f0a", size = 99789, upload-time = "2024-12-04T17:44:58.956Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d0/cc/0a838ba5ca64dc832aa43f727bd586309846b0ffb2ce52422543e6075e8a/typer-0.15.1-py3-none-any.whl", hash = "sha256:7994fb7b8155b64d3402518560648446072864beefd44aa2dc36972a5972e847", size = 44908, upload-time = "2024-12-04T17:44:57.291Z" },
-]
-
-[[package]]
 name = "typing-extensions"
 version = "4.15.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2643,19 +2570,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c7/24/5f1b3bdffd70275f6661c76461e25f024d5a38a46f04aaca912426a2b1d3/urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed", size = 435556, upload-time = "2026-01-07T16:24:43.925Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4", size = 131584, upload-time = "2026-01-07T16:24:42.685Z" },
-]
-
-[[package]]
-name = "uvicorn"
-version = "0.34.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "click" },
-    { name = "h11" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4b/4d/938bd85e5bf2edeec766267a5015ad969730bb91e31b44021dfe8b22df6c/uvicorn-0.34.0.tar.gz", hash = "sha256:404051050cd7e905de2c9a7e61790943440b3416f49cb409f965d9dcd0fa73e9", size = 76568, upload-time = "2024-12-15T13:33:30.42Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/61/14/33a3a1352cfa71812a3a21e8c9bfb83f60b0011f5e36f2b1399d51928209/uvicorn-0.34.0-py3-none-any.whl", hash = "sha256:023dc038422502fa28a09c7a30bf2b6991512da7dcdb8fd35fe57cfc154126f4", size = 62315, upload-time = "2024-12-15T13:33:27.467Z" },
 ]
 
 [[package]]

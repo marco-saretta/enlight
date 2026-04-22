@@ -69,7 +69,7 @@ class DataProcessor:
     def _init_data_paths(self) -> None:
         """Initialize all data directory paths according to the updated folder structure."""
         # Demand paths
-        self.root_path = self.global_config.paths.root
+        self.root_path = Path(self.global_config.paths.root)
         self.data_path = self.root_path / 'data'
         self.config_path = self.root_path / 'config'
         self.simulations_path = self.root_path / 'simulations'
