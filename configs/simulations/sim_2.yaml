@@ -1,28 +1,40 @@
 # ┌─────────────────────────────────────────────────────────────────┐
-# │  ENLIGHT Model — Simulation Configuration                       │
-# │  Short test run: 2 weeks, rolling horizon                       │
+# │  ENLIGHT Model — Simulation Configuration Template              │
 # └─────────────────────────────────────────────────────────────────┘
+#
+#  Copy this file, rename it (e.g. sim_new.yaml), place it under
+#  configs/simulations/, then reference it from the CLI:
+#
+#    python main.py simulations=sim_new
 
-label: sim_1
+label: sim_template   # written to output metadata; keep it unique
 
 # ═══════════════════════════════════════════════════════════════════
 #  RUN CONTROL
 # ═══════════════════════════════════════════════════════════════════
+#
+#  mode:              rolling_horizon | yearly
+#  prediction_year:   projection year for capacities and demand
+#  plant_aggregation: aggregate units by zone+fuel before solving [bool]
 
 run:
-  mode:              rolling_horizon
+  mode:              yearly
   prediction_year:   2040
   plant_aggregation: true
 
-rolling_horizon:
-  start_week: 1
-  end_week:   52   # 2 weeks for a quick test run
+rolling_horizon:                       # ignored when mode: yearly
+  start_week: 1                        # first week to simulate [1-52]
+  end_week:   52                       # last week to simulate  [1-52]
 
 # ═══════════════════════════════════════════════════════════════════
 #  PRODUCTION
 # ═══════════════════════════════════════════════════════════════════
 
 # ─── Variable Renewables ───────────────────────────────────────────
+#
+#  weather_year  : historical year used for the generation profile
+#  capacity_file : capacity projection dataset (file stem in data/*/projections/)
+#  bid_price     : offer price submitted to the market [EUR/MWh]
 
 wind_onshore:
   weather_year:  2020
@@ -45,6 +57,9 @@ hydro_ror:
   bid_price:     0.04
 
 # ─── Hydro Reservoir ───────────────────────────────────────────────
+#
+#  energy_weather_year : historical year for reservoir energy availability
+#  bid_price           : numeric [EUR/MWh] or ramboll (Ramboll fuel price projection)
 
 hydro_res:
   units_file:          hydro_reservoir_units
@@ -52,6 +67,10 @@ hydro_res:
   bid_price:           ramboll
 
 # ─── Hydro Pumped Storage ──────────────────────────────────────────
+#
+#  initial_soc          : state-of-charge at t=0 as fraction of storage capacity [0-1]
+#  roundtrip_efficiency : pump-turbine roundtrip efficiency [0-1]
+#  fuel_projection      : fuel price dataset used to derive marginal costs
 
 hydro_ps:
   units_file:           hydro_pumped_storage_units
@@ -60,6 +79,8 @@ hydro_ps:
   fuel_projection:      ramboll
 
 # ─── Thermal ───────────────────────────────────────────────────────
+#
+#  fuel_projection : fuel price dataset used to compute marginal costs
 
 thermal:
   units_file:      thermal_plant_units
@@ -68,6 +89,8 @@ thermal:
 # ═══════════════════════════════════════════════════════════════════
 #  TRANSMISSION
 # ═══════════════════════════════════════════════════════════════════
+#
+#  capacity_file : entsoe uses the ENTSO-E NTC file
 
 lines:
   capacity_file: entsoe
@@ -77,6 +100,11 @@ lines:
 # ═══════════════════════════════════════════════════════════════════
 
 # ─── Inflexible Demand ─────────────────────────────────────────────
+#
+#  Modelled as a price-inelastic bid at the value of lost load (voll).
+#  profile_year : historical year used for the demand profile shape
+#  amount_file  : annual energy projection dataset name
+#  voll         : value of lost load, maximum bid price [EUR/MWh]
 
 demand_inflexible:
   classical:
@@ -101,6 +129,11 @@ demand_inflexible:
     voll:         5004
 
 # ─── Flexible Demand ───────────────────────────────────────────────
+#
+#  Modelled as a price-elastic bid at the willingness to pay (wtp).
+#  amount_file   : annual energy projection dataset name
+#  capacity_file : hourly capacity projection dataset name
+#  wtp           : willingness to pay, maximum bid price [EUR/MWh]
 
 demand_flexible:
   classical:
@@ -127,6 +160,9 @@ demand_flexible:
 # ═══════════════════════════════════════════════════════════════════
 #  STORAGE
 # ═══════════════════════════════════════════════════════════════════
+#
+#  initial_soc          : state-of-charge at t=0 as fraction of storage capacity [0-1]
+#  roundtrip_efficiency : roundtrip efficiency [0-1]
 
 bess:
   units_file:           bess_units

@@ -135,13 +135,14 @@ class EnlightRunner:
         This step reads from data/ and writes to simulations/<label>/data/.
         It only needs to run once per simulation, even in rolling-horizon mode.
         """
-        timer = Timer(self.logger, "Data preprocessing")
-        self.data_processor = DataProcessor(
-            sim_config=self.sim_config,
-            global_config=self.global_config,
-            logger=self.logger,
-        )
-        timer.stop()
+        self.logger.info("I am doing the preprocessing stage")
+        # timer = Timer(self.logger, "Data preprocessing")
+        # self.data_processor = DataProcessor(
+        #     sim_config=self.sim_config,
+        #     global_config=self.global_config,
+        #     logger=self.logger,
+        # )
+        # timer.stop()
 
     def _load_data(self, week: int | None = None) -> None:
         """
@@ -153,17 +154,19 @@ class EnlightRunner:
         Args:
             week: Week index (1-52) for rolling-horizon runs; None for yearly.
         """
-        label = "Data loading" if week is None else f"Data loading -- week {week}"
-        timer = Timer(self.logger, label)
-        self.data = DataLoader(
-            scenario_name=self.sim_config.label,
-            scenario_config=OmegaConf.to_container(self.sim_config, resolve=True),
-            config_yaml=OmegaConf.to_container(self.global_config, resolve=True),
-            logger=self.logger,
-            root_path=self.root_path,
-            week=week,
-        )
-        timer.stop()
+        self.logger.info("I am loading the data stage")
+            
+        # label = "Data loading" if week is None else f"Data loading -- week {week}"
+        # timer = Timer(self.logger, label)
+        # self.data = DataLoader(
+        #     scenario_name=self.sim_config.label,
+        #     scenario_config=OmegaConf.to_container(self.sim_config, resolve=True),
+        #     config_yaml=OmegaConf.to_container(self.global_config, resolve=True),
+        #     logger=self.logger,
+        #     root_path=self.root_path,
+        #     week=week,
+        # )
+        # timer.stop()
 
     def _solve(self, dry_run: bool, week: int | None = None) -> None:
         """
@@ -175,22 +178,23 @@ class EnlightRunner:
             dry_run: When True, logs a message and returns without solving.
             week: Week index for rolling-horizon runs; None for yearly.
         """
-        if dry_run:
-            self.logger.info("Dry run -- skipping model execution.")
-            return
+        self.logger.info("I am solving the model")
+        # if dry_run:
+        #     self.logger.info("Dry run -- skipping model execution.")
+        #     return
 
-        label = "Model execution" if week is None else f"Model execution -- week {week}"
-        timer = Timer(self.logger, label)
-        self.enlight_model = EnlightModel(
-            data=self.data,
-            scenario_name=self.sim_config.label,
-            scenario_config=OmegaConf.to_container(self.sim_config, resolve=True),
-            config_yaml=OmegaConf.to_container(self.global_config, resolve=True),
-            root_path=self.root_path,
-            logger=self.logger,
-        )
-        self.enlight_model.run_model()
-        timer.stop()
+        # label = "Model execution" if week is None else f"Model execution -- week {week}"
+        # timer = Timer(self.logger, label)
+        # self.enlight_model = EnlightModel(
+        #     data=self.data,
+        #     scenario_name=self.sim_config.label,
+        #     scenario_config=OmegaConf.to_container(self.sim_config, resolve=True),
+        #     config_yaml=OmegaConf.to_container(self.global_config, resolve=True),
+        #     root_path=self.root_path,
+        #     logger=self.logger,
+        # )
+        # self.enlight_model.run_model()
+        # timer.stop()
 
     def _export(self, week: int | None = None) -> None:
         """
@@ -199,16 +203,17 @@ class EnlightRunner:
         Args:
             week: Week index for rolling-horizon runs; None for yearly.
         """
-        label = "Results export" if week is None else f"Results export -- week {week}"
-        timer = Timer(self.logger, label)
-        DataExporter(
-            enlight_model=self.enlight_model,
-            scenario_name=self.sim_config.label,
-            scenario_config=OmegaConf.to_container(self.sim_config, resolve=True),
-            root_path=self.root_path,
-            logger=self.logger,
-        ).export_solution()
-        timer.stop()
+        self.logger.info("I am exporting the results")
+        # label = "Results export" if week is None else f"Results export -- week {week}"
+        # timer = Timer(self.logger, label)
+        # DataExporter(
+        #     enlight_model=self.enlight_model,
+        #     scenario_name=self.sim_config.label,
+        #     scenario_config=OmegaConf.to_container(self.sim_config, resolve=True),
+        #     root_path=self.root_path,
+        #     logger=self.logger,
+        # ).export_solution()
+        # timer.stop()
 
     def _concatenate_weekly_results(self, start_week: int, end_week: int) -> None:
         """
@@ -220,14 +225,15 @@ class EnlightRunner:
             start_week: First week that was simulated.
             end_week:   Last week that was simulated.
         """
-        timer = Timer(self.logger, "Concatenating weekly results")
-        results_path = self.root_path / "simulations" / self.sim_config.label / "results"
-        utils.combine_simulations_result(
-            weeks=list(range(start_week, end_week + 1)),
-            result_path=results_path,
-            result="electricity_prices",
-        )
-        timer.stop()
+        self.logger.info("I am concatenating the results")
+        # timer = Timer(self.logger, "Concatenating weekly results")
+        # results_path = self.root_path / "simulations" / self.sim_config.label / "results"
+        # utils.combine_simulations_result(
+        #     weeks=list(range(start_week, end_week + 1)),
+        #     result_path=results_path,
+        #     result="electricity_prices",
+        # )
+        # timer.stop()
 
     # -------------------------------------------------------------------------
     # Setup
