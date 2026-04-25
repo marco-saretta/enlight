@@ -155,6 +155,8 @@ Execution logs with timing saved to `logs/enlight.log`:
 
 See `docs/` for detailed guides on configuration, architecture, API reference, and troubleshooting.
 
+If your Gurobi license restricts the number of CPU cores and you need to run inside Docker, see the [Docker guide](docs/source/docker.md).
+
 ## Testing
 
 ```bash

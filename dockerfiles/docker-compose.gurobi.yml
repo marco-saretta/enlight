@@ -1,0 +1,22 @@
+name: enlight
+
+services:
+  gurobi:
+    build:
+      context: ..
+      dockerfile: dockerfiles/gurobi.dockerfile
+      args:
+        GUROBI_VERSION: "13.0.1"
+        PYTHON_VERSION: "3.12"
+    image: enlight-gurobi:latest
+    cpus: 7                          # keeps Gurobi within the <=8-core license limit
+    volumes:
+      - ${GRB_LICENSE_FILE:-~/.gurobi/gurobi.lic}:/opt/gurobi/gurobi.lic:ro
+      - ../configs:/app/configs      # mount so config edits don't require a rebuild
+      - ../data:/app/data
+      - ../outputs:/app/outputs      # hydra writes results here by default
+
+# Build:  docker compose -f dockerfiles/docker-compose.gurobi.yml build
+# Run:    docker compose -f dockerfiles/docker-compose.gurobi.yml run gurobi
+# With hydra overrides:
+#         docker compose -f dockerfiles/docker-compose.gurobi.yml run gurobi simulations=sim_1
