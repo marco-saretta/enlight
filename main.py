@@ -1,16 +1,22 @@
+import logging
+
 import hydra
 from omegaconf import DictConfig
+
 from enlight.runner import EnlightRunner
 
+log = logging.getLogger(__name__)
 
-@hydra.main(config_path="configs", config_name="default_config", version_base=None)
-def main(config: DictConfig) -> None:
-    runner = EnlightRunner(config=config)
-    runner.run(dry_run=False)
+
+@hydra.main(version_base=None, config_path="config", config_name="config")
+def main(cfg: DictConfig) -> None:
+    log.info("Starting ENLIGHT")
+
+    runner = EnlightRunner(cfg)
+    runner.run()
+
+    log.info("Run completed.")
 
 
 if __name__ == "__main__":
     main()
-
-# uv run main.py --run simulations=sim_1
-# uv run main.py --multirun simulations=_template,sim_1

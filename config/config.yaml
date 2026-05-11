@@ -1,0 +1,61 @@
+defaults:
+  - paths: default           # file system paths → config/paths/
+  - simulations: _template   # active scenario  → config/simulations/
+  - entsoe_api_key: placeholder
+  - _self_
+
+# highs (open-source, no license) | gurobi (commercial, requires license)
+solver: highs
+
+# All active zones must have matching input data under data/.
+# Comment out zones to exclude them from the model.
+bidding_zones:
+
+  # EU member states
+  - AT   # Austria
+  - BE   # Belgium
+  # - BG   # Bulgaria
+  # - CZ   # Czech Republic
+  # - DELU # Germany and Luxembourg
+  # - DK1  # Denmark West
+  # - DK2  # Denmark East
+  # - EE   # Estonia
+  # - EL   # Greece
+  # - ES   # Spain
+  # - FI   # Finland
+  - FR   # France
+  # - HR   # Croatia
+  # - HU   # Hungary
+  - IT   # Italy
+  # - LT   # Lithuania
+  # - LV   # Latvia
+  # - NL   # Netherlands
+  # - PL   # Poland
+  # - PT   # Portugal
+  # - RO   # Romania
+  # - SE1  # Sweden Zone 1
+  # - SE2  # Sweden Zone 2
+  # - SE3  # Sweden Zone 3
+  # - SE4  # Sweden Zone 4
+  # - SEM  # Single Electricity Market (Ireland & Northern Ireland)
+  # - SI   # Slovenia
+  # - SK   # Slovakia
+
+  # Extra-EU
+  - CH   # Switzerland
+  # - AL   # Albania
+  # - BA   # Bosnia and Herzegovina
+  # - GB   # Great Britain
+  # - ME   # Montenegro
+  # - MK   # North Macedonia
+  # - NO1  # Norway Zone 1
+  # - NO2  # Norway Zone 2
+  # - NO3  # Norway Zone 3
+  # - NO4  # Norway Zone 4
+  # - NO5  # Norway Zone 5
+  # - RS   # Serbia
+  # - XK   # Kosovo
+
+# Multi-run:
+#   python main.py --multirun simulations=sim_1,sim_2
+#   python main.py --multirun simulations='glob(*)'

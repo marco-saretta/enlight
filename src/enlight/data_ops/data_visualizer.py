@@ -1,4 +1,3 @@
-from logging import Logger
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -9,6 +8,8 @@ import enlight.utils as utils
 from enlight.data_ops import DataProcessor
 from enlight.data_ops import DataLoader
 
+log = utils.get_logger(__name__)
+
 
 class DataVisualizer:
     """
@@ -18,13 +19,10 @@ class DataVisualizer:
     - dataprocessor_obj (DataProcessor): An instance of DataProcessor to load the raw data.
     - dataloader_obj (DataLoader): An instance of DataLoader to load the (model-ready) data.
     - week: the same week as was chosen for the DataLoader object. Only used for titles in plots.
-    - logger: logger
     """
     
-    def __init__(self, dataprocessor_obj, dataloader_obj, palette, logger):# week, palette, logger):
-        """Initialize the DataLoader instance."""
-        self.logger = logger
-        self.logger.info("INITIALIZING DATA VISUALIZER")
+    def __init__(self, dataprocessor_obj, dataloader_obj, palette):
+        log.info("INITIALIZING DATA VISUALIZER")
 
         self.data_raw = dataprocessor_obj  # rename for convenience
         self.data = dataloader_obj  # rename for convenience

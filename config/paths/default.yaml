@@ -1,0 +1,11 @@
+# @package paths
+
+root: "${hydra:runtime.cwd}"
+log:  "${paths.root}/logs"
+
+# Input data — read by DataProcessor, never modified by the pipeline.
+data: "${paths.root}/data"
+
+# Preprocessed outputs written by DataProcessor, consumed by DataLoader.
+# Subdirectory per scenario: {processed}/{label}/
+processed: "${paths.root}/simulations"

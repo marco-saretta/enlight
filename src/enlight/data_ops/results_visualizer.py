@@ -1,4 +1,3 @@
-from logging import Logger 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,6 +5,8 @@ import seaborn as sns
 
 import enlight.utils as utils
 from enlight.model import EnlightModel
+
+log = utils.get_logger(__name__)
 
 
 class ResultsVisualizer:
@@ -15,12 +16,8 @@ class ResultsVisualizer:
     Attributes:
     - data_loader (DataLoader): An instance of DataLoader to load the data.
     """
-    englightmodel_obj: EnlightModel
-    logger: Logger
-
-    def __init__(self, enlightmodel_obj, palette, logger):
-        self.logger = logger
-        self.logger.info("INITIALIZING RESULTS VISUALIZER")
+    def __init__(self, enlightmodel_obj, palette):
+        log.info("INITIALIZING RESULTS VISUALIZER")
 
         self.enlight_model = enlightmodel_obj
 

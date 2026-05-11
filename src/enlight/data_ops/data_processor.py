@@ -1,10 +1,11 @@
 from pathlib import Path
-from logging import Logger
 from dataclasses import dataclass
 from typing import Dict, Any
 import enlight.utils as utils
 import pandas as pd
 import yaml
+
+log = utils.get_logger(__name__)
 
 
 @dataclass
@@ -20,13 +21,12 @@ class DataProcessor:
 
     sim_config: dict
     global_config: dict
-    logger: Logger
     overwrite_preprocessed_data: bool = True
         
     def __post_init__(self) -> None:
         
         self.sim_label = self.sim_config.label
-        self.logger.info(f"-------------- DATA PROCESSOR: {self.sim_label} --------------")
+        log.info(f"-------------- DATA PROCESSOR: {self.sim_label} --------------")
 
         self.aux_data_dict: Dict[str, Any] = {"sim_label": self.sim_label}
         
@@ -156,7 +156,7 @@ class DataProcessor:
         self.setup_config_df = self.sim_config_df.loc[setup_label].copy()
 
         # Extract and copy the solver chosen in the configuration yaml-file
-        self.aux_data_dict["solver_name"] = self.global_config.get("solver_name")
+        self.aux_data_dict["solver_name"] = self.global_config.get("solver")
 
         # Store the setup configuration and determine the prediction year from the scenario name
         self.prediction_year = int(self.setup_config_df[self.sim_label])  # type: ignore
@@ -296,8 +296,7 @@ class DataProcessor:
                     self.prod_dfs[source["aux_label"]],
                     source["output_file"],
                     output_dir=self.output_path,
-                    logger=self.logger,
-                )
+                    )
 
     def _process_hydro_reservoir_data(self) -> None:
         """
@@ -370,13 +369,11 @@ class DataProcessor:
                 self.hydro_reservoir_units_df,
                 "hydro_reservoir_units.csv",
                 output_dir=self.output_path,
-                logger=self.logger,
             )
             utils.save_data(
                 self.hydro_res_energy_wy_df,
                 "hydro_reservoir_energy.csv",
                 output_dir=self.output_path,
-                logger=self.logger,
             )
 
     def _process_hydro_pumped_storage(self) -> None:
@@ -431,7 +428,6 @@ class DataProcessor:
                 self.hydro_pumped_units_df,
                 "hydro_pumped_units.csv",
                 output_dir=self.output_path,
-                logger=self.logger,
             )
 
     def _process_conventional_thermal_units_data(self) -> None:
@@ -478,7 +474,6 @@ class DataProcessor:
                 self.thermal_units,
                 "conventional_thermal_units.csv",
                 output_dir=self.output_path,
-                logger=self.logger,
             )
 
     def _process_bess(self) -> None:
@@ -532,7 +527,6 @@ class DataProcessor:
                 self.bess_units_df,
                 "bess_units.csv",
                 output_dir=self.output_path,
-                logger=self.logger,
             )
 
     def _process_ptx_units(self) -> None:
@@ -572,7 +566,6 @@ class DataProcessor:
                 self.ptx_units,
                 "ptx_units.csv",
                 output_dir=self.output_path,
-                logger=self.logger
             )
 
     def _process_dh_units(self) -> None:
@@ -612,7 +605,6 @@ class DataProcessor:
                 self.dh_units,
                 "dh_units.csv",
                 output_dir=self.output_path,
-                logger=self.logger
             )
 
     def _process_fuel_prices(self) -> None:
@@ -673,14 +665,12 @@ class DataProcessor:
                     self.lines_a_b,
                     "lines_a_b.csv",
                     output_dir=self.output_path,
-                    logger=self.logger,
-                )
+                    )
                 utils.save_data(
                     self.lines_b_a,
                     "lines_b_a.csv",
                     output_dir=self.output_path,
-                    logger=self.logger,
-                )
+                    )
         else:
             raise FileNotFoundError(
                 f"Line files not found: {lines_a_b_file} or {lines_b_a_file}"
@@ -791,8 +781,7 @@ class DataProcessor:
                     self.cons_dfs[config["aux_label"]],
                     config["output_file"],
                     output_dir=self.output_path,
-                    logger=self.logger,
-                )
+                    )
 
     def _process_flexible_demand_sources(self) -> None:
         """
@@ -860,8 +849,7 @@ class DataProcessor:
                         self.flex_demands_dfs[flex_load + f"_{param_name}"],
                         subdir_label + f"_{param_name}.csv",  # subdir_label used instead of flex_load to get a more descriptive filename
                         output_dir=self.output_path,
-                        logger=self.logger,
-                    )
+                            )
 
     def _save_aux_data_to_yaml(self) -> None:
         """Save auxiliary data dictionary to a YAML file."""
@@ -880,4 +868,4 @@ class DataProcessor:
                 sort_keys=False,
             )
 
-        self.logger.info(f"Auxiliary data saved to: {yaml_path}")
+        log.info(f"Auxiliary data saved to: {yaml_path}")

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from logging import Logger
 from pathlib import Path
 
 import numpy as np
@@ -8,6 +7,8 @@ import xarray as xr
 import yaml
 
 import enlight.utils as utils
+
+log = utils.get_logger(__name__)
 
 
 @dataclass
@@ -19,7 +20,6 @@ class DataLoader:
     scenario_name: str
     scenario_config: dict
     config_yaml: dict
-    logger: Logger
     root_path: Path
     week: int | None = None
 
@@ -28,7 +28,7 @@ class DataLoader:
     # -------------------------------------------------------------------------
     def __post_init__(self) -> None:
         """Post-init: prepare paths, load files, and build mappings."""
-        self.logger.info(
+        log.info(
             f"-------------- DATA LOADER: {self.scenario_name} --------------"
         )
         
@@ -181,7 +181,7 @@ class DataLoader:
         self.scenario_name = self.yaml_data.get('scenario_name')
         self.prediction_year = self.yaml_data.get('prediction_year')
         self.bidding_zones = self.yaml_data.get('bidding_zones', [])
-        self.solver_name = self.yaml_data.get('solver_name')
+        self.solver_name = self.yaml_data.get('solver')
 
         # Extract nested values for renewables and demand
         wind_on = self.yaml_data.get('wind_on', {})

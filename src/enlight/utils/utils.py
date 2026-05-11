@@ -120,12 +120,9 @@ def log_time(logger: logging.Logger, operation_name: str):
         logger.info("Done: %s in %s", operation_name, _fmt_elapsed(time.perf_counter() - start))
 
 
-def get_logger(name: str = "enlight") -> logging.Logger:
-    """Return the named logger, initialising it if it has no handlers yet."""
-    logger = logging.getLogger(name)
-    if not logger.handlers:
-        return setup_logging(logger_name=name)
-    return logger
+def get_logger(name: str) -> logging.Logger:
+    """Return a child logger; propagates to the configured enlight root logger."""
+    return logging.getLogger(name)
 
 
 class Timer:
@@ -161,30 +158,12 @@ def save_data(
     data: pd.DataFrame,
     filename: str,
     output_dir: Optional[Path] = None,
-    logger: Optional[logging.Logger] = None
 ) -> Path:
-    """
-    Save a DataFrame to CSV in the specified output directory.
-
-    Args:
-        data (pd.DataFrame): Data to save.
-        filename (str): Name of the CSV file.
-        output_dir (Optional[Path]): Directory to save the file. Defaults to current working directory.
-        logger (Optional[logging.Logger]): Logger for info messages. Defaults to None.
-
-    Returns:
-        Path: Full path to the saved file.
-    """
-    # Default directory is current working directory
+    """Save a DataFrame to CSV in the specified output directory."""
     output_dir = Path(output_dir or Path.cwd())
     output_dir.mkdir(parents=True, exist_ok=True)
-
     file_path = output_dir / filename
-    data.to_csv(file_path, index=True)  # Save row labels
-
-    if logger:
-        logger.info(f"Saved DataFrame to {file_path}")
-
+    data.to_csv(file_path, index=True)
     return file_path
 
 def check_vars_list(vre_list: list, dem_list: list, gen_units_list: list, stor_units_list: list, dem_units_list: list, model_vars: linopy.variables.Variables):

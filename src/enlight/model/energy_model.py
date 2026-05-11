@@ -4,6 +4,8 @@ import pandas as pd
 import linopy
 import enlight.utils as utils
 
+log = utils.get_logger(__name__)
+
 
 class EnlightModel:
     """
@@ -19,8 +21,7 @@ class EnlightModel:
         L_PtX (int): Number of PtX products
     """
 
-    def __init__(self, data, scenario_name, scenario_config,
-                config_yaml, root_path, logger):
+    def __init__(self, data, scenario_name, scenario_config, config_yaml, root_path):
 
         linopy.options.set_value(display_max_rows=50, display_max_terms=50)
 
@@ -29,14 +30,13 @@ class EnlightModel:
         self.scenario_config = scenario_config
         self.config_yaml = config_yaml
         self.root_path = root_path
-        self.logger = logger
 
         if scenario_config['run_mode'] == 'weekly':
-            self.logger.info(
+            log.info(
                 f"-------------- ENERGY MODEL : {self.scenario_name} - WEEK {self.data.week} --------------"
             )
         else:
-            self.logger.info(
+            log.info(
                 f"-------------- ENERGY MODEL : {self.scenario_name} --------------"
             )
 
@@ -69,7 +69,7 @@ class EnlightModel:
         Note: Unused variables will be excluded from the model unless referenced
                 in the objective or constraints.
         """
-        self.logger.info("VARS - Start building variables")
+        log.info("VARS - Start building variables")
         # Onshore wind production [MW]
         # Shape: (T, Z)
         self.wind_onshore_offer = self.model.add_variables(
@@ -290,13 +290,13 @@ class EnlightModel:
             name='lineflow'
         )
 
-        self.logger.info("VARS - Finished building variables")
+        log.info("VARS - Finished building variables")
         
     def _build_constraints(self):
         """
         Placeholder for adding model constraints.
         """
-        self.logger.info("CONS - Start building constraints")
+        log.info("CONS - Start building constraints")
         
         
         # ========================================================================
@@ -304,7 +304,7 @@ class EnlightModel:
         # ========================================================================
         
         if self.scenario_config.get('plant_aggregation'):
-            self.logger.info("CONS - POWER BALANCE (aggregated power plants) - Building constraints")
+            log.info("CONS - POWER BALANCE (aggregated power plants) - Building constraints")
             self.power_balance = self.model.add_constraints(
                 (
                     self.wind_onshore_offer
@@ -326,12 +326,12 @@ class EnlightModel:
                 ),
                 name='power_balance'
             )
-            self.logger.info(
+            log.info(
                 "CONS - POWER BALANCE (aggregated power plants) - Added constraints"
             )
 
         else:
-            self.logger.info("CONS - POWER BALANCE (disaggregated power plants) - Building constraints")
+            log.info("CONS - POWER BALANCE (disaggregated power plants) - Building constraints")
             self.power_balance = self.model.add_constraints(
                 (
                     self.wind_onshore_offer
@@ -353,11 +353,11 @@ class EnlightModel:
                 ),
                 name='power_balance'
             )
-            self.logger.info(
+            log.info(
                 "CONS - POWER BALANCE (disaggregated power plants) - Added constraints"
             )
         
-        self.logger.info(
+        log.info(
             f"Shape: {self.power_balance.shape}, "
             f"Dimensions: {self.power_balance.dims}"
         )
@@ -365,15 +365,15 @@ class EnlightModel:
         # ========================================================================
         # ELECTRICITY EXPORTS CONSTRAINT
         # ========================================================================
-        self.logger.info("CONS - LINEFLOW - Building constraints")
+        log.info("CONS - LINEFLOW - Building constraints")
         
         self.electricity_exports = self.model.add_constraints(
             (self.lineflow.dot(self.data.L_Z_xr) == self.electricity_export),
             name='electricity_exports'
         )
         
-        self.logger.info("CONS - LINEFLOW - Added constraints")
-        self.logger.info(
+        log.info("CONS - LINEFLOW - Added constraints")
+        log.info(
             f"  Shape: {self.electricity_exports.shape}, "
             f"Dimensions: {self.electricity_exports.dims}"
         )
@@ -388,8 +388,8 @@ class EnlightModel:
             if self.scenario_config.get('run_mode') == 'yearly':
                 # YEARLY MODE: Create one constraint per week (52 constraints total)
                 # Each constraint covers the hours in that specific week
-                self.logger.info("CONS - WEEKLY HYDRO RES - Building constraints")
-                self.logger.info("CONS - WEEKLY HYDRO RES - Mode: Yearly")
+                log.info("CONS - WEEKLY HYDRO RES - Building constraints")
+                log.info("CONS - WEEKLY HYDRO RES - Mode: Yearly")
                 self.hydro_res_energy_availability = {}
                 
                 for w in range(1, self.data.W + 1):
@@ -410,13 +410,13 @@ class EnlightModel:
                         name=f"hydro_res_energy_availability_{w}"
                     )
             
-                self.logger.info("CONS - WEEKLY HYDRO RES - Added constraints")
+                log.info("CONS - WEEKLY HYDRO RES - Added constraints")
             
             elif self.scenario_config.get('run_mode') == 'weekly':
                 # WEEKLY MODE: Create single constraint for the week being simulated
                 # Assumes hydro_res_units_offer already contains only the hours for this week
                 
-                self.logger.info("Mode: Weekly (single constraint)")
+                log.info("Mode: Weekly (single constraint)")
                 
                 # Option 1: If T dimension already contains only the week's hours (e.g., 168 hours)
                 # This is the simpler approach - just sum all T
@@ -427,14 +427,14 @@ class EnlightModel:
                     <= self.data.hydro_res_energy.squeeze()),  # squeeze() removes the Week dimension if present
                     name='hydro_res_energy_availability'
                 )
-                self.logger.info("CONS - WEEKLY HYDRO RES - Added constraints")
+                log.info("CONS - WEEKLY HYDRO RES - Added constraints")
                 
                 
 
         # ========================================================================
         # FLEXIBLE DEMAND LIMIT CONSTRAINT
         # ========================================================================
-        self.logger.info("Building flexible demand limit constraint...")
+        log.info("Building flexible demand limit constraint...")
         
         self.demand_flexible_classic_limit = self.model.add_constraints(
             (
@@ -444,8 +444,8 @@ class EnlightModel:
             name='demand_flexible_classic_limit'
         )
         
-        self.logger.info("✓ Flexible demand limit constraint added")
-        self.logger.info(
+        log.info("✓ Flexible demand limit constraint added")
+        log.info(
             f"  Shape: {self.demand_flexible_classic_limit.shape}, "
             f"Dimensions: {self.demand_flexible_classic_limit.dims}"
         )
@@ -473,14 +473,14 @@ class EnlightModel:
             name='bess_SOC_balance'
         )
         
-        self.logger.info("CONS - Finished building constraints")
+        log.info("CONS - Finished building constraints")
 
     def _build_objective(self):
         """
         Define the objective function for minimization of negative social welfare.
         """
         
-        self.logger.info("OBJ - Start building objective function")
+        log.info("OBJ - Start building objective function")
         self.model.add_objective(
             expr = (
                 # Loads:
@@ -507,29 +507,29 @@ class EnlightModel:
             sense="min"
         )
 
-        self.logger.info("OBJ - Finished building objective function")
+        log.info("OBJ - Finished building objective function")
 
     def solve_model(self):
         """
         Solve the model using the solver specified in yaml config file.
         """
         if self.data.solver_name == "gurobi":
-            self.logger.info("SOLVE - Start solving model with Gurobi")
+            log.info("SOLVE - Start solving model with Gurobi")
             self.model.solve(solver_name=self.data.solver_name, Method=1)  # use dual simplex instead of barrier algorithm immediately
         else:
-            self.logger.info(f"SOLVE - Start solving model with {self.data.solver_name}")
+            log.info(f"SOLVE - Start solving model with {self.data.solver_name}")
             self.model.solve(solver_name=self.data.solver_name)
-        self.logger.info('SOLVE - Model solved, good job champ!')
+        log.info('SOLVE - Model solved, good job champ!')
 
 
     def save_model_to_lp_file(self):
         """
         Export model to .lp file.
         """
-        self.logger.info('SAVE - Saving the .lp model file')
+        log.info('SAVE - Saving the .lp model file')
         Path('results').mkdir(parents=True, exist_ok=True)
         self.model.to_file(Path(self.simulation_path) / 'results' / 'debug_model_agg3.lp', io_api='lp', explicit_coordinate_names=True)
-        self.logger.info('SAVE - Saved .lp model file')
+        log.info('SAVE - Saved .lp model file')
 
 
     def run_model(self, save_model_to_lp = False):

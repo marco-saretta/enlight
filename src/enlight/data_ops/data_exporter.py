@@ -6,6 +6,10 @@ import yaml
 from datetime import datetime
 import linopy
 
+from enlight.utils import get_logger
+
+log = get_logger(__name__)
+
 
 class DataExporter:
     """
@@ -19,7 +23,6 @@ class DataExporter:
         scenario_name: Name of the scenario
         scenario_config: Configuration dictionary
         root_path: Project root path
-        logger: Logger instance
         results_path: Path where results will be saved
         results_dict: Dictionary storing extracted results
         exported_files: List of successfully exported files
@@ -31,23 +34,11 @@ class DataExporter:
         scenario_name: str,
         scenario_config: Dict,
         root_path: Path,
-        logger
     ):
-        """
-        Initialize the DataExporter.
-        
-        Args:
-            model: EnlightModel or linopy.Model instance
-            scenario_name: Name of the scenario being exported
-            scenario_config: Configuration dictionary for this scenario
-            root_path: Root path of the project
-            logger: Logger instance
-        """
         self.enlight_model = enlight_model
         self.scenario_name = scenario_name
         self.scenario_config = scenario_config
         self.root_path = root_path
-        self.logger = logger
         
         # Initialize attributes
         self.results_dict = {}
@@ -59,8 +50,8 @@ class DataExporter:
         # Extract model if needed
         self._extract_model_object()
         
-        self.logger.info(f"DataExporter initialized for '{scenario_name}'")
-        self.logger.info(f"Results directory: {self.results_path}")
+        log.info(f"DataExporter initialized for '{scenario_name}'")
+        log.info(f"Results directory: {self.results_path}")
     
     def _setup_paths(self) -> None:
         """Create output directory structure."""
@@ -72,12 +63,12 @@ class DataExporter:
     def _extract_model_object(self) -> None:
         """Extract the linopy model from EnlightModel."""
         if isinstance(self.enlight_model, linopy.model.Model):
-            self.logger.info("Model is already a linopy.Model instance")
+            log.info("Model is already a linopy.Model instance")
             self.model = self.enlight_model
             self.enlight_model = None  # No EnlightModel available
             
         elif hasattr(self.enlight_model, 'model'):  # ✓ Fixed
-            self.logger.info("Extracting linopy model from EnlightModel")
+            log.info("Extracting linopy model from EnlightModel")
             self.model = self.enlight_model.model
             
         else:
@@ -116,10 +107,10 @@ class DataExporter:
         Returns:
             Dictionary of DataFrames with results
         """
-        self.logger.info("Exporting model results...")
+        log.info("Exporting model results...")
         
         if self.model.status != 'ok':
-            self.logger.warning(f"Model status: {self.model.status}")
+            log.warning(f"Model status: {self.model.status}")
         
         # Extract main variables
         self._extract_main_variables()
@@ -133,7 +124,7 @@ class DataExporter:
         # Save metadata
         self._save_metadata()
         
-        self.logger.info(f"Exported {len(self.exported_files)} files")
+        log.info(f"Exported {len(self.exported_files)} files")
         
         return self.results_dict
     
@@ -144,7 +135,7 @@ class DataExporter:
     def _extract_main_variables(self) -> None:
         """Extract only the most important variables."""
         if self.model is None:
-            self.logger.warning("No EnlightModel - skipping variable extraction")
+            log.warning("No EnlightModel - skipping variable extraction")
             return
         
         # Extract all variables
@@ -154,9 +145,9 @@ class DataExporter:
                     df = self._get_solution(var)
                     if df is not None:
                         self.results_dict[var_name] = df
-                        self.logger.info(f"Exported {var_name}: {df.shape}")
+                        log.info(f"Exported {var_name}: {df.shape}")
             except Exception as e:
-                self.logger.debug(f"Skipping {var_name}: {e}")
+                log.debug(f"Skipping {var_name}: {e}")
 
     
     # ========================================================================
@@ -166,7 +157,7 @@ class DataExporter:
     def _extract_dual_values(self) -> None:
         """Extract dual values (shadow prices) from constraints."""
         if self.enlight_model is None:
-            self.logger.warning(
+            log.warning(
                 "Cannot extract duals - EnlightModel not available"
             )
             return
@@ -199,12 +190,12 @@ class DataExporter:
             description: Human-readable description
         """
         if constraint is None:
-            self.logger.debug(f"  Skipping {dual_name} (None)")
+            log.debug(f"  Skipping {dual_name} (None)")
             return
         
         try:
             if not hasattr(constraint, 'dual') or constraint.dual is None:
-                self.logger.debug(f"  Skipping {dual_name} (no dual values)")
+                log.debug(f"  Skipping {dual_name} (no dual values)")
                 return
             
             # Convert to DataFrame
@@ -219,10 +210,10 @@ class DataExporter:
                 dual_df = dual_df[value_col].unstack()
             
             self.results_dict[dual_name] = dual_df
-            self.logger.info(f"Extracted {description}: {dual_df.shape}")
+            log.info(f"Extracted {description}: {dual_df.shape}")
             
         except Exception as e:
-            self.logger.warning(f"Failed to extract {dual_name}: {e}")
+            log.warning(f"Failed to extract {dual_name}: {e}")
     
     
     # ========================================================================
@@ -237,7 +228,7 @@ class DataExporter:
                 df.to_csv(filepath)
                 self.exported_files.append(str(filepath))
             except Exception as e:
-                self.logger.warning(f"Failed to save {name}: {e}")
+                log.warning(f"Failed to save {name}: {e}")
     
     def _save_metadata(self) -> None:
         """Save basic run metadata to YAML file."""
@@ -265,4 +256,4 @@ class DataExporter:
             self.exported_files.append(str(filepath))
             
         except Exception as e:
-            self.logger.debug(f"Could not save metadata: {e}")
+            log.debug(f"Could not save metadata: {e}")
