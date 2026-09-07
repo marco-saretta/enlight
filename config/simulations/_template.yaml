@@ -1,0 +1,143 @@
+# Simulation template — copy, rename, and place under config/simulations/
+# Reference with:  python main.py simulations=<name>
+
+label: sim_template   # written to output dirs and metadata; must be unique
+
+# run.mode:
+#   rolling_horizon  — solve week by week (168 h), concatenate results afterwards
+#   yearly           — solve all 8760 hours in one pass (faster for small grids,
+#                      high memory for large ones)
+# run.plant_aggregation:
+#   true   — group units by bidding zone + fuel type before solving (faster)
+#   false  — keep individual units (more detail, much larger model)
+
+run:
+  mode:              rolling_horizon
+  prediction_year:   2040              # capacity and demand projection year
+  plant_aggregation: true
+
+rolling_horizon:                       # ignored when mode: yearly
+  start_week: 1                        # 1–52
+  end_week:   52
+
+# --- Production ---------------------------------------------------------------
+# weather_year:  historical year used for the hourly generation profile
+# capacity_file: projection file stem under data/*/projections/
+# bid_price:     offer price in EUR/MWh (near-zero = always dispatch)
+wind_onshore:
+  weather_year:  2020
+  capacity_file: TYNDP_2024_National_Trends
+  bid_price:     0.01
+
+wind_offshore:
+  weather_year:  2020
+  capacity_file: TYNDP_2024_National_Trends
+  bid_price:     0.02
+
+solar_pv:
+  weather_year:  2020
+  capacity_file: TYNDP_2024_National_Trends
+  bid_price:     0.03
+
+hydro_ror:
+  weather_year:  2020
+  capacity_file: TYNDP_2024_National_Trends
+  bid_price:     0.04
+
+# --- Dispatchable hydro -------------------------------------------------------
+# bid_price: numeric EUR/MWh | ramboll (Ramboll fuel price projection)
+
+hydro_res:
+  units_file:          hydro_reservoir_units
+  energy_weather_year: 2020
+  bid_price:           ramboll
+
+hydro_ps:
+  units_file:           hydro_pumped_storage_units
+  initial_soc:          0.5    # fraction of storage capacity at t=0 [0–1]
+  roundtrip_efficiency: 0.9    # pump-turbine roundtrip efficiency [0–1]
+  fuel_projection:      ramboll
+
+# --- Thermal ------------------------------------------------------------------
+
+thermal:
+  units_file:      thermal_plant_units
+  fuel_projection: ramboll   # fuel price dataset used to compute marginal costs
+
+# --- Transmission -------------------------------------------------------------
+
+lines:
+  capacity_file: entsoe   # ENTSO-E NTC file
+
+# --- Inflexible demand --------------------------------------------------------
+# Modelled as a price-inelastic bid at the value of lost load (voll).
+# profile_year: historical year for the hourly demand profile shape
+# amount_file:  annual energy projection file stem
+# voll:         value of lost load — maximum bid price in EUR/MWh
+
+demand_inflexible:
+  classical:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5000
+  industrial:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5001
+  household:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5002
+  public:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5003
+  ev:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5004
+
+# --- Flexible demand ----------------------------------------------------------
+# Modelled as a price-elastic bid at the willingness to pay (wtp).
+# amount_file:   annual energy projection file stem
+# capacity_file: hourly capacity projection file stem
+# wtp:           willingness to pay — maximum bid price in EUR/MWh
+
+demand_flexible:
+  classical:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+  industrial:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+  household:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+  public:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+  ev:
+    amount_file:   TYNDP_2024_National_Trends
+    capacity_file: TYNDP_2024_National_Trends
+    wtp:           100
+
+# --- Storage ------------------------------------------------------------------
+# initial_soc:          state of charge at t=0 as fraction of capacity [0–1]
+# roundtrip_efficiency: roundtrip efficiency [0–1]
+
+bess:
+  units_file:           bess_units
+  initial_soc:          0.5
+  roundtrip_efficiency: 0.85
+
+# --- Other demand units -------------------------------------------------------
+
+ptx:
+  units_file: ptx_units
+
+district_heating:
+  units_file: district_heating_units

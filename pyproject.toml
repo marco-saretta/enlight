@@ -1,37 +1,57 @@
 [project]
 name = "enlight"
-version = "0.1.0"
-description = "European Network for Long-term Insights on Grid prices, Hedging and Trends"
+version = "0.0.1"
+description = "European Network for Long-term Insights on Grid prices, Hedging and Trends."
+authors = [
+  { name = "Marco Saretta (Technical University of Denmark / Ramboll Denmark)", email = "mcsr@dtu.dk" },
+]
+keywords = ["European market model", "Price forecasting"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+]
 readme = "README.md"
 requires-python = ">=3.12"
-
 dependencies = [
-    # Core
     "numpy>=2.4.1",
     "pandas>=2.3.3",
     "xarray>=2024.03.0,<2025.7.0",
-    "scipy",
-    "joblib",
     "tqdm",
-    "pytz",
-    "pyyaml",
-    "tables",
-    # Jupyter
-    "jupyterlab",
-    "ipykernel",
-    # IO
-    "openpyxl",
-    # Visualization
     "matplotlib",
-    # Modeling + optimization
-    "powerplantmatching>=0.5.15",
+    "seaborn>=0.13",
     "linopy>=0.4.4",
-    "highspy",
-    "networkx",
-    # Data sources
+    "highspy>=1.14.0",
     "yfinance",
     "entsoe-py",
-    # Commercial solver (requires external install)
-    "gurobipy",
+    "gurobipy>=13.0.1",     # requires a valid Gurobi license
+    "scipy",
     "hydra-core>=1.3.2",
+    "pydantic>=2.0",
+    "openpyxl",
 ]
+
+[dependency-groups]
+dev = [
+    "ipykernel",
+    "coverage>=7.0",
+    "invoke>=2.0",
+    "pre-commit>=4.0",
+    "pytest>=8.0",
+    "ruff>=0.2",
+    "mypy>=1.0",
+    "mkdocs-material>=9.5",
+    "mkdocstrings-python>=1.0",
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.coverage.run]
+omit = ["tests/*"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/enlight"]
+
+[build-system]
+requires = ["uv_build>=0.9.22,<0.10.0"]
+build-backend = "uv_build"

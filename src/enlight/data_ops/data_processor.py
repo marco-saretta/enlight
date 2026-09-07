@@ -1,0 +1,871 @@
+from pathlib import Path
+from dataclasses import dataclass
+from typing import Dict, Any
+import enlight.utils as utils
+import pandas as pd
+import yaml
+
+log = utils.get_logger(__name__)
+
+
+@dataclass
+class DataProcessor:
+    """
+    Data processor for energy system scenarios.
+    It loads the raw data and preprocesses it so the data is
+    ready for DataLoader which makes it ready to be used directly
+    in linopy.
+    The data only has to be re-saved (overwritten) when the model
+    configuration files have been changed.
+    """
+
+    sim_config: dict
+    global_config: dict
+    overwrite_preprocessed_data: bool = True
+        
+    def __post_init__(self) -> None:
+        
+        self.sim_label = self.sim_config.label
+        log.info(f"-------------- DATA PROCESSOR: {self.sim_label} --------------")
+
+        self.aux_data_dict: Dict[str, Any] = {"sim_label": self.sim_label}
+        
+        self._get_global_config_data()
+        self._init_data_paths()
+        self._load_scenarios_config()
+        self._load_setup()
+        self._init_data_visualizer_dicts()
+        self._prepare_all_renewable_sources()
+        self._process_hydro_reservoir_data()
+        self._process_hydro_pumped_storage()
+        self._process_conventional_thermal_units_data()
+        self._process_bess()
+        self._process_ptx_units()
+        self._process_dh_units()
+        self._process_fuel_prices()
+        self._process_transmission_lines_data()
+        self._prepare_inflexible_demand_sources()
+        self._process_flexible_demand_sources()
+        if self.overwrite_preprocessed_data:
+            self._save_aux_data_to_yaml()
+
+    def _get_global_config_data(self):
+        self.scenario_label = self.sim_config.get("label")
+        self.run_mode = self.sim_config.get("run_mode")
+        self.run_year = self.sim_config.get("run_year")
+        self.plant_aggregation = self.sim_config.get("plant_aggregation")
+
+        self.bidding_zones_list = self.global_config.get("bidding_zones", [])
+        self.VRE_generators = self.global_config.get("VRE_generators", [])
+
+        self.aux_data_dict.update({
+        "scenario_label": self.scenario_label,
+        "run_mode": self.run_mode,
+        "run_year": self.run_year,
+        "plant_aggregation": self.plant_aggregation,
+        "bidding_zones": self.bidding_zones_list,
+        })
+        
+    def _init_data_paths(self) -> None:
+        """Initialize all data directory paths according to the updated folder structure."""
+        # Demand paths
+        self.root_path = Path(self.global_config.paths.root)
+        self.data_path = self.root_path / 'data'
+        self.config_path = self.root_path / 'config'
+        self.simulations_path = self.root_path / 'simulations'
+        
+        # Define the path to the scenarios configuration Excel file
+        self.sim_config_path = self.config_path / "scenarios_config.xlsx"
+        
+        self.path_demand_inflex_classic = (
+            self.data_path / "demand_inflexible_classic"
+        )
+        self.path_demand_flex_classic = self.data_path / "demand_flexible_classic"
+        self.path_demand_inflex_ev = self.data_path / "demand_inflexible_ev"
+        self.path_demand_flex_ev = self.data_path / "demand_flexible_ev"
+
+        # Market data paths
+        self.path_fuel_projections = self.data_path / "fuel_price_projections"
+
+        # Hydro paths
+        self.path_hydro_ror = self.data_path / "hydro_run_of_river"
+        self.path_hydro_reservoir = self.data_path / "hydro_reservoir"
+        self.path_hydro_pumped = self.data_path / "hydro_pumped_storage"
+
+        # Renewable paths
+        self.path_solar_pv = self.data_path / "solar_pv"
+        self.path_wind_onshore = self.data_path / "wind_onshore"
+        self.path_wind_offshore = self.data_path / "wind_offshore"
+
+        # Thermal and other paths
+        self.path_thermal_plants = self.data_path / "thermal_plants"
+        self.path_district_heating = self.data_path / "district_heating"
+        self.path_ptx = self.data_path / "ptx"
+        self.path_lines = self.data_path / "lines"
+
+        # BESS path
+        self.path_bess = self.data_path / "bess"
+
+        # Common subdirectories
+        self.capacity_projections_subdir = "capacity_projections"
+        self.weather_years_subdir = "weather_years"
+        self.profile_years_subdir = "profile_years"
+
+        # Output path for the scenario data
+        self.output_path = (
+            self.simulations_path / self.sim_label / "data"
+        )  
+
+    def _load_scenarios_config(self) -> None:
+        """
+        Load the system configuration for various scenarios from an Excel file.
+
+        Raises:
+            FileNotFoundError: If the configuration file does not exist.
+        """
+
+        # Check if the configuration file exists
+        if not self.sim_config_path.exists():
+            raise FileNotFoundError(
+                f"System configuration not found: {self.sim_config_path}"
+            )
+
+        # Load the configuration file into a DataFrame
+        self.sim_config_df = pd.read_excel(
+            self.sim_config_path, index_col=0, sheet_name="Python"
+        )
+
+    def _load_setup(self) -> None:
+        """
+        Load scenario setup configuration from the loaded configuration DataFrame.
+
+        This method extracts the 'SETUP' section from the 'sim_config_df' DataFrame,
+        sets up the configurations for the scenario, and determines the prediction year.
+
+        Raises:
+            ValueError: If the 'SETUP' section is missing in the configuration DataFrame.
+        """
+        # Label for the setup configuration section
+        setup_label = "SETUP"
+
+        # Check if the 'SETUP' section is present in the configuration DataFrame
+        if setup_label not in self.sim_config_df.index:
+            raise ValueError("Missing SETUP section in system config.")
+
+        # Extract and copy the setup configuration section from the DataFrame
+        self.setup_config_df = self.sim_config_df.loc[setup_label].copy()
+
+        # Extract and copy the solver chosen in the configuration yaml-file
+        self.aux_data_dict["solver_name"] = self.global_config.get("solver")
+
+        # Store the setup configuration and determine the prediction year from the scenario name
+        self.prediction_year = int(self.setup_config_df[self.sim_label])  # type: ignore
+
+        self.aux_data_dict["prediction_year"] = self.prediction_year
+
+    def _init_data_visualizer_dicts(self) -> None:
+        """Initialize dictionaries needed for DataVisualizer."""
+        self.prod_dfs = {}  # useful for visualizing yearly data of production
+        self.cons_dfs = {}  # useful for visualizing yearly data of consumption
+        self.profile_dfs = {}  # needed in DataVisualizer
+        self.projection_row_seriess = {}  # needed in DataVisualizer
+        self.cap_year_dfs = {}  # needed in DataVisualizer
+
+    def calculate_renewable_profiles(self, config: dict) -> pd.DataFrame:
+        """
+        Compute renewable generation profiles by combining weather-based per-unit profiles
+        with installed capacity projections.
+
+        Args:
+            config (dict): Expected keys:
+                - 'label': Section label in the scenario config sheet
+                - 'data_path': Base data folder for this technology
+                - 'wy_key': Config key for weather year
+                - 'cap_file_key': Config key for capacity projection file
+                - 'bid_price_key': Config key for bid price
+                - 'wy_subdir': Subfolder under data_path containing profile files
+                - 'wy_label': File prefix for profile files
+
+        Returns:
+            pd.DataFrame: Hourly renewable production [MW] for the prediction year,
+                        indexed by time, with columns as bidding zones.
+        """
+
+        label = config["label"]  # e.g., "WIND_ON"
+        scenario = self.sim_label
+
+        # --- Extract scenario-specific parameters ---
+        section = self.sim_config_df.loc[label].copy().set_index("key")
+        weather_year = section.at[config["wy_key"], scenario]
+        cap_file = section.at[config["cap_file_key"], scenario]
+        bid_price = float(section.at[config["bid_price_key"], scenario])
+
+        # Store bid price and weather year in aux data (for later use/reporting)
+
+        # Store in aux data
+        aux = self.aux_data_dict.setdefault(label.lower(), {})
+        aux.update({"bid_prices": bid_price, "weather_year": weather_year})
+
+        # --- Load weather-based per-unit production profile ---
+        profile_file = f"{config['wy_label']}_{weather_year}.csv"
+        profile_path = config["data_path"] / config["wy_subdir"] / profile_file
+        if not profile_path.exists():
+            raise FileNotFoundError(f"Profile file not found: {profile_path}")
+
+        profile_df = pd.read_csv(profile_path, index_col=0)
+        utils.validate_df_positive_numeric(profile_df, f"{label.lower()}_profile_pu")
+
+        # --- Load installed capacity projections ---
+        cap_path = (
+            config["data_path"] / self.capacity_projections_subdir / f"{cap_file}.csv"
+        )
+        if not cap_path.exists():
+            raise FileNotFoundError(f"Capacity file not found: {cap_path}")
+
+        cap_df = pd.read_csv(cap_path, index_col=0)
+
+        # Filter to prediction year
+        try:
+            cap_year = cap_df.loc[[self.prediction_year]]
+        except KeyError:
+            raise KeyError(
+                f"Prediction year '{self.prediction_year}' not found in {cap_path}"
+            )
+
+        utils.validate_df_positive_numeric(cap_year, f"{label.lower()}_cap")
+
+        # --- Compute renewable production ---
+        # Initialize output with all bidding zones (set to 0 if no data)
+        production_df = pd.DataFrame(
+            index=profile_df.index,
+            columns=self.bidding_zones_list,
+            data=0.0,
+        )
+
+        # --- Compute renewable production ---
+        # Find columns present in all three: capacity, profile, and output template
+        common_cols = cap_year.columns.intersection(profile_df.columns).intersection(
+            production_df.columns
+        )
+
+        if common_cols.empty:
+            raise ValueError(
+                f"No matching bidding zone columns between capacity, profile, and production for {label}"
+            )
+
+        # Multiply profile (per-unit) by installed capacity (MW)
+        production_df[common_cols] = (
+            profile_df[common_cols] * cap_year[common_cols].values
+        )
+
+        if self.run_mode == "weekly":
+            # Add the week column
+            production_df["Week"] = profile_df["Week"]
+
+        return production_df, profile_df, cap_year
+
+    def _prepare_all_renewable_sources(self) -> None:
+        """
+        Load, process, and store renewable generation profiles and capacities.
+        Covers: Wind Onshore, Wind Offshore, Solar PV, Hydro ROR.
+        """
+
+        sources_dict = {}  # create a dictionary of dictionaries to dynamically create the sources list used to load the VRE data from the excel-configuration file.
+        for vre_gen in self.VRE_generators:
+            label, tech = (
+                vre_gen.values()
+            )  # load the label and tech from the .yaml configuration file e.g. WIND_ON and wind_onshore
+            sources_dict[label] = {}
+            sources_dict[label]["label"] = label
+            sources_dict[label]["aux_label"] = tech
+            sources_dict[label]["data_path"] = self.data_path / tech
+            sources_dict[label]["wy_subdir"] = self.weather_years_subdir
+            sources_dict[label]["wy_label"] = tech + "_wy"
+            sources_dict[label]["output_file"] = tech + "_production.csv"
+            for subkey in self.sim_config_df.loc[label, "key"]:
+                sources_dict[label][subkey.replace(tech + "_", "") + "_key"] = subkey
+        sources = list(sources_dict.values())
+
+        for source in sources:
+            (self.prod_dfs[source["aux_label"]],
+             self.profile_dfs[source["aux_label"]],
+             self.cap_year_dfs[source["aux_label"]]) = self.calculate_renewable_profiles(source)
+            
+            if self.overwrite_preprocessed_data:
+                utils.save_data(
+                    self.prod_dfs[source["aux_label"]],
+                    source["output_file"],
+                    output_dir=self.output_path,
+                    )
+
+    def _process_hydro_reservoir_data(self) -> None:
+        """
+        Load and process data for hydro reservoir units.
+
+        This method retrieves the hydro reservoir units data from a specified CSV file,
+        checks for its existence, loads it into a DataFrame, validates the data, and saves
+        it to the designated output path.
+
+        Raises:
+            FileNotFoundError: If the hydro reservoir units file does not exist.
+        """
+
+        # Load the configuration section for hydro reservoir
+        hydro_res_df = self.sim_config_df.loc["HYDRO_RES"].copy()
+        hydro_res_df.set_index("key", inplace=True)
+
+        # Extract hydro reservoir configuration values
+        hydro_res_units_file = hydro_res_df.loc[
+            "hydro_res_units_file", self.sim_label
+        ]
+        hydro_res_energy_wy = hydro_res_df.loc[
+            "hydro_res_energy_wy", self.sim_label
+        ]
+
+        # Define file paths
+        hydro_res_units_filepath = (
+            self.path_hydro_reservoir / "units" / f"{hydro_res_units_file}.csv"
+        )
+        hydro_res_energy_wy_filepath = (
+            self.path_hydro_reservoir
+            / "energy_availability"
+            / f"hydro_res_energy_wy_{hydro_res_energy_wy}.csv"
+        )
+
+        # Check if the hydro reservoir units file exists
+        if not hydro_res_units_filepath.exists():
+            raise FileNotFoundError(
+                f"Hydro reservoir units file not found: {hydro_res_units_filepath}"
+            )
+
+        # Check if the hydro reservoir energy availability file exists
+        if not hydro_res_energy_wy_filepath.exists():
+            raise FileNotFoundError(
+                f"Hydro reservoir energy availability file not found: {hydro_res_energy_wy_filepath}"
+            )
+
+        # Load the hydro reservoir data into DataFrames
+        self.hydro_reservoir_units_df_raw = pd.read_csv(
+            hydro_res_units_filepath, index_col=0
+        )
+        self.hydro_res_energy_wy_df_raw = pd.read_csv(
+            hydro_res_energy_wy_filepath, index_col=0
+        )
+
+        # Filter the hydro reservoir data to only include generators and energy availability in the selected bidding zones
+        self.hydro_reservoir_units_df = self.hydro_reservoir_units_df_raw[
+            self.hydro_reservoir_units_df_raw['zone_el'].isin(self.bidding_zones_list)
+            ].copy()  # .copy() used to avoid SettingWithCopyWarning
+        self.hydro_res_energy_wy_df = self.hydro_res_energy_wy_df_raw[self.bidding_zones_list].copy()
+
+        # Validate the loaded data
+        utils.validate_df_positive_numeric(
+            self.hydro_res_energy_wy_df, "hydro_res_energy_availability"
+        )
+
+        # Save the loaded and validated hydro reservoir data to the designated output path
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.hydro_reservoir_units_df,
+                "hydro_reservoir_units.csv",
+                output_dir=self.output_path,
+            )
+            utils.save_data(
+                self.hydro_res_energy_wy_df,
+                "hydro_reservoir_energy.csv",
+                output_dir=self.output_path,
+            )
+
+    def _process_hydro_pumped_storage(self) -> None:
+        """
+        Load and process data for hydro pumped storage units.
+
+        This method retrieves the hydro pumped storage units data from a specified CSV file,
+        checks for its existence, loads it into a DataFrame, and saves it to the designated output path.
+
+        Raises:
+            FileNotFoundError: If the hydro pumped storage units file does not exist.
+        """
+
+        # Load the configuration section for hydro pumped storage
+        hydro_ps_df = self.sim_config_df.loc["HYDRO_PS"].copy()
+        hydro_ps_df.set_index("key", inplace=True)
+
+        # Extract the pumped hydro storage roundtrip efficiency and
+        #   initial SOC and store them in the auxiliary yaml data dictionary
+        self.aux_data_dict["hydro_ps_roundtrip"] = float(hydro_ps_df.loc["hydro_ps_roundtrip", self.sim_label])
+        self.aux_data_dict["hydro_ps_initial_soc"] = float(hydro_ps_df.loc["hydro_ps_initial_soc", self.sim_label])
+
+        # Extract hydro pumped storage configuration values
+        hydro_ps_units_filename = hydro_ps_df.loc[
+            "hydro_ps_units_file", self.sim_label
+        ]
+
+        # Define file path
+        hydro_ps_units_filepath = (
+            self.path_hydro_pumped / f"{hydro_ps_units_filename}.csv"
+        )
+
+        # Check if the hydro pumped storage units file exists
+        if not hydro_ps_units_filepath.exists():
+            raise FileNotFoundError(
+                f"Hydro pumped storage units file not found: {hydro_ps_units_filepath}"
+            )
+
+        # Load the hydro pumped storage data into DataFrames
+        self.hydro_pumped_units_df_raw = pd.read_csv(
+            hydro_ps_units_filepath, index_col=0
+        )
+
+        # Filter the hydro reservoir data to only include generators and energy availability in the selected bidding zones
+        self.hydro_pumped_units_df = self.hydro_pumped_units_df_raw[
+            self.hydro_pumped_units_df_raw['zone_el'].isin(self.bidding_zones_list)
+            ].copy()  # .copy() used to avoid SettingWithCopyWarning
+
+        # Save the loaded and validated hydro reservoir data to the designated output path
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.hydro_pumped_units_df,
+                "hydro_pumped_units.csv",
+                output_dir=self.output_path,
+            )
+
+    def _process_conventional_thermal_units_data(self) -> None:
+        """
+        Load data for thermal generation units.
+
+        This method retrieves the thermal plant units data from a specified CSV file,
+        checks for its existence, and loads it into a DataFrame. The data is then saved
+        to a specified output path.
+
+        Raises:
+            FileNotFoundError: If the thermal units file does not exist.
+        """
+
+        # Load the configuration section for conventional units
+        thermal_df = self.sim_config_df.loc["THERMAL"].copy()
+        thermal_df.set_index("key", inplace=True)
+
+        # Extract thermal units file name
+        thermal_units_file = thermal_df.loc["thermal_units_file", self.sim_label]
+
+        # Define the path to the thermal plant units CSV file
+        thermal_units_filepath = (
+            self.path_thermal_plants / "units" / f"{thermal_units_file}.csv"
+        )
+
+        # Check if the thermal units file exists
+        if not thermal_units_filepath.exists():
+            raise FileNotFoundError(
+                f"Thermal units file not found: {thermal_units_filepath}"
+            )
+
+        # Load the thermal plant units data into a DataFrame
+        self.thermal_units_raw = pd.read_csv(thermal_units_filepath, index_col=0)
+
+        # Filter the thermal units to only include those in the selected bidding zones
+        self.thermal_units = self.thermal_units_raw[
+            self.thermal_units_raw["zone_el"].isin(self.bidding_zones_list)
+        ]
+
+        # Save the loaded thermal plant units data to the designated output path
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.thermal_units,
+                "conventional_thermal_units.csv",
+                output_dir=self.output_path,
+            )
+
+    def _process_bess(self) -> None:
+        """
+        Load and process data for battery energy storage system (BESS) units.
+
+        This method retrieves the BESS units data from a specified CSV file,
+        checks for its existence, loads it into a DataFrame, and saves it to the designated output path.
+
+        Raises:
+            FileNotFoundError: If the BESS units file does not exist.
+        """
+
+        # Load the configuration section for hydro pumped storage
+        bess_df = self.sim_config_df.loc["BESS"].copy()
+        bess_df.set_index("key", inplace=True)
+
+        # Extract the BESS roundtrip efficiency and initial SOC and store them in the auxiliary yaml data dictionary
+        self.aux_data_dict["bess_roundtrip"] = float(bess_df.loc["bess_roundtrip", self.sim_label])
+        self.aux_data_dict["bess_initial_soc"] = float(bess_df.loc["bess_initial_soc", self.sim_label])
+
+        # Extract hydro pumped storage configuration values
+        bess_units_filename = bess_df.loc[
+            "bess_units_file", self.sim_label
+        ]
+
+        # Define file path
+        bess_units_filepath = (
+            self.path_bess / f"{bess_units_filename}.csv"
+        )
+
+        # Check if the hydro pumped storage units file exists
+        if not bess_units_filepath.exists():
+            raise FileNotFoundError(
+                f"BESS units file not found: {bess_units_filepath}"
+            )
+
+        # Load the hydro pumped storage data into DataFrames
+        self.bess_units_df_raw = pd.read_csv(
+            bess_units_filepath, index_col=0
+        )
+
+        # Filter the hydro reservoir data to only include generators and energy availability in the selected bidding zones
+        self.bess_units_df = self.bess_units_df_raw[
+            self.bess_units_df_raw['zone_el'].isin(self.bidding_zones_list)
+            ].copy()  # .copy() used to avoid SettingWithCopyWarning
+
+        # Save the loaded and validated hydro reservoir data to the designated output path
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.bess_units_df,
+                "bess_units.csv",
+                output_dir=self.output_path,
+            )
+
+    def _process_ptx_units(self) -> None:
+        '''
+        Load and process the raw data on PtX units.
+        This method is similar to that of the conventional thermal units.
+        '''
+        
+        # Load the configuration section for ptx units
+        ptx_series = self.sim_config_df.loc["PTX"].copy()
+
+        # Extract PtX units file name - the series is the "ptx_units_file" for each scenario
+        ptx_units_file = ptx_series.loc[self.sim_label]
+
+        # Define the path to the ptx units CSV file
+        ptx_units_filepath = (
+            self.path_ptx / f"{ptx_units_file}.csv"
+        )
+
+        # Check if the PtX units file exists
+        if not ptx_units_filepath.exists():
+            raise FileNotFoundError(
+                f"PtX units file not found: {ptx_units_filepath}"
+            )
+        
+        # Load the PtX units data into a DataFrame
+        self.ptx_units_raw = pd.read_csv(ptx_units_filepath, index_col=0)
+
+        # Filter the PtX units to only include those in the selected bidding zones
+        self.ptx_units = self.ptx_units_raw[
+            self.ptx_units_raw["zone_el"].isin(self.bidding_zones_list)
+        ]
+
+        # Save the load ptx units data to the designated output path
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.ptx_units,
+                "ptx_units.csv",
+                output_dir=self.output_path,
+            )
+
+    def _process_dh_units(self) -> None:
+        '''
+        Load and process the raw data on district heating (DH) units.
+        This method is similar to that of the conventional thermal units.
+        '''
+        
+        # Load the configuration section for ptx units
+        dh_series = self.sim_config_df.loc["DH"].copy()
+
+        # Extract DH units file name -- the series is the "dh_units_file" for each scenario
+        dh_units_file = dh_series.loc[self.sim_label]
+
+        # Define the path to the DH units CSV file
+        dh_units_filepath = (
+            self.path_district_heating / f"{dh_units_file}.csv"
+        )
+
+        # Check if the DH units file exists
+        if not dh_units_filepath.exists():
+            raise FileNotFoundError(
+                f"DH units file not found: {dh_units_filepath}"
+            )
+        
+        # Load the DH units data into a DataFrame
+        self.dh_units_raw = pd.read_csv(dh_units_filepath, index_col=0)
+
+        # Filter the DH units to only include those in the selected bidding zones
+        self.dh_units = self.dh_units_raw[
+            self.dh_units_raw["zone_el"].isin(self.bidding_zones_list)
+        ]
+
+        # Save the load DH units data to the designated output path
+        if self.overwrite_preprocessed_data:
+            utils.save_data(
+                self.dh_units,
+                "dh_units.csv",
+                output_dir=self.output_path,
+            )
+
+    def _process_fuel_prices(self) -> None:
+        pass
+
+    def _process_transmission_lines_data(self) -> None:
+        """
+        Load data for transmission lines.
+
+        This method retrieves the transmission lines data from specified CSV files,
+        checks for their existence, and loads them into DataFrames. The data is then saved
+        to a specified output path.
+
+        Raises:
+            FileNotFoundError: If neither of the transmission lines files exist.
+        """
+
+        # Label for the setup configuration section
+        lines_label = "LINES"
+
+        # Check if the 'SETUP' section is present in the configuration DataFrame
+        if lines_label not in self.sim_config_df.index:
+            raise ValueError("Missing LINES section in system config.")
+
+        # Extract and copy the setup configuration section from the DataFrame
+        self.lines_config_df = self.sim_config_df.loc[lines_label].copy()
+
+        # Store the setup configuration and determine the prediction year from the scenario name
+        self.lines_selection = str(self.lines_config_df[self.sim_label])
+
+        # Define the paths to the transmission lines CSV files
+        lines_a_b_file = self.path_lines / self.lines_selection / "lines_a_b.csv"
+        lines_b_a_file = self.path_lines / self.lines_selection / "lines_b_a.csv"
+
+        # Check if both transmission lines files exist
+        # Check if both transmission lines files exist
+        if lines_a_b_file.exists() and lines_b_a_file.exists():
+            # Load CSVs with two header rows: from_zone and to_zone
+            self.lines_a_b_raw = pd.read_csv(lines_a_b_file, header=[0, 1])
+            self.lines_b_a_raw = pd.read_csv(lines_b_a_file, header=[0, 1])
+
+            # Filter columns where both from_zone and to_zone are in bidding_zones_list
+            # The columns are MultiIndex with (from_zone, to_zone)
+            mask_a_b = [
+                (col[0] in self.bidding_zones_list and col[1] in self.bidding_zones_list)
+                for col in self.lines_a_b_raw.columns
+            ]
+            mask_b_a = [
+                (col[0] in self.bidding_zones_list and col[1] in self.bidding_zones_list)
+                for col in self.lines_b_a_raw.columns
+            ]
+            
+            self.lines_a_b = self.lines_a_b_raw.loc[:, mask_a_b]
+            self.lines_b_a = self.lines_b_a_raw.loc[:, mask_b_a]
+
+        if self.overwrite_preprocessed_data:
+                utils.save_data(
+                    self.lines_a_b,
+                    "lines_a_b.csv",
+                    output_dir=self.output_path,
+                    )
+                utils.save_data(
+                    self.lines_b_a,
+                    "lines_b_a.csv",
+                    output_dir=self.output_path,
+                    )
+        else:
+            raise FileNotFoundError(
+                f"Line files not found: {lines_a_b_file} or {lines_b_a_file}"
+            )
+
+    def calculate_inflexible_demand(self, config: dict) -> pd.DataFrame:
+        """
+        Load and scale inflexible electricity demand using profile and projection.
+
+        Args:
+            config (dict): Expected keys:
+                - 'label': Section label in the config sheet
+                - 'profile_year_key': Config key for profile year
+                - 'amount_file_key': Config key for total demand projection
+                - 'voll_key': Config key for VOLL (Value of Lost Load)
+                - 'aux_label': Key under which VOLL is stored in aux_data_dict
+                - 'base_path': Base folder for profile and projection files
+
+        Returns:
+            pd.DataFrame: Scaled demand profile (MW) for prediction year
+        """
+        scenario = self.sim_label
+        section = self.sim_config_df.loc[config["label"]].copy().set_index("key")
+
+        # --- Extract configuration values ---
+        profile_year = section.at[config["profile_year_key"], scenario]
+        amount_file = section.at[config["amount_file_key"], scenario]
+        voll = float(section.at[config["voll_key"], scenario])
+
+        # Store VOLL in auxiliary data
+        self.aux_data_dict.setdefault(config["aux_label"], {})["voll"] = voll
+
+        # --- Build file paths ---
+        profile_file = f"{config['profile_year_key']}_{profile_year}.csv"
+        profile_path = config["base_path"] / self.profile_years_subdir / profile_file
+        projection_path = (
+            config["base_path"] / "demand_projection" / f"{amount_file}.csv"
+        )
+
+        # --- Load data ---
+        profile_df = utils.load_csv_if_exists(profile_path)
+        projection_df = utils.load_csv_if_exists(projection_path)
+
+        # --- Extract projection for prediction year ---
+        if self.prediction_year not in projection_df.index:
+            raise KeyError(
+                f"Prediction year '{self.prediction_year}' not found in projection file: {projection_path}"
+            )
+        projection_row = projection_df.loc[self.prediction_year]
+
+        # --- Compute demand by scaling profile with projection ---
+        common_cols = profile_df.columns.intersection(projection_row.index)
+        if common_cols.empty:
+            raise ValueError(
+                f"No matching columns between profile and projection for {config['label']}"
+            )
+
+        demand_profile = profile_df.copy()
+        demand_profile[common_cols] = (
+            profile_df[common_cols] * projection_row[common_cols].values
+        )
+
+        # --- Validation ---
+        utils.validate_df_positive_numeric(demand_profile, profile_file)
+
+        demand_profile = demand_profile[self.bidding_zones_list]
+        
+        if self.run_mode == "weekly":
+            # Filter the bidding zones chosen in config.yaml
+            demand_profile['Week'] = profile_df["Week"]
+        
+        # Filter the bidding zones chosen in config.yaml
+
+        return demand_profile, profile_df, projection_row
+
+    def _prepare_inflexible_demand_sources(self) -> None:
+        """
+        Load, scale, and save inflexible demand profiles from sources.
+        """
+        source_configs = [
+            {
+                "label": "DEMAND_INF_CLA",
+                "aux_label": "demand_inflexible_classic",
+                "profile_year_key": "demand_inf_cla_py",
+                "amount_file_key": "demand_inf_cla_amount_file",
+                "voll_key": "demand_inf_cla_voll",
+                "base_path": self.path_demand_inflex_classic,
+                "output_file": "demand_inflexible_classic.csv",
+            },
+            {
+                "label": "DEMAND_INF_EV",
+                "aux_label": "demand_inflexible_ev",
+                "profile_year_key": "demand_inf_ev_py",
+                "amount_file_key": "demand_inf_ev_amount_file",
+                "voll_key": "demand_inf_ev_voll",
+                "base_path": self.path_demand_inflex_ev,
+                "output_file": "demand_inflexible_ev.csv",
+            },
+        ]
+
+        for config in source_configs:
+            (self.cons_dfs[config["aux_label"]],
+             self.profile_dfs[config["aux_label"]],
+             self.projection_row_seriess[config["aux_label"]]) = self.calculate_inflexible_demand(config)
+
+            if self.overwrite_preprocessed_data:
+                utils.save_data(
+                    self.cons_dfs[config["aux_label"]],
+                    config["output_file"],
+                    output_dir=self.output_path,
+                    )
+
+    def _process_flexible_demand_sources(self) -> None:
+        """
+        Load data for flexible loads.
+
+        This method retrieves the flexible loads data from specified CSV files,
+        checks for its existence, and loads it into a DataFrame. The data is then saved
+        to a specified output path. This is done for weekly (maximum) amount and hourly capacity,
+        and for multiple types of flexible loads.
+
+        Raises:
+            FileNotFoundError: If any of the flexible load files do not exist.
+        """
+        # Hardcoded list of flexible load types for now.
+        # flex_demands = ["DEMAND_FLEX_CLA", "DEMAND_FLEX_IND", "DEMAND_FLEX_HOU", "DEMAND_FLEX_PUB", "DEMAND_FLEX_EV"]
+        flex_demands = ["DEMAND_FLEX_CLA", "DEMAND_FLEX_EV"]  # Key in config file
+        # subdir_labels = ["demand_flexible_classic", "demand_flexible_industry", "demand_flexible_household", "demand_flexible_public", "demand_flexible_ev"]
+        subdir_labels = ["demand_flexible_classic", "demand_flexible_ev"]  # more descriptive name and subfolder name
+        parameter_names = ["amount", "capacity"]  # used for file names
+        alternative_parameter_names = ["amount", "cap"]  # used for keys in the excel config file
+
+        # Load the configuration section for the flexible loads
+        flex_demands_df = self.sim_config_df.loc[flex_demands].copy()
+        flex_demands_df.set_index("key", inplace=True)
+
+        # Extract flexible loads configuration values,
+        #   and verify that the files exist,
+        flex_demands_dfs_raw = {}
+        self.flex_demands_dfs = {}
+        for flex_load, subdir_label in zip(flex_demands, subdir_labels):
+            # Load WTP for each flexible load type
+            voll_flex = float(flex_demands_df.loc[  # extract the willingness-to-pay from the excel config file
+                flex_load.lower() + "_wtp",
+                self.sim_label
+                ])
+            self.aux_data_dict[subdir_label] = {"wtp": voll_flex}  # use subdir_label because it's more descriptive
+
+            # Load (weekly) amount and (hourly) capacity for each flexible load type
+            for param_name, alt_param_name in zip(parameter_names, alternative_parameter_names):
+                file = flex_demands_df.loc[
+                    flex_load.lower() + f"_{alt_param_name}_file", self.sim_label
+                    ]
+                
+                # Define the path to the CSV file of the flexible load data
+                filepath = self.data_path / subdir_label / f"{param_name}" / f"{file}.csv"
+
+                # Check if the flexible load amount file exists
+                if not filepath.exists():
+                    raise FileNotFoundError(
+                        f"Flexible load amount file not found: {filepath}"
+                    )
+                # Load the flexible load data into DataFrames and save them in the dictionary
+                flex_demands_dfs_raw[flex_load + f"_{param_name}"] = pd.read_csv(filepath, index_col=0)
+                # Filter the flexible units to only include those in the selected bidding zones
+                self.flex_demands_dfs[flex_load + f"_{param_name}"] = flex_demands_dfs_raw[flex_load + f"_{param_name}"][self.bidding_zones_list].copy()
+                
+                # Validate the loaded data
+                utils.validate_df_positive_numeric(
+                    self.flex_demands_dfs[flex_load + f"_{param_name}"],
+                    flex_load + f"_{param_name}"
+                )
+                # Save the loaded flexible demands data to the designated output path
+                if self.overwrite_preprocessed_data:
+                    utils.save_data(
+                        self.flex_demands_dfs[flex_load + f"_{param_name}"],
+                        subdir_label + f"_{param_name}.csv",  # subdir_label used instead of flex_load to get a more descriptive filename
+                        output_dir=self.output_path,
+                            )
+
+    def _save_aux_data_to_yaml(self) -> None:
+        """Save auxiliary data dictionary to a YAML file."""
+        yaml_path = Path(self.output_path) / f"{self.sim_label}_aux_data.yaml"
+
+        # Ensure output directory exists
+        yaml_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Write to YAML file
+        with open(yaml_path, "w") as f:
+            yaml.dump(
+                self.aux_data_dict,
+                f,
+                default_flow_style=False,
+                indent=2,
+                sort_keys=False,
+            )
+
+        log.info(f"Auxiliary data saved to: {yaml_path}")
