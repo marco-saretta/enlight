@@ -12,10 +12,11 @@ log = logging.getLogger(__name__)
 def main(cfg: DictConfig) -> None:
     log.info("Starting ENLIGHT")
 
-    runner = EnlightRunner(cfg)
-    runner.run()
+    print(cfg)
+    #runner = EnlightRunner(cfg)
+    #runner.run()
 
-    log.info("Run completed.")
+    #log.info("Run completed.")
 
 
 if __name__ == "__main__":
