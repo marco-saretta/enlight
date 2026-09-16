@@ -20,29 +20,29 @@ supply_curve:
     bid_price:     0.01
     capacity_file: TYNDP_2024_National_Trends
     weather_data:
+      source: demo
       year:   2020
-      source: entsoe
 
   wind_offshore:
     bid_price:     0.02
     capacity_file: TYNDP_2024_National_Trends
     weather_data:
+      source: demo
       year:   2020
-      source: entsoe
 
   solar_pv:
     bid_price:     0.03
     capacity_file: TYNDP_2024_National_Trends
     weather_data:
+      source: demo
       year:   2020
-      source: entsoe
 
   hydro_ror:
     bid_price:     0.04
     capacity_file: TYNDP_2024_National_Trends
     weather_data:
+      source: demo
       year:   2020
-      source: entsoe
 
   hydro_res:
     units_file:          hydro_reservoir_units

@@ -1,6 +1,6 @@
 defaults:
   - paths: default           # file system paths → config/paths/
-  - simulations: _template   # active scenario  → config/simulations/
+  - simulations: default   # active scenario  → config/simulations/
   - _self_
 
 # Multi-run:

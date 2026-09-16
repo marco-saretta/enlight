@@ -12,8 +12,7 @@ log = logging.getLogger(__name__)
 def main(cfg: DictConfig) -> None:
     log.info("Starting ENLIGHT")
 
-    print(cfg)
-    #runner = EnlightRunner(cfg)
+    runner = EnlightRunner(cfg)
     #runner.run()
 
     #log.info("Run completed.")
