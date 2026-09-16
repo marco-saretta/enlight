@@ -6,7 +6,7 @@
 label: sim_template   # written to output dirs and metadata; must be unique
 
 run:
-  mode:            rolling_horizon   # rolling_horizon | yearly
+  mode:            yearly            # rolling_horizon | yearly
   prediction_year: 2040
   solver:          gurobi            # highs | gurobi
 
