@@ -16,10 +16,10 @@ class EnlightRunner:
     Instantiate the ENLIGHT runner object to execute the pipeline.
 
     Runner works in 4 steps:
-    1. Preprocess — raw data into simulation input .csv files
-    2. Load       — .csv files into linopy-compatible arrays
-    3. Solve      — build and solve the market-clearing model
-    4. Export     — model results into result .csv files
+    1. Preprocess - raw data into simulation input .csv files
+    2. Load       - .csv files into linopy-compatible arrays
+    3. Solve      - build and solve the market-clearing model
+    4. Export     - model results into result .csv files
     """
 
     def __init__(self, cfg: DictConfig) -> None:
@@ -96,7 +96,7 @@ class EnlightRunner:
         """
         Load the preprocessed simulation data into linopy-compatible arrays.
         """
-        pass  # TODO: not yet implemented
+        self.data = DataLoader(self.cfg)    # Loads simultaiton data into self.data 
 
     def _solve(self, dry_run: bool, week: int | None = None) -> None:
         """
