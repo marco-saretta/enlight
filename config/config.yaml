@@ -1,8 +1,12 @@
 defaults:
-  - paths: default           # file system paths → config/paths/
-  - simulations: default   # active scenario  → config/simulations/
+  - paths: default          # file system paths → config/paths/
+  - simulations: default    # active scenario  → config/simulations/
   - _self_
 
-# Multi-run:
-#   python main.py --multirun simulations=sim_1,sim_2
-#   python main.py --multirun simulations='glob(*)'
+# Pipeline steps run by `python main.py`, in this order. Run part of it with e.g.
+#   python main.py steps=[preprocess]
+steps: [preprocess, load, build, solve, export]
+
+# One scenario:     python main.py simulations=demo1
+# Several in a row: python main.py --multirun simulations=demo1,demo2
+# All of them:      python main.py --multirun 'simulations=glob(*)'

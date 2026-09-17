@@ -8,7 +8,12 @@ label: demo   # written to output dirs and metadata; must be unique
 run:
   mode:            yearly            # rolling_horizon | yearly
   prediction_year: 2040
-  solver:          gurobi            # highs | gurobi
+  solver:          highs            # highs | gurobi
+
+rolling_horizon:                     # only used when run.mode is rolling_horizon
+  start_week:          1             # weeks are 168 h; week 52 also takes the last 24 h
+  end_week:            52
+  keep_weekly_results: false         # true keeps results/week_NN/ next to the joined annual files
 
 # --- SUPPLY CURVE -------------------------------------------------------------
 # VRE (wind/solar/hydro_ror):          bid_price, capacity_file, weather_data
@@ -49,23 +54,24 @@ supply_curve:
     plant_aggregation:   false
     ramp_constraints:    false
     energy_weather_year: 2020
-    bid_price:           ramboll
+    bid_price:           demo
 
   hydro_ps:
     units_file:           hydro_pumped_storage_units
     plant_aggregation:    false
     initial_soc:          0.5    # fraction of capacity at t=0 [0–1]
     roundtrip_efficiency: 0.9    # charge/discharge efficiency [0–1]
-    fuel_projection:      ramboll
+    fuel_projection:      demo
 
   thermal:
-    units_file:        thermal_plant_units
+    units_file:        generators
     plant_aggregation: false
     ramp_constraints:  false
-    marginal_cost:              # TODO: placeholder, to be wired up
-      fuel_prices:      demo
-      co2_quota_prices: demo
-      taxes:            demo
+    marginal_cost:              # projection datasets under data/fuel_price_projections/
+      fuel_prices:        demo
+      co2_quota_prices:   demo
+      fuel_price_profile: null    # TODO: monthly fuel price shape (e.g. TTF), not implemented yet
+      taxes:              demo    # TODO: not used yet
 
   bess:
     units_file:           bess_units

@@ -1,129 +1,200 @@
+import gc
+import logging
+import shutil
+import time
+from collections.abc import Sequence
 from pathlib import Path
-from omegaconf import DictConfig
-from tqdm import tqdm
 
-from enlight.data_ops import DataPreprocessor, DataLoader, DataExporter
-from enlight.model import EnlightModel
+from hydra import compose, initialize_config_dir
+from hydra.core.global_hydra import GlobalHydra
+from omegaconf import DictConfig
+
 import enlight.utils as utils
-from enlight.utils import Timer
+from enlight.data_ops import DataExporter, DataLoader, DataPreprocessor
+from enlight.model import EnlightModel
 from enlight.utils.validation import validate_simulation_config
 
 log = utils.get_logger(__name__)
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+STEPS = ("preprocess", "load", "build", "solve", "export")
+
+
+def load_config(simulation: str = "default", overrides: Sequence[str] = ()) -> DictConfig:
+    """
+    Compose the Hydra config without `python main.py`, e.g. in a notebook:
+
+        cfg = load_config("demo1", overrides=["simulations.run.solver=highs"])
+        runner = EnlightRunner(cfg)
+        runner.preprocess()
+    """
+    GlobalHydra.instance().clear()
+    with initialize_config_dir(config_dir=str(PROJECT_ROOT / "config"), version_base=None):
+        # paths.root normally comes from ${hydra:runtime.cwd}, which only exists under @hydra.main
+        return compose("config", overrides=[f"simulations={simulation}", f"paths.root={PROJECT_ROOT}", *overrides])
 
 
 class EnlightRunner:
     """
     Instantiate the ENLIGHT runner object to execute the pipeline.
 
-    Runner works in 4 steps:
-    1. Preprocess - raw data into simulation input .csv files
-    2. Load       - .csv files into linopy-compatible arrays
-    3. Solve      - build and solve the market-clearing model
-    4. Export     - model results into result .csv files
+    Runner works in 5 steps, each a public method:
+    1. preprocess() - raw data into simulation input .csv files
+    2. load()       - .csv files into linopy-compatible arrays
+    3. build()      - build the market-clearing model
+    4. solve()      - solve it
+    5. export()     - model results into result .csv files
+
+    run() executes the steps listed in cfg.steps; call the methods directly to
+    run only part of the pipeline. In rolling_horizon mode, load to export
+    repeat once per week.
     """
 
     def __init__(self, cfg: DictConfig) -> None:
         utils.setup_logging(log_dir=cfg.paths.log)
-        utils.log_section(log, "ENLIGHT initialisation")
+        utils.reset_peak_memory()
+        validate_simulation_config(cfg.simulations)
 
         self.cfg = cfg
+        self.data: DataLoader | None = None
+        self.model: EnlightModel | None = None
 
         self._setup_simulation_folders()
         utils.load_plot_config()
 
         log.info(
-            "Simulation: '%s'  mode: %s  zones: %d",
+            "simulation '%s': mode %s, %d zones, prediction year %d, solver %s",
             cfg.simulations.label,
             cfg.simulations.run.mode,
             len(cfg.simulations.bidding_zones),
+            cfg.simulations.run.prediction_year,
+            cfg.simulations.run.solver,
         )
 
-    def run(self, dry_run: bool = False) -> None:
+    def run(self) -> None:
         """
-        Run the active simulation end-to-end.
+        Run the steps listed in cfg.steps, in pipeline order.
         """
+        start = time.perf_counter()
+        steps = set(self.cfg.steps)
+        unknown = steps - set(STEPS)
+        if unknown:
+            raise ValueError(f"Unknown steps {sorted(unknown)}. Valid: {', '.join(STEPS)}")
 
-        mode = self.cfg.simulations.run.mode
-        label = self.cfg.simulations.label
+        if "preprocess" in steps:
+            self.preprocess()
 
-        validate_simulation_config(self.cfg.simulations)
-        utils.log_section(log, f"RUN: {label}  [{mode}]")
-        timer = Timer(log, f"Simulation '{label}'")
-
-        if mode == "yearly":
-            self._run_yearly(dry_run)
-        elif mode == "rolling_horizon":
-            self._run_rolling_horizon(dry_run)
+        weeks = self._weeks()
+        if weeks == [None]:
+            self._run_steps(steps)
         else:
-            raise ValueError(f"Unknown run mode '{mode}'. Valid: yearly | rolling_horizon")
+            log_file = Path(self.cfg.paths.log).relative_to(self.cfg.paths.root) / "enlight.log"
+            log.info("solving %d weeks; each week's step details are only in %s", len(weeks), log_file)
+            for week in weeks:
+                week_start = time.perf_counter()
+                with utils.console_level(logging.WARNING):  # warnings still reach the console
+                    self._run_steps(steps, week)
+                objective = f", objective {self.model.model.objective.value:.4e}" if "solve" in steps else ""
+                log.info("week %d (%d-%d) done in %.1f s%s", week, weeks[0], weeks[-1], time.perf_counter() - week_start, objective)
 
-        timer.stop()
+            if "export" in steps:
+                self.join_weekly_results(weeks)
 
-    def _run_yearly(self, dry_run: bool) -> None:
+        log.info(
+            "simulation '%s' finished in %.1f s, peak memory %.1f GB",
+            self.cfg.simulations.label, time.perf_counter() - start, utils.peak_memory_gb(),
+        )
+
+    def _run_steps(self, steps: set[str], week: int | None = None) -> None:
         """
-        Run a single full-year optimisation (8760 h).
+        Run load to export for the whole year, or for one week.
         """
-        self._preprocess()
-        self._load_data()
-        self._solve(dry_run)
-        if not dry_run:
-            self._export()
+        if "load" in steps:
+            self.load(week)
+        if "build" in steps:
+            self.build()
+        if "solve" in steps:
+            self.solve()
+        if "export" in steps:
+            self.export(week)
 
-    def _run_rolling_horizon(self, dry_run: bool) -> None:
-        """
-        Run a week-by-week optimisation, concatenating results after the loop.
-        """
-        rh = self.cfg.simulations.rolling_horizon
-        self._preprocess()  # raw data is scenario-wide, so this runs once, not per week
-
-        for week in tqdm(range(rh.start_week, rh.end_week + 1), desc="Rolling horizon"):
-            log.info("Week %d / %d", week, rh.end_week)
-            self._load_data(week=week)
-            self._solve(dry_run, week=week)
-            if not dry_run:
-                self._export(week=week)
-
-        if not dry_run:
-            self._concatenate_weekly_results(rh.start_week, rh.end_week)
-
-    def _preprocess(self) -> None:
+    def preprocess(self) -> None:
         """
         Preprocess the raw data into the simulation input as .csv files
         """
-        DataPreprocessor(self.cfg)  # writes CSVs as a side effect; nothing to keep here
+        with utils.stage("preprocess", log):
+            DataPreprocessor(self.cfg)  # writes CSVs as a side effect; nothing to keep here
 
-    def _load_data(self, week: int | None = None) -> None:
+    def load(self, week: int | None = None) -> None:
         """
-        Load the preprocessed simulation data into linopy-compatible arrays.
+        Load the preprocessed simulation data (one week of it in rolling_horizon mode).
+        Any previously loaded data and model are dropped.
         """
-        self.data = DataLoader(self.cfg)    # Loads simultaiton data into self.data 
+        # Linopy objects reference each other, so an old week's model is only
+        # freed when Python's garbage collector runs; without this, memory grows
+        # by about one week's model per iteration.
+        self.data = self.model = None
+        gc.collect()
 
-    def _solve(self, dry_run: bool, week: int | None = None) -> None:
-        """
-        Build and solve the market-clearing model; skipped when dry_run=True.
-        """
-        if dry_run:
-            log.info("Dry run — skipping solve.")
-            return
-        # TODO: not yet implemented, awaits _load_data
+        with utils.stage("load", log):
+            self.data = DataLoader(self.cfg, week=week)
 
-    def _export(self, week: int | None = None) -> None:
+    def build(self) -> None:
         """
-        Export the model results into simulations/<label>/results/.
+        Build the market-clearing model from the loaded data.
         """
-        pass  # TODO: not yet implemented, awaits _solve
+        if self.data is None:
+            raise RuntimeError("build() needs data: call load() first")
+        with utils.stage("build", log):
+            self.model = EnlightModel(self.data, self.cfg)
 
-    def _concatenate_weekly_results(self, start_week: int, end_week: int) -> None:
+    def solve(self) -> None:
         """
-        Merge the per-week result CSVs into a single annual file.
+        Solve the built model.
         """
-        pass  # TODO: not yet implemented; only matters once rolling_horizon produces per-week results
+        if self.model is None:
+            raise RuntimeError("solve() needs a model: call build() first")
+        with utils.stage("solve", log):
+            self.model.solve()
+
+    def export(self, week: int | None = None) -> None:
+        """
+        Export the model results into simulations/<label>/results/ (results/week_<nn>/ for a week).
+        """
+        if self.model is None or self.model.model.status != "ok":
+            raise RuntimeError("export() needs a solved model: call build() and solve() first")
+        with utils.stage("export", log):
+            DataExporter(self.model, week=week)  # writes CSVs as a side effect; nothing to keep here
+
+    def join_weekly_results(self, weeks: list[int]) -> None:
+        """
+        Join the weekly results into annual files in simulations/<label>/results/,
+        then delete the weekly folders unless rolling_horizon.keep_weekly_results.
+        """
+        with utils.stage("export", log):
+            DataExporter.concatenate(self._results_path(), weeks)
+            if not self.cfg.simulations.rolling_horizon.keep_weekly_results:
+                for week in weeks:
+                    shutil.rmtree(DataExporter.week_path(self._results_path(), week))
+                log.info("deleted %d weekly result folders", len(weeks))
+
+    def _weeks(self) -> list[int | None]:
+        """
+        [None] for a yearly run (one pass), otherwise the weeks to solve one by one.
+        """
+        if self.cfg.simulations.run.mode == "yearly":
+            return [None]
+        rh = self.cfg.simulations.rolling_horizon
+        return list(range(rh.start_week, rh.end_week + 1))
+
+    def _results_path(self) -> Path:
+        return Path(self.cfg.paths.processed) / self.cfg.simulations.label / "results"
 
     def _setup_simulation_folders(self) -> None:
         """
         Create the data/ and results/ subdirectories under simulations/<label>/.
         """
-        # Created up front, in __init__, so every stage has somewhere to write
+        # Created up front, in __init__, so every step has somewhere to write
         # regardless of which one runs first.
         root = Path(self.cfg.paths.root)
         label = self.cfg.simulations.label

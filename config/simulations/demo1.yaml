@@ -1,0 +1,15 @@
+# Scenario demo1: everything as in default.yaml, except the settings below.
+# Solved week by week, with thermal plants aggregated per zone and technology.
+
+defaults:
+  - default
+  - _self_
+
+label: demo1
+
+run:
+  mode: rolling_horizon
+
+supply_curve:
+  thermal:
+    plant_aggregation: true

@@ -8,8 +8,9 @@ from omegaconf import DictConfig, OmegaConf
 # ---------------------------------------------------------------------------
 
 class RollingHorizonConfig(BaseModel):
-    start_week: int = Field(ge=1, le=52)
-    end_week:   int = Field(ge=1, le=52)
+    start_week:          int = Field(ge=1, le=52)
+    end_week:            int = Field(ge=1, le=52)
+    keep_weekly_results: bool = False
 
     @model_validator(mode="after")
     def end_not_before_start(self) -> "RollingHorizonConfig":
@@ -52,8 +53,8 @@ class HydroResConfig(BaseModel):
     @field_validator("bid_price")
     @classmethod
     def bid_price_valid(cls, v: Union[float, str]) -> Union[float, str]:
-        if isinstance(v, str) and v != "ramboll":
-            raise ValueError(f"bid_price must be a number or 'ramboll', got '{v}'")
+        if isinstance(v, str) and v != "demo":
+            raise ValueError(f"bid_price must be a number or 'demo', got '{v}'")
         if isinstance(v, (int, float)) and v < 0:
             raise ValueError(f"bid_price must be >= 0, got {v}")
         return v
@@ -74,10 +75,11 @@ class BessConfig(BaseModel):
 
 
 class MarginalCostConfig(BaseModel):
-    """Placeholder cost breakdown — still wired to 'demo' values."""
-    fuel_prices:      str
-    co2_quota_prices: str
-    taxes:            str
+    """Datasets under data/fuel_price_projections/ used to compute thermal marginal costs."""
+    fuel_prices:        str
+    co2_quota_prices:   str
+    fuel_price_profile: Optional[str] = None  # TODO: monthly fuel price shape, not implemented yet
+    taxes:              str
 
 
 class ThermalConfig(BaseModel):
