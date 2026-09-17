@@ -81,13 +81,13 @@ class DataLoader:
         self.data_path = Path(self.cfg.paths.processed) / label / "data"
         self.times: pd.Index | None = None  # hours shared by every hourly series, set on first load
 
-        # Supply curve — variable renewables
+        # Supply curve - variable renewables
         self._load_wind_onshore()
         self._load_wind_offshore()
         self._load_solar_pv()
         self._load_hydro_ror()
 
-        # Supply curve — unit-based dispatchable plants
+        # Supply curve - unit-based dispatchable plants
         self._load_hydro_res()
         self._load_hydro_ps()
         self._load_thermal()
@@ -114,7 +114,7 @@ class DataLoader:
         )
 
     # -------------------------------------------------------------------
-    # Supply curve — variable renewables
+    # Supply curve - variable renewables
     # -------------------------------------------------------------------
     def _load_wind_onshore(self) -> None:
         """wind_onshore_production.csv + bid_price -> self.wind_onshore."""
@@ -133,10 +133,10 @@ class DataLoader:
         self.hydro_ror = self._load_vre("hydro_ror")
 
     # -------------------------------------------------------------------
-    # Supply curve — unit-based dispatchable plants
+    # Supply curve - unit-based dispatchable plants
     # Plan: one static table per technology (one row per unit: zone,
     # capacity, cost), kept 1-D over units. The model maps units to zones
-    # with groupby on the zone column — no unit-to-zone incidence matrix.
+    # with groupby on the zone column - no unit-to-zone incidence matrix.
     # -------------------------------------------------------------------
     def _load_hydro_res(self) -> None:
         """hydro_res_units.csv + hydro_res_energy.csv -> self.hydro_res."""

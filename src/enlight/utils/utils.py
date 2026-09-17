@@ -1,6 +1,4 @@
 import logging
-import resource
-import sys
 import time
 from contextvars import ContextVar
 from pathlib import Path
@@ -59,26 +57,6 @@ def _fmt_elapsed(seconds: float) -> str:
     return f"{int(m)} min {s:.0f} s"
 
 
-def peak_memory_gb() -> float:
-    """Peak resident memory [GB] since the process started or reset_peak_memory() was called."""
-    try:
-        for line in Path("/proc/self/status").read_text().splitlines():
-            if line.startswith("VmHWM:"):
-                return int(line.split()[1]) / 1e6  # kB -> GB
-    except OSError:
-        pass
-    # Not Linux: lifetime peak only (macOS reports ru_maxrss in bytes, Linux in kB)
-    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1e9 if sys.platform == "darwin" else 1e6)
-
-
-def reset_peak_memory() -> None:
-    """Restart peak memory tracking, so a --multirun job doesn't report the previous job's peak (Linux only)."""
-    try:
-        Path("/proc/self/clear_refs").write_text("5")
-    except OSError:
-        pass
-
-
 class _StageFilter(logging.Filter):
     """Tag every record with the pipeline stage it was logged in, e.g. '[solve]'."""
 
@@ -126,7 +104,7 @@ def stage(name: str, logger: logging.Logger):
     start = time.perf_counter()
     try:
         yield
-        logger.info("done in %s, peak memory %.1f GB", _fmt_elapsed(time.perf_counter() - start), peak_memory_gb())
+        logger.info("done in %s", _fmt_elapsed(time.perf_counter() - start))
     finally:
         _STAGE.reset(token)
 

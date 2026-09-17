@@ -5,8 +5,6 @@ from .utils import (
     get_logger,
     stage,
     console_level,
-    peak_memory_gb,
-    reset_peak_memory,
     save_data,
     check_vars_list,
     save_model_results,

@@ -52,7 +52,6 @@ class EnlightRunner:
 
     def __init__(self, cfg: DictConfig) -> None:
         utils.setup_logging(log_dir=cfg.paths.log)
-        utils.reset_peak_memory()
         validate_simulation_config(cfg.simulations)
 
         self.cfg = cfg
@@ -101,8 +100,8 @@ class EnlightRunner:
                 self.join_weekly_results(weeks)
 
         log.info(
-            "simulation '%s' finished in %.1f s, peak memory %.1f GB",
-            self.cfg.simulations.label, time.perf_counter() - start, utils.peak_memory_gb(),
+            "simulation '%s' finished in %.1f s",
+            self.cfg.simulations.label, time.perf_counter() - start,
         )
 
     def _run_steps(self, steps: set[str], week: int | None = None) -> None:

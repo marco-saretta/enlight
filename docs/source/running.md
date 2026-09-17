@@ -41,7 +41,7 @@ runner.data.thermal.marginal_cost   # loaded inputs
 runner.model.model                  # the linopy model
 ```
 
-In rolling horizon mode, pass the week: `runner.load(week=1)` … `runner.export(week=1)`.
+In rolling horizon mode, pass the week: `runner.load(week=1)` ... `runner.export(week=1)`.
 
 ## Output
 
@@ -56,4 +56,4 @@ simulations/<label>/
     └── solver.log
 ```
 
-The console shows one line per event, tagged with its step (`[preprocess]`, `[solve]`, …); `logs/enlight.log` keeps every line, including each week's details in rolling horizon mode.
+The console shows one line per event, tagged with its step (`[preprocess]`, `[solve]`, etc.); `logs/enlight.log` keeps every line, including each week's details in rolling horizon mode.

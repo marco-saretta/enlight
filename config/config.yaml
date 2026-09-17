@@ -1,6 +1,6 @@
 defaults:
   - paths: default          # file system paths → config/paths/
-  - simulations: default    # active scenario  → config/simulations/
+  - simulations: demo1    # active scenario  → config/simulations/
   - _self_
 
 # Pipeline steps run by `python main.py`, in this order. Run part of it with e.g.
