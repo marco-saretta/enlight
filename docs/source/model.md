@@ -1,6 +1,6 @@
 # Model
 
-ENLIGHT solves one linear program per run (or per week in rolling horizon mode) with [linopy](https://linopy.readthedocs.io/): it maximises social welfare — consumer benefit minus production cost — subject to a power balance in every zone and hour.
+ENLIGHT solves one linear program per run (or per week in rolling horizon mode) with [linopy](https://linopy.readthedocs.io/): it maximises social welfare (consumer benefit minus production cost) subject to a power balance in every zone and hour.
 
 ## Sets
 

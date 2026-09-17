@@ -1,4 +1,4 @@
-# Simulation template — copy, rename, and place under config/simulations/
+# Simulation template - copy, rename, and place under config/simulations/
 # Reference with:  python main.py simulations=<name>
 
 # --- MAIN RUN CONFIG ----------------------------------------------------------
@@ -59,8 +59,8 @@ supply_curve:
   hydro_ps:
     units_file:           hydro_pumped_storage_units
     plant_aggregation:    false
-    initial_soc:          0.5    # fraction of capacity at t=0 [0–1]
-    roundtrip_efficiency: 0.9    # charge/discharge efficiency [0–1]
+    initial_soc:          0.5    # fraction of capacity at t=0 [0-1]
+    roundtrip_efficiency: 0.9    # charge/discharge efficiency [0-1]
     fuel_projection:      demo
 
   thermal:

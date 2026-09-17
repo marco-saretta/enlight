@@ -4,7 +4,7 @@
 
 - Python 3.13
 - [uv](https://docs.astral.sh/uv/)
-- A Gurobi license (optional — HiGHS is the open-source default)
+- A Gurobi license (optional - HiGHS is the open-source default)
 
 ## Install
 

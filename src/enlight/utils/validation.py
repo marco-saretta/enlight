@@ -4,7 +4,7 @@ from omegaconf import DictConfig, OmegaConf
 
 
 # ---------------------------------------------------------------------------
-# Sub-models — run
+# Sub-models - run
 # ---------------------------------------------------------------------------
 
 class RollingHorizonConfig(BaseModel):
@@ -28,7 +28,7 @@ class RunConfig(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Sub-models — supply curve
+# Sub-models - supply curve
 # ---------------------------------------------------------------------------
 
 class WeatherDataConfig(BaseModel):
@@ -101,7 +101,7 @@ class SupplyCurveConfig(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Sub-models — demand curve
+# Sub-models - demand curve
 # ---------------------------------------------------------------------------
 
 class InflexibleDemandConfig(BaseModel):

@@ -22,7 +22,7 @@ class DataPreprocessor:
 
     Every technology/demand category has a method below so the class reads as
     a full map of the pipeline; the renewables, thermal, inflexible demand and
-    lines are implemented so far — everything else is a documented no-op
+    lines are implemented so far - everything else is a documented no-op
     until its data is ready.
     """
 
@@ -37,13 +37,13 @@ class DataPreprocessor:
         self.output_path = Path(self.cfg.paths.processed) / label / "data"
         self.output_path.mkdir(parents=True, exist_ok=True)
 
-        # Supply curve — variable renewables
+        # Supply curve - variable renewables
         self._process_wind_onshore()
         self._process_wind_offshore()
         self._process_solar_pv()
         self._process_hydro_ror()
 
-        # Supply curve — unit-based dispatchable plants
+        # Supply curve - unit-based dispatchable plants
         self._process_hydro_res()
         self._process_hydro_ps()
         self._process_thermal()
@@ -59,7 +59,7 @@ class DataPreprocessor:
         self._process_lines()
 
     # -------------------------------------------------------------------
-    # Supply curve — variable renewables (bid_price, capacity_file, weather_data)
+    # Supply curve - variable renewables (bid_price, capacity_file, weather_data)
     # -------------------------------------------------------------------
     def _process_wind_onshore(self) -> None:
         """weather_data profile x capacity_file -> wind_onshore_production.csv [MW, T x Z]."""
@@ -78,7 +78,7 @@ class DataPreprocessor:
         self._process_vre_source("hydro_ror")
 
     # -------------------------------------------------------------------
-    # Supply curve — unit-based dispatchable plants
+    # Supply curve - unit-based dispatchable plants
     # -------------------------------------------------------------------
     def _process_hydro_res(self) -> None:
         """
