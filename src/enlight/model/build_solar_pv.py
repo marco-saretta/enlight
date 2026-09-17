@@ -8,11 +8,16 @@ if TYPE_CHECKING:
 
 def build_solar_pv(em: EnlightModel) -> None:
     """
-    Solar PV offer per zone, up to the available production, at its bid price.
+    Solar PV bid per zone and hour: a volume up to the solar potential, at a
+    fixed bid price.
     """
-    vre = em.data.solar_pv
+    solar_pv_potential = em.data.solar_pv.production  # [MW], (T, Z): input, what the sun could produce
+    solar_pv_bid_price = em.data.solar_pv.bid_price   # [EUR/MWh]: input, price asked for each MWh
 
-    offer = em.model.add_variables(lower=0, upper=vre.production, name="solar_pv_offer")  # [MW], (T, Z)
+    solar_pv_bid_volume = em.model.add_variables(
+        lower=0, upper=solar_pv_potential, name="solar_pv_bid_volume",
+    )  # [MW], (T, Z): decision, the volume the market accepts
 
-    em.add_to_power_balance("solar_pv", offer)
-    em.add_to_objective(offer * vre.bid_price)
+    em.add_to_power_balance("solar_pv", solar_pv_bid_volume)
+    em.add_curtailment("solar_pv", solar_pv_potential, solar_pv_bid_volume)
+    em.add_to_objective(solar_pv_bid_volume * solar_pv_bid_price)

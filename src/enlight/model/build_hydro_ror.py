@@ -8,11 +8,16 @@ if TYPE_CHECKING:
 
 def build_hydro_ror(em: EnlightModel) -> None:
     """
-    Run-of-river hydro offer per zone, up to the available production, at its bid price.
+    Run-of-river hydro bid per zone and hour: a volume up to the run-of-river
+    potential, at a fixed bid price.
     """
-    vre = em.data.hydro_ror
+    hydro_ror_potential = em.data.hydro_ror.production  # [MW], (T, Z): input, what the river flow could produce
+    hydro_ror_bid_price = em.data.hydro_ror.bid_price   # [EUR/MWh]: input, price asked for each MWh
 
-    offer = em.model.add_variables(lower=0, upper=vre.production, name="hydro_ror_offer")  # [MW], (T, Z)
+    hydro_ror_bid_volume = em.model.add_variables(
+        lower=0, upper=hydro_ror_potential, name="hydro_ror_bid_volume",
+    )  # [MW], (T, Z): decision, the volume the market accepts
 
-    em.add_to_power_balance("hydro_ror", offer)
-    em.add_to_objective(offer * vre.bid_price)
+    em.add_to_power_balance("hydro_ror", hydro_ror_bid_volume)
+    em.add_curtailment("hydro_ror", hydro_ror_potential, hydro_ror_bid_volume)
+    em.add_to_objective(hydro_ror_bid_volume * hydro_ror_bid_price)

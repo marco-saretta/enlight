@@ -8,11 +8,16 @@ if TYPE_CHECKING:
 
 def build_wind_onshore(em: EnlightModel) -> None:
     """
-    Onshore wind offer per zone, up to the available production, at its bid price.
+    Onshore wind bid per zone and hour: a volume up to the wind potential, at a
+    fixed bid price.
     """
-    wind = em.data.wind_onshore
+    wind_onshore_potential = em.data.wind_onshore.production  # [MW], (T, Z): input, what the wind could produce
+    wind_onshore_bid_price = em.data.wind_onshore.bid_price   # [EUR/MWh]: input, price asked for each MWh
 
-    offer = em.model.add_variables(lower=0, upper=wind.production, name="wind_onshore_offer")  # [MW], (T, Z)
+    wind_onshore_bid_volume = em.model.add_variables(
+        lower=0, upper=wind_onshore_potential, name="wind_onshore_bid_volume",
+    )  # [MW], (T, Z): decision, the volume the market accepts
 
-    em.add_to_power_balance("wind_onshore", offer)
-    em.add_to_objective(offer * wind.bid_price)
+    em.add_to_power_balance("wind_onshore", wind_onshore_bid_volume)
+    em.add_curtailment("wind_onshore", wind_onshore_potential, wind_onshore_bid_volume)
+    em.add_to_objective(wind_onshore_bid_volume * wind_onshore_bid_price)
