@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 import enlight.utils as utils
-from enlight.data_ops import DataProcessor
+from enlight.data_ops import DataPreprocessor
 from enlight.data_ops import DataLoader
 
 log = utils.get_logger(__name__)
@@ -16,7 +16,7 @@ class DataVisualizer:
     A class for visualizing the model inputs data using pandas, matplotlib, and seaborn..
 
     Attributes:
-    - dataprocessor_obj (DataProcessor): An instance of DataProcessor to load the raw data.
+    - dataprocessor_obj (DataPreprocessor): An instance of DataPreprocessor to load the raw data.
     - dataloader_obj (DataLoader): An instance of DataLoader to load the (model-ready) data.
     - week: the same week as was chosen for the DataLoader object. Only used for titles in plots.
     """
@@ -195,7 +195,7 @@ class DataVisualizer:
         '''
         fig, ax = plt.subplots(figsize=(12,6))
 
-        # Access and plot the production and consumption profiles from the DataProcessor instance
+        # Access and plot the production and consumption profiles from the DataPreprocessor instance
         for tech, df_ in self.data_raw.prod_dfs.items():
             df = utils.hourly_int_index_to_datetime(df=df_, year0=self.data_raw.prediction_year)
             df[z0].plot(ax=ax, label=tech)

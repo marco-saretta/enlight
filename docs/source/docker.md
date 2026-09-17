@@ -44,11 +44,11 @@ docker compose -f dockerfiles/docker-compose.gurobi.yml run gurobi
 Pass Hydra overrides as you normally would:
 
 ```bash
-docker compose -f dockerfiles/docker-compose.gurobi.yml run gurobi simulations=sim_1
-docker compose -f dockerfiles/docker-compose.gurobi.yml run gurobi --multirun simulations=sim_1,sim_2
+docker compose -f dockerfiles/docker-compose.gurobi.yml run gurobi simulations=demo1
+docker compose -f dockerfiles/docker-compose.gurobi.yml run gurobi --multirun simulations=demo1,demo2
 ```
 
-Results are written to `outputs/` in your local repo, exactly as when running without Docker.
+Results are written to `simulations/<label>/results/` in your local repo, exactly as when running without Docker.
 
 ## Workflow
 
@@ -58,10 +58,10 @@ You edit code and configs in your local repo as usual. The container is only inv
 edit code / configs locally
         |
         v
-docker compose ... run gurobi simulations=sim_1
+docker compose ... run gurobi simulations=demo1
         |
         v
-outputs/ appears in your local repo
+simulations/<label>/results/ appears in your local repo
         |
         v
 git add / commit / push as usual
@@ -69,7 +69,7 @@ git add / commit / push as usual
 
 ## Rebuilding the image
 
-Rebuild only when `pyproject.toml` or `uv.lock` changes (i.e. when dependencies change). Config and data changes do not require a rebuild because `configs/` and `data/` are mounted as volumes.
+Rebuild only when `pyproject.toml` or `uv.lock` changes (i.e. when dependencies change). Config and data changes do not require a rebuild because `config/` and `data/` are mounted as volumes.
 
 ```bash
 docker compose -f dockerfiles/docker-compose.gurobi.yml build --no-cache
@@ -77,7 +77,7 @@ docker compose -f dockerfiles/docker-compose.gurobi.yml build --no-cache
 
 ## Gurobi version
 
-The image uses `gurobi/python:13.0.1_3.12` by default. To use a different version, edit the `GUROBI_VERSION` build arg in [dockerfiles/docker-compose.gurobi.yml](../../dockerfiles/docker-compose.gurobi.yml) or pass it at build time:
+The image uses `gurobi/python:13.0.1_3.12` by default. To use a different version, edit the `GUROBI_VERSION` build arg in [dockerfiles/docker-compose.gurobi.yml](https://github.com/marco-saretta-DTU/enlight/blob/main/dockerfiles/docker-compose.gurobi.yml) or pass it at build time:
 
 ```bash
 docker compose -f dockerfiles/docker-compose.gurobi.yml build --build-arg GUROBI_VERSION=12.0.2

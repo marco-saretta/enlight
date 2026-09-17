@@ -1,38 +1,34 @@
 # ENLIGHT
 
-## European Network for Long-term Insights on Grid prices, Hedging & Trends
+**European Network for Long-term Insights on Grid prices, Hedging & Trends**
 
-ENLIGHT is a multi-year electricity market forecast model that simulates market clearing across European bidding zones using solver-based optimization.
+ENLIGHT forecasts hourly electricity prices across European bidding zones by clearing the market as a linear program: supply offers and demand bids meet in every zone and hour, linked by transmission lines, and the zonal prices are the duals of the power balance.
 
-## Key Features
+!!! note "Work in progress"
+    These pages are a placeholder while the model is being rebuilt. They describe the current state of the code, not a finished product.
 
-- Models all European bidding zones with multi-year foresight
-- Reproduces market clearing via optimization (Gurobi or HiGHS)
-- Scenario configuration via YAML files
-- Rolling-horizon or full-year simulation modes
-- Outputs: prices, dispatch, line flows, curtailment
+## Pipeline
 
-## How It Works
+A run goes through five steps, each a method of `EnlightRunner`:
 
-Each simulation run follows a four-step pipeline:
+| Step | Reads | Writes |
+|---|---|---|
+| 1. `preprocess` | raw data in `data/` | model inputs in `simulations/<label>/data/` |
+| 2. `load` | `simulations/<label>/data/` | xarray objects (`runner.data`) |
+| 3. `build` | loaded data | linopy model (`runner.model`) |
+| 4. `solve` | model | solution and prices |
+| 5. `export` | solved model | results in `simulations/<label>/results/` |
 
-1. **Data Preprocessing** — transforms raw input data into model-ready formats and saves to `simulations/<name>/data/`
-2. **Data Loading** — loads preprocessed data into structured objects (DataFrames, arrays)
-3. **Model Execution** — solves the market clearing optimization (maximise social welfare subject to power balance, generation limits, transmission capacity, storage dynamics)
-4. **Results Export** — extracts solutions, calculates metrics, saves to `simulations/<name>/results/`
+The run is either **yearly** (one model for 8760 h) or **rolling horizon** (one model per week, results joined afterwards).
 
-## Output Structure
+## Pages
 
-```text
-simulations/<name>/
-├── data/        # preprocessed inputs
-└── results/
-    ├── electricity_prices.csv
-    ├── generation_schedules.csv
-    ├── lineflows.csv
-    ├── demand_served.csv
-    └── curtailment.csv
-```
+- [Installation](installation.md)
+- [Running simulations](running.md)
+- [Configuration](configuration.md)
+- [Model](model.md)
+- [Files](files.md)
+- [Docker (Gurobi)](docker.md)
 
 ## License
 

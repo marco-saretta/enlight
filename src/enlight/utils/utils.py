@@ -1,5 +1,8 @@
 import logging
+import resource
+import sys
 import time
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Optional
 import pandas as pd
@@ -42,116 +45,115 @@ def load_csv_if_exists(path: Path) -> pd.DataFrame:
         raise ValueError(f"File {path} is empty.")
     return df
 
+_STAGE: ContextVar[str] = ContextVar("stage", default="run")
+
+# Third-party loggers whose INFO messages repeat what ENLIGHT already reports
+_QUIET_LOGGERS = ("linopy", "gurobipy", "highspy")
+
+
 def _fmt_elapsed(seconds: float) -> str:
-    """Format an elapsed time as '3.1s' or '2m 5s'."""
+    """Format an elapsed time as '3.1 s' or '2 min 5 s'."""
     if seconds < 60:
-        return f"{seconds:.1f}s"
+        return f"{seconds:.1f} s"
     m, s = divmod(seconds, 60)
-    return f"{int(m)}m {s:.0f}s"
+    return f"{int(m)} min {s:.0f} s"
 
 
-def setup_logging(
-    log_dir: str = "logs",
-    log_file: str = "enlight.log",
-    level: int = logging.INFO,
-    logger_name: str = "enlight",
-) -> logging.Logger:
+def peak_memory_gb() -> float:
+    """Peak resident memory [GB] since the process started or reset_peak_memory() was called."""
+    try:
+        for line in Path("/proc/self/status").read_text().splitlines():
+            if line.startswith("VmHWM:"):
+                return int(line.split()[1]) / 1e6  # kB -> GB
+    except OSError:
+        pass
+    # Not Linux: lifetime peak only (macOS reports ru_maxrss in bytes, Linux in kB)
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1e9 if sys.platform == "darwin" else 1e6)
+
+
+def reset_peak_memory() -> None:
+    """Restart peak memory tracking, so a --multirun job doesn't report the previous job's peak (Linux only)."""
+    try:
+        Path("/proc/self/clear_refs").write_text("5")
+    except OSError:
+        pass
+
+
+class _StageFilter(logging.Filter):
+    """Tag every record with the pipeline stage it was logged in, e.g. '[solve]'."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        record.stage = f"[{_STAGE.get()}]"
+        return True
+
+
+def setup_logging(log_dir: str = "logs", log_file: str = "enlight.log", level: int = logging.INFO) -> None:
     """
-    Configure a two-handler logger: clean console output and a timestamped log file.
+    Log one line per event to the console and to <log_dir>/<log_file>:
 
-    Console prints the message only (no timestamp or level prefix) so the
-    output stays readable during interactive runs. The file handler records
-    full timestamps for post-run analysis.
+        10:50:31 INFO    [solve]      highs: optimal, objective -5.12e+12
 
-    Args:
-        log_dir:     Directory for the log file (created if missing).
-        log_file:    Log file name.
-        level:       Logging level for both handlers.
-        logger_name: Logger name; reusing the same name returns the same instance.
-
-    Returns:
-        Configured Logger instance.
+    The stage tag comes from the enclosing `stage(...)` block.
     """
-    log_path = Path(log_dir)
-    log_path.mkdir(parents=True, exist_ok=True)
-
-    logger = logging.getLogger(logger_name)
+    logger = logging.getLogger("enlight")
     if logger.handlers:
-        return logger
-
+        return
     logger.setLevel(level)
-    logger.propagate = False  # prevent Hydra from double-printing
+    logger.propagate = False  # Hydra's root handler would print every line twice
 
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(level)
-    console_handler.setFormatter(logging.Formatter("%(message)s"))
-
-    file_handler = logging.FileHandler(log_path / log_file, mode="a", encoding="utf-8")
-    file_handler.setLevel(level)
-    file_handler.setFormatter(
-        logging.Formatter(
-            "%(asctime)s  %(levelname)-8s  %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
+    Path(log_dir).mkdir(parents=True, exist_ok=True)
+    console = logging.StreamHandler()
+    console.setFormatter(
+        logging.Formatter("%(asctime)s %(levelname)-7s %(stage)-12s %(message)s", datefmt="%H:%M:%S")
     )
+    file = logging.FileHandler(Path(log_dir) / log_file, mode="a", encoding="utf-8")
+    file.setFormatter(logging.Formatter("%(asctime)s %(levelname)-7s %(stage)-12s %(name)s: %(message)s"))
+    for handler in (console, file):
+        handler.addFilter(_StageFilter())
+        logger.addHandler(handler)
 
-    logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
-    return logger
-
-
-def log_section(logger: logging.Logger, title: str, width: int = 56) -> None:
-    """Log a section header with a surrounding border of '=' characters."""
-    border = "=" * width
-    logger.info("")
-    logger.info(border)
-    logger.info("  %s", title)
-    logger.info(border)
+    for name in _QUIET_LOGGERS:
+        logging.getLogger(name).setLevel(logging.WARNING)
 
 
 @contextmanager
-def log_time(logger: logging.Logger, operation_name: str):
-    """Context manager that logs start and elapsed time of a block."""
+def stage(name: str, logger: logging.Logger):
+    """
+    Tag every log line inside the block with [name]; on success, log how long
+    the block took and the process's peak memory so far.
+    """
+    token = _STAGE.set(name)
     start = time.perf_counter()
-    logger.info("Starting: %s", operation_name)
+    try:
+        yield
+        logger.info("done in %s, peak memory %.1f GB", _fmt_elapsed(time.perf_counter() - start), peak_memory_gb())
+    finally:
+        _STAGE.reset(token)
+
+
+@contextmanager
+def console_level(level: int):
+    """
+    Temporarily show only messages at `level` or above on the console; the log
+    file keeps recording every line.
+    """
+    consoles = [
+        h for h in logging.getLogger("enlight").handlers
+        if isinstance(h, logging.StreamHandler) and not isinstance(h, logging.FileHandler)
+    ]
+    previous = [h.level for h in consoles]
+    for handler in consoles:
+        handler.setLevel(level)
     try:
         yield
     finally:
-        logger.info("Done: %s in %s", operation_name, _fmt_elapsed(time.perf_counter() - start))
+        for handler, old_level in zip(consoles, previous):
+            handler.setLevel(old_level)
 
 
 def get_logger(name: str) -> logging.Logger:
     """Return a child logger; propagates to the configured enlight root logger."""
     return logging.getLogger(name)
-
-
-class Timer:
-    """
-    Explicit start/stop timer for pipeline steps.
-
-    Logs 'Starting: <name>' on creation and 'Done: <name> in <time>' on stop().
-
-    Usage:
-        timer = Timer(logger, "Data loading")
-        load_data()
-        timer.stop()
-    """
-
-    def __init__(self, logger: logging.Logger, operation_name: str) -> None:
-        self.logger = logger
-        self.operation_name = operation_name
-        self._start = time.perf_counter()
-        logger.info("Starting: %s", operation_name)
-
-    def stop(self) -> float:
-        """Stop the timer, log elapsed time, and return the elapsed seconds."""
-        elapsed = time.perf_counter() - self._start
-        self.logger.info("Done: %s in %s", self.operation_name, _fmt_elapsed(elapsed))
-        return elapsed
-
-    def elapsed(self) -> float:
-        """Return elapsed seconds without stopping the timer."""
-        return time.perf_counter() - self._start
 
 
 def save_data(

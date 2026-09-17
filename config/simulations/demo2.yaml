@@ -1,0 +1,14 @@
+# Scenario demo2: everything as in default.yaml, except the settings below.
+# Adds Germany-Luxembourg, the Netherlands and Spain to the five default zones.
+
+defaults:
+  - default
+  - _self_
+
+label: demo2
+
+supply_curve:
+  thermal:
+    plant_aggregation: true
+
+bidding_zones: [AT, BE, FR, IT, CH, DELU, NL, ES]   # a list replaces the default one, it is not merged

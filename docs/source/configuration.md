@@ -1,94 +1,56 @@
 # Configuration
 
-ENLIGHT uses [Hydra](https://hydra.cc/) for configuration. Settings are split into two layers:
+ENLIGHT is configured with [Hydra](https://hydra.cc/). Everything lives in `config/`:
 
-| File | Purpose |
+| File | Content |
 |---|---|
-| `configs/default_config.yaml` | Global settings: solver, bidding zones, paths |
-| `configs/simulations/<name>.yaml` | Per-simulation settings: run mode, years, technology parameters |
+| `config/config.yaml` | Which scenario runs by default, and the pipeline `steps` |
+| `config/paths/default.yaml` | Where raw data, simulations and logs are |
+| `config/simulations/default.yaml` | The full scenario: every setting, with its default value |
+| `config/simulations/<name>.yaml` | Other scenarios |
 
----
+## Scenario settings
 
-## Global Config (`default_config.yaml`)
+`default.yaml` is organised in five sections:
 
-### Solver
+| Section | Main settings |
+|---|---|
+| `label`, `run` | Output folder name; `mode` (`yearly` \| `rolling_horizon`), `prediction_year`, `solver` (`highs` \| `gurobi`) |
+| `rolling_horizon` | `start_week`, `end_week`, `keep_weekly_results` |
+| `supply_curve` | One block per technology: bid prices, capacity projection files, weather data, thermal unit file and marginal cost datasets, `plant_aggregation` |
+| `demand_curve` | Inflexible (`*_inflex`, bid at `voll`) and flexible (`*_flex`, bid at `wtp`) demand categories |
+| `lines`, `bidding_zones` | Transmission capacity dataset; the zones in the model |
 
-```yaml
-solver_name: highs   # highs (open-source) | gurobi (requires license)
-```
+Every setting is documented with a comment in `default.yaml` itself.
 
-### Bidding Zones
+## Creating a scenario
 
-Uncomment zones to include them. Each active zone must have corresponding input data.
-
-```yaml
-bidding_zones:
-  - AT   # Austria
-  - FR   # France
-  # - DE  # (commented out = excluded)
-```
-
-### Multi-run Mode
-
-Uncomment the `hydra` block to enable sweeps across multiple simulation configs:
+A scenario file lists only what differs from `default.yaml`; Hydra loads `default.yaml` first and applies the file on top:
 
 ```yaml
-hydra:
-  mode: MULTIRUN
-  sweeper:
-    params:
-      simulations: glob(*)
-```
+# config/simulations/demo1.yaml
+defaults:
+  - default
+  - _self_
 
----
+label: demo1          # must be unique: it names simulations/<label>/
 
-## Simulation Config (`configs/simulations/<name>.yaml`)
-
-### Run Control
-
-```yaml
 run:
-  mode:              rolling_horizon   # rolling_horizon | yearly
-  prediction_year:   2040              # capacity/demand projection year
-  plant_aggregation: true              # aggregate units by zone+fuel
+  mode: rolling_horizon
 
-rolling_horizon:
-  start_week: 1    # [1-52]
-  end_week:   52   # [1-52]
+supply_curve:
+  thermal:
+    plant_aggregation: true
 ```
 
-### Production Technologies
-
-Each technology block follows the same pattern:
+Nested blocks are merged key by key, but lists are replaced as a whole:
 
 ```yaml
-wind_onshore:
-  weather_year:  2020                      # historical profile year
-  capacity_file: TYNDP_2024_National_Trends
-  bid_price:     0.01                      # EUR/MWh
+bidding_zones: [AT, BE, FR, IT, CH, DELU, NL, ES]   # the complete list, not an addition
 ```
 
-Technologies: `wind_onshore`, `wind_offshore`, `solar_pv`, `hydro_ror`, `hydro_res`, `hydro_ps`, `thermal`.
+Run it with `uv run main.py simulations=demo1`.
 
-### Demand
+## Validation
 
-Demand is split into **inflexible** (price-inelastic, bid at `voll`) and **flexible** (price-elastic, bid at `wtp`) categories.
-
-Categories within each: `classical`, `industrial`, `household`, `public`, `ev`.
-
-```yaml
-demand_inflexible:
-  classical:
-    profile_year: 2020
-    amount_file:  TYNDP_2024_National_Trends
-    voll:         5000   # EUR/MWh — value of lost load
-```
-
-### Storage
-
-```yaml
-bess:
-  units_file:           bess_units
-  initial_soc:          0.5    # fraction of capacity at t=0
-  roundtrip_efficiency: 0.85
-```
+At start-up the composed scenario is checked against the schema in `src/enlight/utils/validation.py` (types, allowed values, required settings); a run with an invalid configuration stops before preprocessing.

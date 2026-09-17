@@ -6,7 +6,7 @@ class MarginalCostCalculator:
         generator_file="../../stuff/generators.csv",
         technology_file="../../data/technology_data/technology_data.csv",
         emissions_file="../../data/emissions/emissions.csv",
-        fuel_price_file="../../data/fuel_price_projections/ramboll/fuel_price_projections.csv",
+        fuel_price_file="../../data/fuel_price_projections/demo/fuel_price_projections.csv",
         price_year=2040,
         output_file="generators_final.csv"
     ):

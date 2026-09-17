@@ -1,0 +1,187 @@
+# Simulation template — copy, rename, and place under config/simulations/
+# Reference with:  python main.py simulations=<name>
+
+# --- MAIN RUN CONFIG ----------------------------------------------------------
+
+label: demo   # written to output dirs and metadata; must be unique
+
+run:
+  mode:            yearly            # rolling_horizon | yearly
+  prediction_year: 2040
+  solver:          highs            # highs | gurobi
+
+rolling_horizon:                     # only used when run.mode is rolling_horizon
+  start_week:          1             # weeks are 168 h; week 52 also takes the last 24 h
+  end_week:            52
+  keep_weekly_results: false         # true keeps results/week_NN/ next to the joined annual files
+
+# --- SUPPLY CURVE -------------------------------------------------------------
+# VRE (wind/solar/hydro_ror):          bid_price, capacity_file, weather_data
+# Dispatchable (hydro_res/ps/thermal): units_file, plant_aggregation, ramp_constraints
+# Storage (hydro_ps/bess) also have:   initial_soc, roundtrip_efficiency
+
+supply_curve:
+  wind_onshore:
+    bid_price:     0.01
+    capacity_file: TYNDP_2024_National_Trends
+    weather_data:
+      source: demo
+      year:   2020
+
+  wind_offshore:
+    bid_price:     0.02
+    capacity_file: TYNDP_2024_National_Trends
+    weather_data:
+      source: demo
+      year:   2020
+
+  solar_pv:
+    bid_price:     0.03
+    capacity_file: TYNDP_2024_National_Trends
+    weather_data:
+      source: demo
+      year:   2020
+
+  hydro_ror:
+    bid_price:     0.04
+    capacity_file: TYNDP_2024_National_Trends
+    weather_data:
+      source: demo
+      year:   2020
+
+  hydro_res:
+    units_file:          hydro_reservoir_units
+    plant_aggregation:   false
+    ramp_constraints:    false
+    energy_weather_year: 2020
+    bid_price:           demo
+
+  hydro_ps:
+    units_file:           hydro_pumped_storage_units
+    plant_aggregation:    false
+    initial_soc:          0.5    # fraction of capacity at t=0 [0–1]
+    roundtrip_efficiency: 0.9    # charge/discharge efficiency [0–1]
+    fuel_projection:      demo
+
+  thermal:
+    units_file:        generators
+    plant_aggregation: false
+    ramp_constraints:  false
+    marginal_cost:              # projection datasets under data/fuel_price_projections/
+      fuel_prices:        demo
+      co2_quota_prices:   demo
+      fuel_price_profile: null    # TODO: monthly fuel price shape (e.g. TTF), not implemented yet
+      taxes:              demo    # TODO: not used yet
+
+  bess:
+    units_file:           bess_units
+    initial_soc:          0.5
+    roundtrip_efficiency: 0.85
+
+# --- DEMAND CURVE -------------------------------------------------------------
+# _inflex: inelastic bid at voll (value of lost load)
+# _flex:   elastic bid at wtp (willingness to pay)
+
+demand_curve:
+  classical_inflex:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5000
+  industrial_inflex:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5001
+  household_inflex:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5002
+  public_inflex:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5003
+  ev_inflex:
+    profile_year: 2020
+    amount_file:  TYNDP_2024_National_Trends
+    voll:         5004
+
+  classical_flex:
+    flex_amount:   TYNDP_2024_National_Trends
+    flex_capacity: TYNDP_2024_National_Trends
+    wtp:           100
+  industrial_flex:
+    flex_amount:   TYNDP_2024_National_Trends
+    flex_capacity: TYNDP_2024_National_Trends
+    wtp:           100
+  household_flex:
+    flex_amount:   TYNDP_2024_National_Trends
+    flex_capacity: TYNDP_2024_National_Trends
+    wtp:           100
+  public_flex:
+    flex_amount:   TYNDP_2024_National_Trends
+    flex_capacity: TYNDP_2024_National_Trends
+    wtp:           100
+  ev_flex:
+    flex_amount:   TYNDP_2024_National_Trends
+    flex_capacity: TYNDP_2024_National_Trends
+    wtp:           100
+
+  ptx:
+    units_file: ptx_units
+
+  district_heating:
+    units_file: district_heating_units
+
+# --- TRANSMISSION -------------------------------------------------------------
+
+lines:
+  capacity_file: entsoe   # ENTSO-E NTC file
+
+# --- BIDDING ZONES ------------------------------------------------------------
+# Comment out a zone to exclude it; matching data must exist under data/.
+
+bidding_zones:
+
+  # EU member states
+  - AT   # Austria
+  - BE   # Belgium
+  # - BG   # Bulgaria
+  # - CZ   # Czech Republic
+  # - DELU # Germany and Luxembourg
+  # - DK1  # Denmark West
+  # - DK2  # Denmark East
+  # - EE   # Estonia
+  # - EL   # Greece
+  # - ES   # Spain
+  # - FI   # Finland
+  - FR   # France
+  # - HR   # Croatia
+  # - HU   # Hungary
+  - IT   # Italy
+  # - LT   # Lithuania
+  # - LV   # Latvia
+  # - NL   # Netherlands
+  # - PL   # Poland
+  # - PT   # Portugal
+  # - RO   # Romania
+  # - SE1  # Sweden Zone 1
+  # - SE2  # Sweden Zone 2
+  # - SE3  # Sweden Zone 3
+  # - SE4  # Sweden Zone 4
+  # - SEM  # Single Electricity Market (Ireland & Northern Ireland)
+  # - SI   # Slovenia
+  # - SK   # Slovakia
+
+  # Extra-EU
+  - CH   # Switzerland
+  # - AL   # Albania
+  # - BA   # Bosnia and Herzegovina
+  # - GB   # Great Britain
+  # - ME   # Montenegro
+  # - MK   # North Macedonia
+  # - NO1  # Norway Zone 1
+  # - NO2  # Norway Zone 2
+  # - NO3  # Norway Zone 3
+  # - NO4  # Norway Zone 4
+  # - NO5  # Norway Zone 5
+  # - RS   # Serbia
+  # - XK   # Kosovo

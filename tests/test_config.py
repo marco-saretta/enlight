@@ -28,9 +28,9 @@ def valid_config() -> dict:
         "wind_offshore": {"weather_year": 2020, "capacity_file": "TYNDP_2024_National_Trends", "bid_price": 0.02},
         "solar_pv":      {"weather_year": 2020, "capacity_file": "TYNDP_2024_National_Trends", "bid_price": 0.03},
         "hydro_ror":     {"weather_year": 2020, "capacity_file": "TYNDP_2024_National_Trends", "bid_price": 0.04},
-        "hydro_res":     {"units_file": "hydro_reservoir_units", "energy_weather_year": 2020, "bid_price": "ramboll"},
-        "hydro_ps":      {"units_file": "hydro_pumped_storage_units", "initial_soc": 0.5, "roundtrip_efficiency": 0.9, "fuel_projection": "ramboll"},
-        "thermal":       {"units_file": "thermal_plant_units", "fuel_projection": "ramboll"},
+        "hydro_res":     {"units_file": "hydro_reservoir_units", "energy_weather_year": 2020, "bid_price": "demo"},
+        "hydro_ps":      {"units_file": "hydro_pumped_storage_units", "initial_soc": 0.5, "roundtrip_efficiency": 0.9, "fuel_projection": "demo"},
+        "thermal":       {"units_file": "thermal_plant_units", "fuel_projection": "demo"},
         "lines":         {"capacity_file": "entsoe"},
         "demand_inflexible": {
             "classical":  {"profile_year": 2020, "amount_file": "TYNDP_2024_National_Trends", "voll": 5000},

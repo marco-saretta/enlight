@@ -48,6 +48,9 @@ nav:
   - Home: index.md
   - Getting Started:
     - Installation: installation.md
-    - Quick Start: quickstart.md
-  - Reference:
+    - Running simulations: running.md
     - Configuration: configuration.md
+  - Reference:
+    - Model: model.md
+    - Files: files.md
+    - Docker (Gurobi): docker.md
