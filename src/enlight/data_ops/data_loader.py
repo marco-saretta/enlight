@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import xarray as xr
 from omegaconf import DictConfig
@@ -10,6 +11,7 @@ import enlight.utils as utils
 log = utils.get_logger(__name__)
 
 HOURS_PER_WEEK = 168
+N_WEEKS = 52  # week 52 also takes the last 24 h of the year
 
 
 @dataclass
@@ -26,6 +28,16 @@ class InflexibleDemandData:
 
     demand: xr.DataArray  # demand [MW], dims (T, Z)
     voll: float           # value of lost load [EUR/MWh]
+
+
+@dataclass
+class HydroReservoirData:
+    """Reservoir hydro units and the energy each zone's reservoirs can release per week."""
+
+    zone: xr.DataArray           # bidding zone of each unit, dims (G,)
+    capacity: xr.DataArray       # [MW], dims (G,)
+    marginal_cost: xr.DataArray  # [EUR/MWh], dims (G,)
+    weekly_energy: xr.DataArray  # [MWh], dims (W, Z); only the loaded week in rolling_horizon mode
 
 
 @dataclass
@@ -90,9 +102,15 @@ class DataLoader:
         # Transmission
         self._load_lines()
 
+        # Week of every loaded hour (hours are numbered 1-8760), for weekly constraints
+        self.week_of_hour = xr.DataArray(
+            np.minimum((self.times - 1) // HOURS_PER_WEEK + 1, N_WEEKS), coords={"T": self.times}, name="W"
+        )
+
         log.info(
-            "%d hours, %d zones, %d thermal units, %d lines",
-            len(self.times), len(self.cfg.simulations.bidding_zones), self.thermal.zone.size, self.lines.from_zone.size,
+            "%d hours, %d zones, %d thermal units, %d hydro reservoir units, %d lines",
+            len(self.times), len(self.cfg.simulations.bidding_zones), self.thermal.zone.size,
+            self.hydro_res.zone.size, self.lines.from_zone.size,
         )
 
     # -------------------------------------------------------------------
@@ -121,8 +139,21 @@ class DataLoader:
     # with groupby on the zone column — no unit-to-zone incidence matrix.
     # -------------------------------------------------------------------
     def _load_hydro_res(self) -> None:
-        """TODO: hydro_reservoir_units.csv + hydro_reservoir_energy.csv."""
-        pass
+        """hydro_res_units.csv + hydro_res_energy.csv -> self.hydro_res."""
+        units = pd.read_csv(self.data_path / "hydro_res_units.csv", index_col=0)
+        units.index.name = "G"
+
+        energy = pd.read_csv(self.data_path / "hydro_res_energy.csv", index_col=0)
+        energy.index.name, energy.columns.name = "W", "Z"
+        if self.cfg.simulations.run.mode == "rolling_horizon":
+            energy = energy.loc[[self.week]]
+
+        self.hydro_res = HydroReservoirData(
+            zone=xr.DataArray(units["zone_el"]),
+            capacity=xr.DataArray(units["capacity_el"]),
+            marginal_cost=xr.DataArray(units["prodcost"]),
+            weekly_energy=xr.DataArray(energy),
+        )
 
     def _load_hydro_ps(self) -> None:
         """TODO: hydro_pumped_storage_units.csv."""

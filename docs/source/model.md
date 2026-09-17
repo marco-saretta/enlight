@@ -13,12 +13,15 @@ ENLIGHT solves one linear program per run (or per week in rolling horizon mode) 
 
 ## Variables
 
+Every market participant bids a volume at a price. In the build scripts each quantity carries its technology name: `<tech>_potential` or `<tech>_capacity` (input: upper limit), `<tech>_bid_price` (input: price), `<tech>_bid_volume` (decision: accepted volume).
+
 | Variable | Dims | Bounds | Built in |
 |---|---|---|---|
-| `wind_onshore_offer`, `wind_offshore_offer`, `solar_pv_offer`, `hydro_ror_offer` | T × Z | $0 \le p \le$ available production | `build_<tech>.py` |
-| `thermal_offer` | T × G | $0 \le p \le$ capacity | `build_thermal.py` |
-| `classical_inflex_bid` | T × Z | $0 \le d \le$ demand | `build_demand_inflexible.py` |
-| `line_flow` | T × L | $-\bar{F}^{\,to \to from} \le f \le \bar{F}^{\,from \to to}$ | `build_lines.py` |
+| `wind_onshore_bid_volume`, `wind_offshore_bid_volume`, `solar_pv_bid_volume`, `hydro_ror_bid_volume` | T × Z | $0 \le p \le$ potential | `build_<tech>.py` |
+| `hydro_res_bid_volume` | T × G | $0 \le p \le$ capacity, weekly energy budget per zone | `build_hydro_res.py` |
+| `thermal_bid_volume` | T × G | $0 \le p \le$ capacity | `build_thermal.py` |
+| `classical_inflex_bid_volume` | T × Z | $0 \le d \le$ load | `build_demand_inflexible.py` |
+| `lines_flow` | T × L | $-\bar{F}^{\,to \to from} \le f \le \bar{F}^{\,from \to to}$ | `build_lines.py` |
 
 ## Objective
 

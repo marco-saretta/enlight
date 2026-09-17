@@ -9,6 +9,7 @@ from omegaconf import DictConfig
 
 import enlight.utils as utils
 from enlight.model.build_demand_inflexible import build_demand_inflexible
+from enlight.model.build_hydro_res import build_hydro_res
 from enlight.model.build_hydro_ror import build_hydro_ror
 from enlight.model.build_lines import build_lines
 from enlight.model.build_solar_pv import build_solar_pv
@@ -17,6 +18,8 @@ from enlight.model.build_wind_offshore import build_wind_offshore
 from enlight.model.build_wind_onshore import build_wind_onshore
 
 if TYPE_CHECKING:
+    import xarray as xr
+
     from enlight.data_ops import DataLoader
 
 log = utils.get_logger(__name__)
@@ -36,6 +39,7 @@ BUILD_STEPS = (
     build_wind_offshore,
     build_solar_pv,
     build_hydro_ror,
+    build_hydro_res,
     build_thermal,
     build_demand_inflexible,
     build_lines,
@@ -64,6 +68,10 @@ class EnlightModel:
         self.power_balance_terms: list[tuple[str, linopy.LinearExpression]] = []
         self._objective_terms: list[linopy.LinearExpression] = []
 
+        # Extra results for DataExporter, registered by the build scripts
+        self.curtailment_terms: dict[str, tuple[xr.DataArray, linopy.Variable]] = {}
+        self.unit_dispatch: dict[str, linopy.Variable] = {}
+
         for build_step in BUILD_STEPS:
             build_step(self)
 
@@ -81,6 +89,19 @@ class EnlightModel:
         if isinstance(expr, linopy.Variable):
             expr = expr.to_linexpr()
         self.power_balance_terms.append((label, expr))
+
+    def add_curtailment(self, label: str, potential: xr.DataArray, dispatched: linopy.Variable) -> None:
+        """
+        Register a renewable whose unused potential is exported as curtailment:
+        potential [MW] minus dispatched [MW], both with dims (T, Z).
+        """
+        self.curtailment_terms[label] = (potential, dispatched)
+
+    def add_unit_dispatch(self, label: str, dispatch: linopy.Variable) -> None:
+        """
+        Register a per-unit variable with dims (T, unit), exported in full as <label>_dispatch.csv.
+        """
+        self.unit_dispatch[label] = dispatch
 
     def add_to_objective(self, expr: linopy.Variable | linopy.LinearExpression) -> None:
         """

@@ -81,8 +81,30 @@ class DataPreprocessor:
     # Supply curve — unit-based dispatchable plants
     # -------------------------------------------------------------------
     def _process_hydro_res(self) -> None:
-        """TODO: units_file + energy_weather_year -> hydro_reservoir_units.csv + hydro_reservoir_energy.csv."""
-        pass
+        """
+        units_file -> hydro_res_units.csv: the unit file as is (capacity_el [MW],
+        prodcost [EUR/MWh]), filtered to the active zones.
+        energy_weather_year -> hydro_res_energy.csv: energy each zone's reservoirs
+        can release per week [MWh, week x zone].
+        """
+        hydro_res_cfg = self.cfg.simulations.supply_curve.hydro_res
+        hydro_res_path = self.data_path / "hydro_reservoir"
+
+        units = pd.read_csv(hydro_res_path / "units" / f"{hydro_res_cfg.units_file}.csv", index_col=0)
+        units = units[units["zone_el"].isin(self.bidding_zones)]
+
+        energy = pd.read_csv(
+            hydro_res_path / "energy_availability" / f"hydro_res_energy_wy_{hydro_res_cfg.energy_weather_year}.csv",
+            index_col=0,
+        )[self.bidding_zones]
+        utils.validate_df_positive_numeric(energy, "hydro_res_energy")
+
+        utils.save_data(units, "hydro_res_units.csv", output_dir=self.output_path)
+        utils.save_data(energy, "hydro_res_energy.csv", output_dir=self.output_path)
+        log.info(
+            "hydro_res: %d units, %.1f GW, %.1f TWh weekly energy budget over the year",
+            len(units), units["capacity_el"].sum() / 1e3, energy.to_numpy().sum() / 1e6,
+        )
 
     def _process_hydro_ps(self) -> None:
         """TODO: units_file -> hydro_pumped_storage_units.csv."""
